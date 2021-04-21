@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelReservation", "HotelReservation\HotelReservation.csproj", "{00261F42-E434-4074-A0D5-0310AB5E3F85}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessLayer", "BusinessLayer\BusinessLayer.csproj", "{A7D67D86-D85A-4754-9ABC-8411AC6A2F9E}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DataAccessLayer", "DataAccessLayer\DataAccessLayer.fsproj", "{35BD7E94-D10C-4804-9966-164945BE5F0C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{00261F42-E434-4074-A0D5-0310AB5E3F85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00261F42-E434-4074-A0D5-0310AB5E3F85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00261F42-E434-4074-A0D5-0310AB5E3F85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7D67D86-D85A-4754-9ABC-8411AC6A2F9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7D67D86-D85A-4754-9ABC-8411AC6A2F9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7D67D86-D85A-4754-9ABC-8411AC6A2F9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7D67D86-D85A-4754-9ABC-8411AC6A2F9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35BD7E94-D10C-4804-9966-164945BE5F0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35BD7E94-D10C-4804-9966-164945BE5F0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35BD7E94-D10C-4804-9966-164945BE5F0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35BD7E94-D10C-4804-9966-164945BE5F0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
