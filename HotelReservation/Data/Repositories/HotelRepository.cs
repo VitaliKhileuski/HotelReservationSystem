@@ -9,7 +9,7 @@ namespace HotelReservation.Data.Repositories
 {
     class HotelRepository : IRepository<HotelEntity>
     {
-        private Context db;
+        private readonly Context db;
 
         public HotelRepository(Context context)
         {

@@ -1,0 +1,30 @@
+﻿
+2021-04-23 16:46:09.473 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2021-04-23 16:46:09.492 +03:00 [INF] Hosting environment: Development
+2021-04-23 16:46:09.494 +03:00 [INF] Content root path: C:\Users\Vitali.khileuski\source\repos\HotelReservationSystem\HotelReservation\Api
+2021-04-23 16:46:09.508 +03:00 [INF] Request starting HTTP/2.0 GET https://localhost:44377/weatherforecast  
+2021-04-23 16:46:09.559 +03:00 [INF] Request finished in 58.5507ms 404 
+2021-04-26 12:33:07.618 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2021-04-26 12:33:07.680 +03:00 [INF] Hosting environment: Development
+2021-04-26 12:33:07.681 +03:00 [INF] Content root path: C:\Users\Vitali.khileuski\source\repos\HotelReservationSystem\HotelReservation\Api
+2021-04-26 12:33:07.743 +03:00 [INF] Request starting HTTP/2.0 GET https://localhost:44377/weatherforecast  
+2021-04-26 12:33:07.826 +03:00 [INF] Request finished in 97.3451ms 404 
+2021-04-26 13:40:34.245 +03:00 [INF] Entity Framework Core 5.0.5 initialized 'Context' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: MigrationsAssembly=Api 
+2021-04-26 13:40:34.722 +03:00 [INF] Executed DbCommand (22ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2021-04-26 13:40:34.759 +03:00 [INF] Executed DbCommand (21ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2021-04-26 13:40:34.765 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2021-04-26 13:40:34.766 +03:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2021-04-26 13:40:34.781 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2021-04-26 13:40:34.811 +03:00 [INF] No migrations were applied. The database is already up to date.
+2021-04-26 13:40:34.864 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2021-04-26 13:40:34.864 +03:00 [INF] Hosting environment: Development
+2021-04-26 13:40:34.865 +03:00 [INF] Content root path: C:\Users\Vitali.khileuski\source\repos\HotelReservationSystem\HotelReservation\Api
+2021-04-26 13:40:34.897 +03:00 [INF] Request starting HTTP/2.0 GET https://localhost:44377/weatherforecast  
+2021-04-26 13:40:34.932 +03:00 [INF] Request finished in 39.9706ms 404 

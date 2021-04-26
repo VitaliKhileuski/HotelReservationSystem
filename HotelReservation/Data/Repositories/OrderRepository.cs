@@ -32,8 +32,7 @@ namespace HotelReservation.Data.Repositories
 
         public IEnumerable<OrderEntity> Find(Func<OrderEntity, bool> predicate)
         {
-            return db.Orders.Include(x => x.Customer).Include(x => x.Hotel)
-                .Where(predicate).ToList();
+            return db.Orders.Where(predicate).ToList();
         }
 
         public OrderEntity Get(int id)
@@ -43,7 +42,7 @@ namespace HotelReservation.Data.Repositories
 
         public IEnumerable<OrderEntity> GetAll()
         {
-            return db.Orders.Include(x => x.Customer).Include(x => x.Hotel);
+            return db.Orders;
         }
 
         public void Update(OrderEntity order)

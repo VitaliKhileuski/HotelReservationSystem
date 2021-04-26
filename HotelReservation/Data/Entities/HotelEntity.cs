@@ -7,11 +7,9 @@ namespace HotelReservation.Data.Entities
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public int CountryId { get; set; }
-        public CountryEntity Country { get; set; }
+        public int LocationId { get; set; }
+        public LocationEntity Location { get; set; }
 
-        public string City { get; set; }
-        public string Street { get; set; }
         public List<RoomEntity> Rooms { get; set; }
         public int Rating { get; set; }
         
