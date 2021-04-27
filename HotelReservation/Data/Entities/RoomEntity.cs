@@ -5,12 +5,11 @@
         public int Id { get; set; }
 
         public int UserId { get; set; }
-        public UserEntity User { get; set; }
-        public int OrderId { get; set; }
-        public OrderEntity Order { get; set; }
+        public virtual UserEntity User { get; set; }
+        public virtual OrderEntity Order { get; set; }
 
         public int HotelId { get; set; }
-        public HotelEntity Hotel { get; set; }
+        public virtual HotelEntity Hotel { get; set; }
 
         public int RoomNumber { get; set; }
         public int BedsNumber { get; set; }

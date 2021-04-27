@@ -32,8 +32,7 @@ namespace HotelReservation.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(50);
             builder.HasOne(x => x.Hotel)
-                .WithOne(x => x.Location)
-                .HasForeignKey<HotelEntity>(x => x.LocationId);
+                .WithOne(x => x.Location);
 
         }
     }

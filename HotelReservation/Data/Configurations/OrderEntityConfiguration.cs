@@ -28,8 +28,7 @@ namespace HotelReservation.Data.Configurations
                 .IsRequired();
             builder
                 .HasOne(x => x.Room)
-                .WithOne(x => x.Order)
-                .HasForeignKey<RoomEntity>(x => x.OrderId);
+                .WithOne(x => x.Order);
             builder
                 .HasOne(x => x.Customer)
                 .WithMany(x => x.Orders);

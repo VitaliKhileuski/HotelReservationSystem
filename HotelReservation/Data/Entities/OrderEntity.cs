@@ -6,9 +6,9 @@ namespace HotelReservation.Data.Entities
     {
         public int Id { get; set; }
         public int UserId { get; set; }
-        public UserEntity Customer { get; set; }
+        public virtual UserEntity Customer { get; set; }
         public int RoomId { get; set; }
-        public RoomEntity Room { get; set; }
+        public virtual RoomEntity Room { get; set; }
 
         public DateTime DateOrdered { get; set; }
         public DateTime StartDate { get; set; }

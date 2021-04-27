@@ -26,11 +26,15 @@ namespace HotelReservation.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            
+
             modelBuilder.ApplyConfiguration(new UserEntityConfiguration())
                 .ApplyConfiguration(new HotelEntityConfiguration())
                 .ApplyConfiguration(new LocationEntityConfiguration())
                 .ApplyConfiguration(new OrderEntityConfiguration())
                 .ApplyConfiguration(new RoomEntityConfiguration());
+
+            
         }
 
     }

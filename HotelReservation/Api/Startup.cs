@@ -53,7 +53,8 @@ namespace HotelReservation.Api
                 .GetRequiredService<IServiceScopeFactory>()
                 .CreateScope();
             using var context = serviceScope.ServiceProvider.GetService<Context>();
-            context.Database.Migrate();
+            context?.Database.Migrate();
+
         }
     }
 }
