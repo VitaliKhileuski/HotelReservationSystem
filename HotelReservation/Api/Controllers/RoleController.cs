@@ -21,15 +21,30 @@ namespace HotelReservation.Api.Controllers
             roleRepository = new RoleRepository(db);
         }
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<RoleEntity> Get()
         {
-            RoleEntity role = new RoleEntity()
-            {
-                Name = "Admin"
-            };
+            return roleRepository.GetAll();
+        }
+        [HttpGet]
+        [Route("{id:int}")]
+        public RoleEntity Get(int id)
+        {
+            return roleRepository.Get(id);
+        }
+
+        [HttpPost]
+        public void Post([FromBody] RoleEntity role)
+        {
             roleRepository.Create(role);
             db.SaveChanges();
-            return new string[] { "value1", "value2" };
         }
+        [HttpDelete]
+        [Route("{id:int}")]
+        public void RemoveRole(int id)
+        {
+            roleRepository.Delete(id);
+            db.SaveChanges();
+        }
+
     }
 }

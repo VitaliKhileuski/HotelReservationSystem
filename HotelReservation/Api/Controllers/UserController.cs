@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using HotelReservation.Data;
 using HotelReservation.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelReservation.Api.Controllers
 {
@@ -14,17 +15,38 @@ namespace HotelReservation.Api.Controllers
     public class UserController : Controller
     {
         private readonly Context db;
-        private UserRepository userRepository;
+        private readonly UserRepository userRepository;
         public UserController(Context context)
         {
             this.db = context;
             userRepository = new UserRepository(db);
         }
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<UserEntity> Get()
         {
-            var users = userRepository.GetAll();
-            return new string[] {"value1", "value2"};
+            return userRepository.GetAll();
         }
+
+        [HttpGet]
+        [Route("{id:int}")]
+        public UserEntity Get(int id)
+        {
+            return userRepository.Get(id);
+        }
+        [HttpPost]
+        public void Post([FromBody] UserEntity user)
+        {
+            userRepository.Create(user);
+        }
+
+        [HttpDelete]
+        [Route("{id:int}")]
+        public void DeleteUser(int id)
+        {
+            userRepository.Delete(id);
+            db.SaveChanges();
+        }
+
+
     }
 }

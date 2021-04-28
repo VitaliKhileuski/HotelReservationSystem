@@ -26,7 +26,7 @@ namespace HotelReservation.Api
             services.AddDbContext<Context>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("HotelContextConnection"),
                     x => x.MigrationsAssembly("Api")));
-            
+            services.AddScoped<HashPassword>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

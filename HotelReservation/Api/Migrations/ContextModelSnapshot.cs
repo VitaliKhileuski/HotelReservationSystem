@@ -132,6 +132,13 @@ namespace HotelReservation.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("HotelReservation.Data.Entities.RoomEntity", b =>
@@ -214,6 +221,18 @@ namespace HotelReservation.Api.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Birthdate = new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "Admin",
+                            Password = "wcIksDzZvHtqhtd/XazkAZF2bEhc1V3EjK+ayHMzXW8=T_CpC.rqbvX65ycC!dhK4I-0G(QAzSId",
+                            PhoneNumber = "+375297809088",
+                            RoleId = 1,
+                            Surname = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("HotelReservation.Data.Entities.LocationEntity", b =>

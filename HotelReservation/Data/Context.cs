@@ -2,18 +2,21 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
 using HotelReservation.Data.Configurations;
 using DbContext = Microsoft.EntityFrameworkCore.DbContext;
+using Org.BouncyCastle.Crypto.Generators;
 
 namespace HotelReservation.Data
 {
     public class Context : DbContext
     {
-        public Context(DbContextOptions<Context> options)
+        private HashPassword hashPass;
+        public Context(DbContextOptions<Context> options,HashPassword hash)
             : base(options)
         {
-
+            hashPass = hash;
         }
 
         public DbSet<UserEntity> Users { get; set; }
@@ -33,8 +36,23 @@ namespace HotelReservation.Data
                 .ApplyConfiguration(new LocationEntityConfiguration())
                 .ApplyConfiguration(new OrderEntityConfiguration())
                 .ApplyConfiguration(new RoomEntityConfiguration());
+            modelBuilder.Entity<RoleEntity>().HasData(new RoleEntity()
+            {
+                Id = 1,
+                Name = "Admin",
+                Users = null,
+            });
+            modelBuilder.Entity<UserEntity>().HasData(new UserEntity()
+            {
+                Id = 1,
+                RoleId = 1,
+                Birthdate = new DateTime(2000,10,10),
+                Name = "Admin",
+                Password = hashPass.GenerateHash("Admin", SHA256.Create()),
+                Surname = "Admin",
+                PhoneNumber = "+375297809088"
+            });
 
-            
         }
 
     }

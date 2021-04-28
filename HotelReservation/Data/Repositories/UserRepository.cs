@@ -46,7 +46,7 @@ namespace HotelReservation.Data.Repositories
 
         public IEnumerable<UserEntity> Find(Func<UserEntity, bool> predicate)
         {
-            return db.Users.Where(predicate).ToList();
+            return db.Users.Include(x => x.Role).Where(predicate).ToList();
         }
 
         public async Task<IEnumerable<UserEntity>> FindAsync(Func<UserEntity, bool> predicate)

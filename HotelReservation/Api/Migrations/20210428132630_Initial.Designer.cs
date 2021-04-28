@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelReservation.Api.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20210426094906_Connections")]
-    partial class Connections
+    [Migration("20210428132630_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,9 +28,6 @@ namespace HotelReservation.Api.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("LocationId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -40,9 +37,6 @@ namespace HotelReservation.Api.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("LocationId")
-                        .IsUnique();
 
                     b.ToTable("Hotels");
                 });
@@ -82,6 +76,9 @@ namespace HotelReservation.Api.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("HotelId")
+                        .IsUnique();
 
                     b.ToTable("Locations");
                 });
@@ -137,6 +134,13 @@ namespace HotelReservation.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("HotelReservation.Data.Entities.RoomEntity", b =>
@@ -157,9 +161,6 @@ namespace HotelReservation.Api.Migrations
 
                     b.Property<bool>("MiniBar")
                         .HasColumnType("bit");
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
 
                     b.Property<double>("PaymentPerDay")
                         .HasMaxLength(9)
@@ -222,17 +223,29 @@ namespace HotelReservation.Api.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Birthdate = new DateTime(2000, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "Admin",
+                            Password = "wcIksDzZvHtqhtd/XazkAZF2bEhc1V3EjK+ayHMzXW8=T_CpC.rqbvX65ycC!dhK4I-0G(QAzSId",
+                            PhoneNumber = "+375297809088",
+                            RoleId = 1,
+                            Surname = "Admin"
+                        });
                 });
 
-            modelBuilder.Entity("HotelReservation.Data.Entities.HotelEntity", b =>
+            modelBuilder.Entity("HotelReservation.Data.Entities.LocationEntity", b =>
                 {
-                    b.HasOne("HotelReservation.Data.Entities.LocationEntity", "Location")
-                        .WithOne("Hotel")
-                        .HasForeignKey("HotelReservation.Data.Entities.HotelEntity", "LocationId")
+                    b.HasOne("HotelReservation.Data.Entities.HotelEntity", "Hotel")
+                        .WithOne("Location")
+                        .HasForeignKey("HotelReservation.Data.Entities.LocationEntity", "HotelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Location");
+                    b.Navigation("Hotel");
                 });
 
             modelBuilder.Entity("HotelReservation.Data.Entities.OrderEntity", b =>
@@ -286,12 +299,9 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("HotelReservation.Data.Entities.HotelEntity", b =>
                 {
-                    b.Navigation("Rooms");
-                });
+                    b.Navigation("Location");
 
-            modelBuilder.Entity("HotelReservation.Data.Entities.LocationEntity", b =>
-                {
-                    b.Navigation("Hotel");
+                    b.Navigation("Rooms");
                 });
 
             modelBuilder.Entity("HotelReservation.Data.Entities.RoleEntity", b =>
