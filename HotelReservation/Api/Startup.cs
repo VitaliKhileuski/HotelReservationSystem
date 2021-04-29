@@ -1,12 +1,18 @@
+using System;
 using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Serialization;
+using System.Text;
+using Business.Interfaces;
+using Business.Services;
 using HotelReservation.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 
 namespace HotelReservation.Api
 {
@@ -22,12 +28,32 @@ namespace HotelReservation.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            
             services.AddDbContext<Context>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("HotelContextConnection"),
                     x => x.MigrationsAssembly("Api")));
             services.AddScoped<HashPassword>();
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddControllers();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidIssuer = Configuration["AuthenticationOptions:issuer"],
+                    ValidAudience = Configuration["AuthenticationOptions:audience"],
+                    ValidateLifetime = true,
+                    IssuerSigningKey =  new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Secrets:secretKey"])),
+                    ValidateIssuerSigningKey = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
         }
+        
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

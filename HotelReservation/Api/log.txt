@@ -2537,3 +2537,137 @@ FROM [Users] AS [u]
 2021-04-28 16:48:51.370 +03:00 [INF] Executed action HotelReservation.Api.Controllers.UserController.Get (Api) in 7.0119ms
 2021-04-28 16:48:51.371 +03:00 [INF] Executed endpoint 'HotelReservation.Api.Controllers.UserController.Get (Api)'
 2021-04-28 16:48:51.371 +03:00 [INF] Request finished in 10.801ms 200 application/json; charset=utf-8
+2021-04-29 19:39:38.515 +03:00 [INF] User profile is available. Using 'C:\Users\Vitali.khileuski\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2021-04-29 19:39:38.575 +03:00 [INF] Creating key {1fa298d9-4f60-431b-8ed2-269f8134c59e} with creation date 2021-04-29 16:39:38Z, activation date 2021-04-29 16:39:38Z, and expiration date 2021-07-28 16:39:38Z.
+2021-04-29 19:39:38.659 +03:00 [INF] Writing data to file 'C:\Users\Vitali.khileuski\AppData\Local\ASP.NET\DataProtection-Keys\key-1fa298d9-4f60-431b-8ed2-269f8134c59e.xml'.
+2021-04-29 19:39:39.925 +03:00 [INF] Entity Framework Core 5.0.5 initialized 'Context' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: MigrationsAssembly=Api 
+2021-04-29 19:39:40.262 +03:00 [INF] Executed DbCommand (21ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2021-04-29 19:39:40.295 +03:00 [INF] Executed DbCommand (20ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2021-04-29 19:39:40.299 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2021-04-29 19:39:40.300 +03:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2021-04-29 19:39:40.313 +03:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2021-04-29 19:39:40.330 +03:00 [INF] No migrations were applied. The database is already up to date.
+2021-04-29 19:39:40.352 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2021-04-29 19:39:40.353 +03:00 [INF] Hosting environment: Development
+2021-04-29 19:39:40.353 +03:00 [INF] Content root path: C:\Users\Vitali.khileuski\source\repos\HotelReservationSystem\HotelReservation\Api
+2021-04-29 19:39:40.405 +03:00 [INF] Request starting HTTP/2.0 GET https://localhost:44377/weatherforecast  
+2021-04-29 19:41:06.600 +03:00 [INF] User profile is available. Using 'C:\Users\Vitali.khileuski\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2021-04-29 19:41:13.993 +03:00 [INF] Entity Framework Core 5.0.5 initialized 'Context' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: MigrationsAssembly=Api 
+2021-04-29 19:41:14.310 +03:00 [INF] Executed DbCommand (26ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2021-04-29 19:41:14.364 +03:00 [INF] Executed DbCommand (29ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2021-04-29 19:41:14.370 +03:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2021-04-29 19:41:14.371 +03:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2021-04-29 19:41:14.389 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2021-04-29 19:41:14.414 +03:00 [INF] No migrations were applied. The database is already up to date.
+2021-04-29 19:41:14.437 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2021-04-29 19:41:14.443 +03:00 [INF] Hosting environment: Development
+2021-04-29 19:41:14.443 +03:00 [INF] Content root path: C:\Users\Vitali.khileuski\source\repos\HotelReservationSystem\HotelReservation\Api
+2021-04-29 19:41:14.485 +03:00 [INF] Request starting HTTP/2.0 GET https://localhost:44377/weatherforecast  
+2021-04-29 19:43:10.596 +03:00 [INF] User profile is available. Using 'C:\Users\Vitali.khileuski\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2021-04-29 19:44:06.470 +03:00 [INF] Entity Framework Core 5.0.5 initialized 'Context' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: MigrationsAssembly=Api 
+2021-04-29 19:44:06.815 +03:00 [INF] Executed DbCommand (21ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2021-04-29 19:44:06.847 +03:00 [INF] Executed DbCommand (17ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2021-04-29 19:44:06.851 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2021-04-29 19:44:06.851 +03:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2021-04-29 19:44:06.864 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2021-04-29 19:44:06.884 +03:00 [INF] No migrations were applied. The database is already up to date.
+2021-04-29 19:44:06.913 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2021-04-29 19:44:06.914 +03:00 [INF] Hosting environment: Development
+2021-04-29 19:44:06.914 +03:00 [INF] Content root path: C:\Users\Vitali.khileuski\source\repos\HotelReservationSystem\HotelReservation\Api
+2021-04-29 19:44:06.947 +03:00 [INF] Request starting HTTP/2.0 GET https://localhost:44377/weatherforecast  
+2021-04-29 19:45:40.913 +03:00 [INF] User profile is available. Using 'C:\Users\Vitali.khileuski\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2021-04-29 19:45:42.150 +03:00 [INF] Entity Framework Core 5.0.5 initialized 'Context' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: MigrationsAssembly=Api 
+2021-04-29 19:45:42.467 +03:00 [INF] Executed DbCommand (21ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2021-04-29 19:45:42.504 +03:00 [INF] Executed DbCommand (21ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2021-04-29 19:45:42.508 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2021-04-29 19:45:42.509 +03:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2021-04-29 19:45:42.522 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2021-04-29 19:45:42.542 +03:00 [INF] No migrations were applied. The database is already up to date.
+2021-04-29 19:45:42.562 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2021-04-29 19:45:42.568 +03:00 [INF] Hosting environment: Development
+2021-04-29 19:45:42.568 +03:00 [INF] Content root path: C:\Users\Vitali.khileuski\source\repos\HotelReservationSystem\HotelReservation\Api
+2021-04-29 19:45:42.601 +03:00 [INF] Request starting HTTP/2.0 GET https://localhost:44377/weatherforecast  
+2021-04-29 19:48:08.148 +03:00 [INF] User profile is available. Using 'C:\Users\Vitali.khileuski\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2021-04-29 19:48:09.399 +03:00 [INF] Entity Framework Core 5.0.5 initialized 'Context' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: MigrationsAssembly=Api 
+2021-04-29 19:48:09.708 +03:00 [INF] Executed DbCommand (26ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2021-04-29 19:48:09.740 +03:00 [INF] Executed DbCommand (18ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2021-04-29 19:48:09.744 +03:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2021-04-29 19:48:09.745 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2021-04-29 19:48:09.757 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2021-04-29 19:48:09.774 +03:00 [INF] No migrations were applied. The database is already up to date.
+2021-04-29 19:48:09.793 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2021-04-29 19:48:09.799 +03:00 [INF] Hosting environment: Development
+2021-04-29 19:48:09.799 +03:00 [INF] Content root path: C:\Users\Vitali.khileuski\source\repos\HotelReservationSystem\HotelReservation\Api
+2021-04-29 19:48:09.834 +03:00 [INF] Request starting HTTP/2.0 GET https://localhost:44377/weatherforecast  
+2021-04-29 19:48:09.992 +03:00 [INF] Request finished in 161.898ms 404 
+2021-04-29 19:48:13.403 +03:00 [INF] Request starting HTTP/2.0 GET https://localhost:44377/user  
+2021-04-29 19:48:13.414 +03:00 [INF] Executing endpoint 'HotelReservation.Api.Controllers.UserController.Get (Api)'
+2021-04-29 19:48:13.450 +03:00 [INF] Route matched with {action = "Get", controller = "User"}. Executing controller action with signature System.Collections.Generic.IEnumerable`1[HotelReservation.Data.Entities.UserEntity] Get() on controller HotelReservation.Api.Controllers.UserController (Api).
+2021-04-29 19:48:13.461 +03:00 [INF] Entity Framework Core 5.0.5 initialized 'Context' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: MigrationsAssembly=Api 
+2021-04-29 19:48:13.706 +03:00 [INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [u].[Id], [u].[Birthdate], [u].[Email], [u].[Name], [u].[Password], [u].[PhoneNumber], [u].[RoleId], [u].[Surname]
+FROM [Users] AS [u]
+2021-04-29 19:48:13.763 +03:00 [INF] Executing ObjectResult, writing value of type 'System.Collections.Generic.List`1[[HotelReservation.Data.Entities.UserEntity, Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2021-04-29 19:48:13.796 +03:00 [INF] Executed action HotelReservation.Api.Controllers.UserController.Get (Api) in 339.4701ms
+2021-04-29 19:48:13.797 +03:00 [INF] Executed endpoint 'HotelReservation.Api.Controllers.UserController.Get (Api)'
+2021-04-29 19:48:13.799 +03:00 [INF] Request finished in 397.024ms 200 application/json; charset=utf-8
+2021-04-29 19:48:14.253 +03:00 [INF] Request starting HTTP/2.0 GET https://localhost:44377/favicon.ico  
+2021-04-29 19:48:14.257 +03:00 [INF] Request finished in 5.9846ms 404 
+2021-04-29 19:48:19.669 +03:00 [INF] Request starting HTTP/2.0 GET https://localhost:44377/user/1  
+2021-04-29 19:48:19.671 +03:00 [INF] Executing endpoint 'HotelReservation.Api.Controllers.UserController.Get (Api)'
+2021-04-29 19:48:19.683 +03:00 [INF] Route matched with {action = "Get", controller = "User"}. Executing controller action with signature HotelReservation.Data.Entities.UserEntity Get(Int32) on controller HotelReservation.Api.Controllers.UserController (Api).
+2021-04-29 19:48:19.733 +03:00 [INF] Entity Framework Core 5.0.5 initialized 'Context' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: MigrationsAssembly=Api 
+2021-04-29 19:48:19.856 +03:00 [INF] Executed DbCommand (21ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [u].[Id], [u].[Birthdate], [u].[Email], [u].[Name], [u].[Password], [u].[PhoneNumber], [u].[RoleId], [u].[Surname]
+FROM [Users] AS [u]
+WHERE [u].[Id] = @__p_0
+2021-04-29 19:48:19.858 +03:00 [INF] Executing ObjectResult, writing value of type 'HotelReservation.Data.Entities.UserEntity'.
+2021-04-29 19:48:19.859 +03:00 [INF] Executed action HotelReservation.Api.Controllers.UserController.Get (Api) in 175.2446ms
+2021-04-29 19:48:19.859 +03:00 [INF] Executed endpoint 'HotelReservation.Api.Controllers.UserController.Get (Api)'
+2021-04-29 19:48:19.859 +03:00 [INF] Request finished in 190.8416ms 200 application/json; charset=utf-8
+2021-04-29 19:48:22.636 +03:00 [INF] Request starting HTTP/2.0 GET https://localhost:44377/role  
+2021-04-29 19:48:22.638 +03:00 [INF] Executing endpoint 'HotelReservation.Api.Controllers.RoleController.Get (Api)'
+2021-04-29 19:48:22.643 +03:00 [INF] Route matched with {action = "Get", controller = "Role"}. Executing controller action with signature System.Collections.Generic.IEnumerable`1[HotelReservation.Data.Entities.RoleEntity] Get() on controller HotelReservation.Api.Controllers.RoleController (Api).
+2021-04-29 19:48:22.648 +03:00 [INF] Entity Framework Core 5.0.5 initialized 'Context' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: MigrationsAssembly=Api 
+2021-04-29 19:48:22.665 +03:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [r].[Id], [r].[Name]
+FROM [Roles] AS [r]
+2021-04-29 19:48:22.671 +03:00 [INF] Executing ObjectResult, writing value of type 'System.Collections.Generic.List`1[[HotelReservation.Data.Entities.RoleEntity, Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2021-04-29 19:48:22.673 +03:00 [INF] Executed action HotelReservation.Api.Controllers.RoleController.Get (Api) in 29.2439ms
+2021-04-29 19:48:22.673 +03:00 [INF] Executed endpoint 'HotelReservation.Api.Controllers.RoleController.Get (Api)'
+2021-04-29 19:48:22.673 +03:00 [INF] Request finished in 37.341ms 200 application/json; charset=utf-8
