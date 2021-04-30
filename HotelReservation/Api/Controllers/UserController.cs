@@ -14,37 +14,37 @@ namespace HotelReservation.Api.Controllers
     [Route("[controller]")]
     public class UserController : Controller
     {
-        private readonly Context db;
-        private readonly UserRepository userRepository;
+        private readonly Context _db;
+        private readonly UserRepository _userRepository;
         public UserController(Context context)
         {
-            this.db = context;
-            userRepository = new UserRepository(db);
+            _db = context;
+            _userRepository = new UserRepository(_db);
         }
         [HttpGet]
         public IEnumerable<UserEntity> Get()
         {
-            return userRepository.GetAll();
+            return _userRepository.GetAll();
         }
 
         [HttpGet]
         [Route("{id:int}")]
         public UserEntity Get(int id)
         {
-            return userRepository.Get(id);
+            return _userRepository.Get(id);
         }
         [HttpPost]
         public void Post([FromBody] UserEntity user)
         {
-            userRepository.Create(user);
+            _userRepository.Create(user);
         }
 
         [HttpDelete]
         [Route("{id:int}")]
         public void DeleteUser(int id)
         {
-            userRepository.Delete(id);
-            db.SaveChanges();
+            _userRepository.Delete(id);
+            _db.SaveChanges();
         }
 
 

@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Business.DTO;
+using Business.Models;
 
 namespace Business.Interfaces
 {
     public interface IAuthenticationService
     {
-        Task<string> Login(LoginUserDTO user);
-        Task<string> Registration(LoginUserDTO user);
+        Task<string> Login(LoginUserRequestModel user);
+        Task<string> Registration(RegisterUserRequestModel user);
     }
 }

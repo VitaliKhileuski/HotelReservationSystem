@@ -22,9 +22,9 @@ namespace HotelReservation.Data.Repositories
             db.Users.Add(user);
         }
 
-        public Task CreateAsync(UserEntity item)
+        public async Task CreateAsync(UserEntity user)
         {
-            throw new NotImplementedException();
+            await db.Users.AddAsync(user);
         }
 
         public void Delete(int id)

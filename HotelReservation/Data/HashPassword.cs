@@ -9,7 +9,7 @@ namespace HotelReservation.Data
 {
    public class HashPassword
    {
-       private IConfiguration configuration;
+       private readonly IConfiguration configuration;
        
        public HashPassword(IConfiguration cfg)
        {

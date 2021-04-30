@@ -28,7 +28,6 @@ namespace HotelReservation.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
             services.AddDbContext<Context>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("HotelContextConnection"),
                     x => x.MigrationsAssembly("Api")));
@@ -42,35 +41,28 @@ namespace HotelReservation.Api
                 options.RequireHttpsMetadata = false;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
                     ValidIssuer = Configuration["AuthenticationOptions:issuer"],
+                    ValidateIssuer = true,
                     ValidAudience = Configuration["AuthenticationOptions:audience"],
+                    ValidateAudience = true,
                     ValidateLifetime = true,
                     IssuerSigningKey =  new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Secrets:secretKey"])),
                     ValidateIssuerSigningKey = true,
-                    ClockSkew = TimeSpan.Zero
                 };
             });
         }
         
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
-            app.UseAuthorization();
             app.UseAuthentication();
-
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

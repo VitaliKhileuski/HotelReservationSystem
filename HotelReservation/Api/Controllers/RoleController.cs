@@ -45,6 +45,5 @@ namespace HotelReservation.Api.Controllers
             roleRepository.Delete(id);
             db.SaveChanges();
         }
-
     }
 }
