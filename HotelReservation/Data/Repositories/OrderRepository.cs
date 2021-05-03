@@ -2,53 +2,51 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using HotelReservation.Data;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace HotelReservation.Data.Repositories
 {
-    public class OrderRepository : IRepository<OrderEntity>
+    public class OrderRepository : IRepository<OrderEntity>, IRepositoryAsync<OrderEntity>
     {
-        private Context db;
+        private Context _db;
 
         public OrderRepository(Context context)
         {
-            this.db = context;
+            this._db = context;
         }
         public void Create(OrderEntity order)
         {
-            db.Orders.Add(order);
+            _db.Orders.Add(order);
         }
 
         public async Task CreateAsync(OrderEntity order)
         {
-            await db.Orders.AddAsync(order);
+            await _db.Orders.AddAsync(order);
         }
 
         public void Delete(int id)
         {
-            OrderEntity order = db.Orders.Find(id);
+            OrderEntity order = _db.Orders.Find(id);
             if (order != null)
             {
-                db.Orders.Remove(order);
+                _db.Orders.Remove(order);
             }
         }
 
         public async Task DeleteAsync(int id)
         {
-            var order = await db.Orders.FindAsync(id);
+            var order = await _db.Orders.FindAsync(id);
 
             if (order != null)
             {
-                db.Orders.Remove(order);
+                _db.Orders.Remove(order);
             }
         }
 
         public IEnumerable<OrderEntity> Find(Func<OrderEntity, bool> predicate)
         {
-            return db.Orders.Where(predicate).ToList();
+            return _db.Orders.Where(predicate).ToList();
         }
 
         public  async Task<IEnumerable<OrderEntity>> FindAsync(Func<OrderEntity, bool> predicate)
@@ -58,12 +56,12 @@ namespace HotelReservation.Data.Repositories
 
         public OrderEntity Get(int id)
         {
-            return db.Orders.Find(id);
+            return _db.Orders.Find(id);
         }
 
         public IEnumerable<OrderEntity> GetAll()
         {
-            return db.Orders;
+            return _db.Orders;
         }
 
         public async Task<IEnumerable<OrderEntity>> GetAllAsync()
@@ -78,7 +76,7 @@ namespace HotelReservation.Data.Repositories
 
         public void Update(OrderEntity order)
         {
-            db.Entry(order);
+            _db.Entry(order);
         }
 
         public async Task UpdateAsync(OrderEntity order)

@@ -1,12 +1,8 @@
 ﻿using HotelReservation.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using HotelReservation.Data;
 using HotelReservation.Data.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace HotelReservation.Api.Controllers
 {

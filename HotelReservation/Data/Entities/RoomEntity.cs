@@ -17,7 +17,5 @@
         public bool WiFi { get; set; }
         public bool MiniBar { get; set; }
         public bool IsEmpty { get; set; }
-
-
     }
 }

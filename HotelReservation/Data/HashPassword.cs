@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Configuration;
-using Org.BouncyCastle.Crypto.Utilities;
 
 namespace HotelReservation.Data
 {
    public class HashPassword
    {
-       private readonly IConfiguration configuration;
+       private readonly IConfiguration _configuration;
        
        public HashPassword(IConfiguration cfg)
        {
-           configuration = cfg;
+           _configuration = cfg;
        }
 
        public bool CheckHash(string password,string hash)
@@ -24,7 +22,7 @@ namespace HotelReservation.Data
 
         public  string GenerateHash(string password,SHA256 sha256)
         {
-            var salt = configuration.GetSection("Salt").Value;
+            var salt = _configuration.GetSection("Salt").Value;
             var passwordBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
             string passwordHash = Convert.ToBase64String(passwordBytes);
             StringBuilder result = new StringBuilder(passwordHash.Length + salt.Length);
@@ -33,5 +31,4 @@ namespace HotelReservation.Data
             return result.ToString();
         }
     }
-
 }

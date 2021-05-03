@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace HotelReservation.Data.Entities
@@ -20,6 +19,5 @@ namespace HotelReservation.Data.Entities
         public string PhoneNumber { get; set; }
         public string Password { get; set; }
         public DateTime Birthdate { get; set; }
-
     }
 }

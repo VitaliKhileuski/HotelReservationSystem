@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
@@ -9,46 +8,46 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelReservation.Data.Repositories
 {
-   public  class LocationRepository : IRepository<LocationEntity>
+   public  class LocationRepository : IRepository<LocationEntity>, IRepositoryAsync<LocationEntity>
     {
-        private readonly Context db;
+        private readonly Context _db;
 
         public LocationRepository(Context context)
         {
-            this.db = context;
+            _db = context;
         }
 
         public void Create(LocationEntity location)
         {
-            db.Locations.Add(location);
+            _db.Locations.Add(location);
         }
 
         public async Task CreateAsync(LocationEntity location)
         {
-            await db.Locations.AddAsync(location);
+            await _db.Locations.AddAsync(location);
         }
 
         public void Delete(int id)
         {
-            LocationEntity location = db.Locations.Find(id);
+            LocationEntity location = _db.Locations.Find(id);
             if (location != null)
             {
-                db.Locations.Remove(location);
+                _db.Locations.Remove(location);
             }
         }
 
         public async Task DeleteAsync(int id)
         {
-            var location = await db.Locations.FindAsync(id);
+            var location = await _db.Locations.FindAsync(id);
             if (location!=null)
             {
-                db.Locations.Remove(location);
+                _db.Locations.Remove(location);
             }
         }
 
         public IEnumerable<LocationEntity> Find(Func<LocationEntity, bool> predicate)
         {
-            return db.Locations.Where(predicate).ToList();
+            return _db.Locations.Where(predicate).ToList();
         }
 
         public Task<IEnumerable<LocationEntity>> FindAsync(Func<LocationEntity, bool> predicate)
@@ -58,12 +57,12 @@ namespace HotelReservation.Data.Repositories
 
         public LocationEntity Get(int id)
         {
-            return db.Locations.Find(id);
+            return _db.Locations.Find(id);
         }
 
         public IEnumerable<LocationEntity> GetAll()
         {
-            return db.Locations;
+            return _db.Locations;
         }
 
         public async Task<IEnumerable<LocationEntity>> GetAllAsync()
@@ -78,7 +77,7 @@ namespace HotelReservation.Data.Repositories
 
         public void Update(LocationEntity location)
         {
-            db.Entry(location).State = EntityState.Modified;
+            _db.Entry(location).State = EntityState.Modified;
         }
 
         public async Task UpdateAsync(LocationEntity location)

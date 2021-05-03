@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Business.Exceptions;
 using Business.Interfaces;
-using Business.Models;
-using Business.Services;
+using Business.Models.RequestModels;
 using Microsoft.AspNetCore.Authorization;
 
 namespace HotelReservation.Api.Controllers
@@ -15,10 +11,10 @@ namespace HotelReservation.Api.Controllers
     [Route("api/[controller]")]
     public class AccountController : Controller
     {
-        private readonly IAuthenticationService authService;
+        private readonly IAuthenticationService _authService;
         public AccountController(IAuthenticationService authService)
         {
-            this.authService = authService;
+            this._authService = authService;
         }
 
         [HttpPost("login")]
@@ -26,7 +22,7 @@ namespace HotelReservation.Api.Controllers
         {
             try
             {
-                return Ok(await authService.Login(user));
+                return Ok(await _authService.Login(user));
             }
             catch (NotFoundException ex)
             {
@@ -42,7 +38,7 @@ namespace HotelReservation.Api.Controllers
         {
             try
             {
-                return Ok(await authService.Registration(user));
+                return Ok(await _authService.Registration(user));
             }
             catch (BadRequestException ex)
             {

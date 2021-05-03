@@ -8,47 +8,47 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelReservation.Data.Repositories
 {
-    public class HotelRepository : IRepository<HotelEntity>
+    public class HotelRepository : IRepository<HotelEntity>, IRepositoryAsync<HotelEntity>
     {
-        private readonly Context db;
+        private readonly Context _db;
 
         public HotelRepository(Context context)
         {
-            this.db = context;
+            _db = context;
         }
 
         public void Create(HotelEntity hotel)
         {
-            db.Hotels.Add(hotel);
+            _db.Hotels.Add(hotel);
         }
 
         public async Task CreateAsync(HotelEntity hotel)
         {
-            await db.Hotels.AddAsync(hotel);
+            await _db.Hotels.AddAsync(hotel);
         }
 
         public void Delete(int id)
         {
-            HotelEntity hotel = db.Hotels.Find(id);
+            HotelEntity hotel = _db.Hotels.Find(id);
             if (hotel != null)
             {
-                db.Hotels.Remove(hotel);
+                _db.Hotels.Remove(hotel);
             }
         }
 
         public async Task DeleteAsync(int id)
         {
-            var hotel = await db.Hotels.FindAsync(id);
+            var hotel = await _db.Hotels.FindAsync(id);
 
             if (hotel != null)
             {
-                db.Hotels.Remove(hotel);
+                _db.Hotels.Remove(hotel);
             }
         }
 
         public IEnumerable<HotelEntity> Find(Func<HotelEntity, bool> predicate)
         {
-            return db.Hotels.Where(predicate).ToList();
+            return _db.Hotels.Where(predicate).ToList();
         }
 
         public async Task<IEnumerable<HotelEntity>> FindAsync(Func<HotelEntity, bool> predicate)
@@ -58,12 +58,12 @@ namespace HotelReservation.Data.Repositories
 
         public HotelEntity Get(int id)
         {
-            return db.Hotels.Find(id);
+            return _db.Hotels.Find(id);
         }
 
         public IEnumerable<HotelEntity> GetAll()
         {
-            return db.Hotels;
+            return _db.Hotels;
         }
 
         public async Task<IEnumerable<HotelEntity>> GetAllAsync()
@@ -78,7 +78,7 @@ namespace HotelReservation.Data.Repositories
 
         public void Update(HotelEntity hotel)
         {
-            db.Entry(hotel).State = EntityState.Modified;
+            _db.Entry(hotel).State = EntityState.Modified;
         }
 
         public async Task UpdateAsync(HotelEntity newItem)
