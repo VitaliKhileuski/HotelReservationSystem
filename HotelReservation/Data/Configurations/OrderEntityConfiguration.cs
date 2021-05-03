@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using HotelReservation.Data.Entities;
-using Microsoft.Data.SqlClient;
+﻿using HotelReservation.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HotelReservation.Data.Configurations
 {
-    class OrderEntityConfiguration : IEntityTypeConfiguration<OrderEntity>
+   public class OrderEntityConfiguration : IEntityTypeConfiguration<OrderEntity>
     {
         public void Configure(EntityTypeBuilder<OrderEntity> builder)
         {
@@ -32,7 +28,6 @@ namespace HotelReservation.Data.Configurations
             builder
                 .HasOne(x => x.Customer)
                 .WithMany(x => x.Orders);
-           
         }
     }
 }

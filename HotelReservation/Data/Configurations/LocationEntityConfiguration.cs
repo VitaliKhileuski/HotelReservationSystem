@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using HotelReservation.Data.Entities;
+﻿using HotelReservation.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HotelReservation.Data.Configurations
 {
-    class LocationEntityConfiguration : IEntityTypeConfiguration<LocationEntity>
+   public class LocationEntityConfiguration : IEntityTypeConfiguration<LocationEntity>
     {
         public void Configure(EntityTypeBuilder<LocationEntity> builder)
         {
@@ -33,7 +30,6 @@ namespace HotelReservation.Data.Configurations
                 .HasMaxLength(50);
             builder.HasOne(x => x.Hotel)
                 .WithOne(x => x.Location);
-
         }
     }
 }
