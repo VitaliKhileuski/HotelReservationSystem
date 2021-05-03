@@ -1,6 +1,3 @@
-using System;
-using System.Runtime.InteropServices.ComTypes;
-using System.Runtime.Serialization;
 using System.Text;
 using Business.Interfaces;
 using Business.Services;
@@ -13,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 
 namespace HotelReservation.Api
 {
@@ -38,16 +36,16 @@ namespace HotelReservation.Api
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
             {
-                options.RequireHttpsMetadata = false;
+                options.RequireHttpsMetadata = bool.Parse(Configuration["AuthenticationOptions:RequireHttpsMetadata"] ?? "false");
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidIssuer = Configuration["AuthenticationOptions:issuer"],
-                    ValidateIssuer = true,
+                    ValidateIssuer = bool.Parse(Configuration["AuthenticationOptions:ValidateIssuer"] ?? "false"),
                     ValidAudience = Configuration["AuthenticationOptions:audience"],
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
+                    ValidateAudience = bool.Parse(Configuration["AuthenticationOptions:ValidateAudience"] ?? "false"),
+                    ValidateLifetime = bool.Parse(Configuration["AuthenticationOptions:ValidateLifetime"] ?? "false"),
                     IssuerSigningKey =  new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Secrets:secretKey"])),
-                    ValidateIssuerSigningKey = true,
+                    ValidateIssuerSigningKey = bool.Parse(Configuration["AuthenticationOptions:ValidateIssuerSigningKey"] ?? "false"),
                 };
             });
         }
@@ -63,10 +61,16 @@ namespace HotelReservation.Api
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseSerilogRequestLogging();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+            Migrate(app);
+        }
+
+        private void Migrate(IApplicationBuilder app)
+        {
             using var serviceScope = app.ApplicationServices
                 .GetRequiredService<IServiceScopeFactory>()
                 .CreateScope();
