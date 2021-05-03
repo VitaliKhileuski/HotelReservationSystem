@@ -7,7 +7,7 @@ using HotelReservation.Data.Repositories;
 namespace HotelReservation.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class RoleController : Controller
     {
         private readonly Context _db;

@@ -9,20 +9,22 @@ namespace HotelReservation.Data.Repositories
 {
     public class OrderRepository : IRepository<OrderEntity>, IRepositoryAsync<OrderEntity>
     {
-        private Context _db;
+        private readonly Context _db;
 
         public OrderRepository(Context context)
         {
-            this._db = context;
+            _db = context;
         }
         public void Create(OrderEntity order)
         {
             _db.Orders.Add(order);
+            _db.SaveChanges();
         }
 
         public async Task CreateAsync(OrderEntity order)
         {
             await _db.Orders.AddAsync(order);
+            await _db.SaveChangesAsync();
         }
 
         public void Delete(int id)
@@ -32,6 +34,8 @@ namespace HotelReservation.Data.Repositories
             {
                 _db.Orders.Remove(order);
             }
+
+            _db.SaveChanges();
         }
 
         public async Task DeleteAsync(int id)
@@ -42,6 +46,8 @@ namespace HotelReservation.Data.Repositories
             {
                 _db.Orders.Remove(order);
             }
+
+            await _db.SaveChangesAsync();
         }
 
         public IEnumerable<OrderEntity> Find(Func<OrderEntity, bool> predicate)
@@ -77,11 +83,13 @@ namespace HotelReservation.Data.Repositories
         public void Update(OrderEntity order)
         {
             _db.Entry(order);
+            _db.SaveChanges();
         }
 
         public async Task UpdateAsync(OrderEntity order)
         {
             await Task.Run((() => Update(order)));
+            await _db.SaveChangesAsync();
         }
     }
 }

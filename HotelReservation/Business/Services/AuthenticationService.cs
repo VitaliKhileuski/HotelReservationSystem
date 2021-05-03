@@ -42,7 +42,7 @@ namespace Business.Services
 
             if (_hash.CheckHash(user.Password, userFromDb.Password))
             {
-                return _tokenService.BuildToken(_cfg["Secrets:secretKey"], user.Email);
+                return _tokenService.BuildToken(_cfg["Secrets:secretKey"], user.Email,userFromDb.Role.Name);
             }
             throw new IncorrectPasswordException("password is incorrect");
         }
@@ -61,7 +61,7 @@ namespace Business.Services
             await _repository.CreateAsync(userEntity);
             await _db.SaveChangesAsync();
 
-            return  _tokenService.BuildToken(_cfg["Secrets:secretKey"], user.Email);
+            return  _tokenService.BuildToken(_cfg["Secrets:secretKey"], user.Email,userEntity.Role.Name);
         }
 
         public async Task<UserEntity> GetUserFromDb(string email)

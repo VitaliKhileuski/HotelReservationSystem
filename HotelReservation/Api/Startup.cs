@@ -1,7 +1,11 @@
 using System.Text;
 using Business.Interfaces;
+using Business.Mappers;
 using Business.Services;
 using HotelReservation.Data;
+using HotelReservation.Data.Entities;
+using HotelReservation.Data.Interfaces;
+using HotelReservation.Data.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,11 +31,17 @@ namespace HotelReservation.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<Context>(opt =>
+            {
+                opt.UseLazyLoadingProxies();
                 opt.UseSqlServer(Configuration.GetConnectionString("HotelContextConnection"),
-                    x => x.MigrationsAssembly("Api")));
+                    x => x.MigrationsAssembly("Api"));
+            });
             services.AddScoped<HashPassword>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<HotelRepository>();
+            services.AddScoped<HotelModelsMapper>();
+            services.AddScoped<IHotelsService, HotelsService>();
             services.AddControllers();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -47,6 +57,19 @@ namespace HotelReservation.Api
                     IssuerSigningKey =  new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Secrets:secretKey"])),
                     ValidateIssuerSigningKey = bool.Parse(Configuration["AuthenticationOptions:ValidateIssuerSigningKey"] ?? "false"),
                 };
+            });
+            services.AddAuthorization(opt =>
+            {
+                opt.AddPolicy("AdminPermission", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole("Admin");
+                });
+                opt.AddPolicy("HotelAdminPermission", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole("Admin", "HotelAdmin");
+                });
             });
         }
         

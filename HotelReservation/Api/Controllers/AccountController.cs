@@ -45,7 +45,7 @@ namespace HotelReservation.Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [Authorize]
+        [Authorize(Policy = "ManageHotelsPermission")]
         [HttpGet("test")]
         public IActionResult Test()
         {

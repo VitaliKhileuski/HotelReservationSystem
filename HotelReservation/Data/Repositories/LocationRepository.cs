@@ -20,11 +20,13 @@ namespace HotelReservation.Data.Repositories
         public void Create(LocationEntity location)
         {
             _db.Locations.Add(location);
+            _db.SaveChanges();
         }
 
         public async Task CreateAsync(LocationEntity location)
         {
             await _db.Locations.AddAsync(location);
+            await _db.SaveChangesAsync();
         }
 
         public void Delete(int id)
@@ -34,6 +36,8 @@ namespace HotelReservation.Data.Repositories
             {
                 _db.Locations.Remove(location);
             }
+
+            _db.SaveChanges();
         }
 
         public async Task DeleteAsync(int id)
@@ -43,6 +47,8 @@ namespace HotelReservation.Data.Repositories
             {
                 _db.Locations.Remove(location);
             }
+
+            await _db.SaveChangesAsync();
         }
 
         public IEnumerable<LocationEntity> Find(Func<LocationEntity, bool> predicate)
@@ -78,11 +84,13 @@ namespace HotelReservation.Data.Repositories
         public void Update(LocationEntity location)
         {
             _db.Entry(location).State = EntityState.Modified;
+            _db.SaveChanges();
         }
 
         public async Task UpdateAsync(LocationEntity location)
         {
             await Task.Run(() => Update(location));
+            await _db.SaveChangesAsync();
         }
     }
 }

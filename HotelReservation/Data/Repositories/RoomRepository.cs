@@ -14,16 +14,18 @@ namespace HotelReservation.Data.Repositories
 
         public RoomRepository(Context context)
         {
-            this._db = context;
+            _db = context;
         }
         public void Create(RoomEntity room)
         {
             _db.Rooms.Add(room);
+            _db.SaveChanges();
         }
 
         public async Task CreateAsync(RoomEntity room)
         {
             await _db.Rooms.AddAsync(room);
+            await _db.SaveChangesAsync();
         }
 
         public void Delete(int id)
@@ -33,6 +35,7 @@ namespace HotelReservation.Data.Repositories
             {
                 _db.Rooms.Remove(room);
             }
+            _db.SaveChanges();
         }
 
         public async Task DeleteAsync(int id)
@@ -43,6 +46,8 @@ namespace HotelReservation.Data.Repositories
             {
                 _db.Rooms.Remove(room);
             }
+
+            await _db.SaveChangesAsync();
         }
 
         public IEnumerable<RoomEntity> Find(Func<RoomEntity, bool> predicate)
@@ -78,11 +83,13 @@ namespace HotelReservation.Data.Repositories
         public void Update(RoomEntity room)
         {
             _db.Entry(room).State = EntityState.Modified;
+            _db.SaveChanges();
         }
 
         public async Task UpdateAsync(RoomEntity room)
         {
             await Task.Run(() => Update(room));
+            await _db.SaveChangesAsync();
         }
     }
 }

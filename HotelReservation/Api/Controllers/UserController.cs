@@ -7,7 +7,7 @@ using HotelReservation.Data.Entities;
 namespace HotelReservation.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class UserController : Controller
     {
         private readonly Context _db;

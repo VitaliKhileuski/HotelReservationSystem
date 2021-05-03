@@ -19,18 +19,24 @@ namespace HotelReservation.Data.Repositories
         public void Create(UserEntity user)
         {
             _db.Users.Add(user);
+            _db.SaveChanges();
         }
 
         public async Task CreateAsync(UserEntity user)
         {
             await _db.Users.AddAsync(user);
+            await _db.SaveChangesAsync();
         }
 
         public void Delete(int id)
         {
             UserEntity user = _db.Users.Find(id);
             if (user != null)
+            {
                 _db.Users.Remove(user);
+            }
+
+            _db.SaveChanges();
         }
 
         public async Task DeleteAsync(int id)
@@ -41,6 +47,8 @@ namespace HotelReservation.Data.Repositories
             {
                 _db.Users.Remove(user);
             }
+
+            await _db.SaveChangesAsync();
         }
 
         public IEnumerable<UserEntity> Find(Func<UserEntity, bool> predicate)
@@ -76,11 +84,13 @@ namespace HotelReservation.Data.Repositories
         public void Update(UserEntity user)
         {
             _db.Entry(user).State = EntityState.Modified;
+            _db.SaveChanges();
         }
 
         public async Task UpdateAsync(UserEntity user)
         {
             await Task.Run(() => Update(user));
+            await _db.SaveChangesAsync();
         }
     }
 }

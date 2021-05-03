@@ -19,11 +19,13 @@ namespace HotelReservation.Data.Repositories
         public void Create(RoleEntity role)
         {
             _db.Roles.Add(role);
+            _db.SaveChanges();
         }
 
         public async Task CreateAsync(RoleEntity role)
         {
             await _db.Roles.AddAsync(role);
+            await _db.SaveChangesAsync();
         }
 
         public void Delete(int id)
@@ -33,6 +35,8 @@ namespace HotelReservation.Data.Repositories
             {
                 _db.Roles.Remove(role);
             }
+
+            _db.SaveChanges();
         }
 
         public async Task DeleteAsync(int id)
@@ -43,6 +47,8 @@ namespace HotelReservation.Data.Repositories
             {
                 _db.Roles.Remove(role);
             }
+
+            await _db.SaveChangesAsync();
         }
 
         public IEnumerable<RoleEntity> Find(Func<RoleEntity, bool> predicate)
@@ -78,11 +84,13 @@ namespace HotelReservation.Data.Repositories
         public void Update(RoleEntity role)
         {
             _db.Entry(role).State = EntityState.Modified;
+            _db.SaveChanges();
         }
 
         public async Task UpdateAsync(RoleEntity role)
         {
             await Task.Run(() => Update(role));
+            await _db.SaveChangesAsync();
         }
     }
 }
