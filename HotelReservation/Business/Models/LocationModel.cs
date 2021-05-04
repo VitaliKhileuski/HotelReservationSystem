@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Business.Models.ResponseModels
+namespace Business.Models
 {
-    public class LocationResponseModel
+    public class LocationModel
     {
         public string Country { get; set; }
         public string Region { get; set; }

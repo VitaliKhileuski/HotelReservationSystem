@@ -8,7 +8,7 @@ namespace Business.Models.RequestModels
     public class HotelRequestModel
     {
         public string Name { get; set; }
-        public LocationResponseModel Location { get; set; }
+        public LocationModel Location { get; set; }
         public ICollection<RoomResponseModel> Rooms { get; set; }
         public int Rating { get; set; }
 

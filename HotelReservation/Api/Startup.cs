@@ -40,8 +40,13 @@ namespace HotelReservation.Api
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<HotelRepository>();
+            services.AddScoped<LocationRepository>();
+            services.AddScoped<UserRepository>();
+            services.AddScoped<UserModelsMapper>();
+            services.AddScoped<LocationModelsMapper>();
             services.AddScoped<HotelModelsMapper>();
             services.AddScoped<IHotelsService, HotelsService>();
+            services.AddScoped<UsersService>();
             services.AddControllers();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>

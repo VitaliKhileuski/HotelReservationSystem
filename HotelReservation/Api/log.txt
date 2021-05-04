@@ -4619,3 +4619,78 @@ WHERE LTRIM(RTRIM([u].[Email])) = @__Trim_0
 2021-04-30 16:43:23.144 +03:00 [INF] Executed action HotelReservation.Api.Controllers.AccountController.Test (Api) in 4.6277ms
 2021-04-30 16:43:23.144 +03:00 [INF] Executed endpoint 'HotelReservation.Api.Controllers.AccountController.Test (Api)'
 2021-04-30 16:43:23.144 +03:00 [INF] Request finished in 33.2495ms 200 text/plain; charset=utf-8
+2021-05-03 10:24:07.900 +03:00 [INF] User profile is available. Using 'C:\Users\Vitali.khileuski\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2021-05-03 10:24:10.981 +03:00 [INF] Entity Framework Core 5.0.5 initialized 'Context' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: MigrationsAssembly=Api 
+2021-05-03 10:24:13.968 +03:00 [INF] Executed DbCommand (37ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2021-05-03 10:24:14.011 +03:00 [INF] Executed DbCommand (23ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2021-05-03 10:24:14.014 +03:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2021-05-03 10:24:14.015 +03:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2021-05-03 10:24:14.065 +03:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2021-05-03 10:24:14.092 +03:00 [INF] No migrations were applied. The database is already up to date.
+2021-05-03 10:24:14.138 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2021-05-03 10:24:14.138 +03:00 [INF] Hosting environment: Development
+2021-05-03 10:24:14.138 +03:00 [INF] Content root path: C:\Users\Vitali.khileuski\source\repos\HotelReservationSystem\HotelReservation\Api
+2021-05-03 10:24:14.199 +03:00 [INF] Request starting HTTP/2.0 GET https://localhost:44377/weatherforecast  
+2021-05-03 10:24:14.533 +03:00 [INF] Request finished in 337.8225ms 404 
+2021-05-03 10:24:27.927 +03:00 [INF] Request starting HTTP/2.0 GET https://localhost:44377/user  
+2021-05-03 10:24:27.933 +03:00 [INF] Executing endpoint 'HotelReservation.Api.Controllers.UserController.Get (Api)'
+2021-05-03 10:24:27.995 +03:00 [INF] Route matched with {action = "Get", controller = "User"}. Executing controller action with signature System.Collections.Generic.IEnumerable`1[HotelReservation.Data.Entities.UserEntity] Get() on controller HotelReservation.Api.Controllers.UserController (Api).
+2021-05-03 10:24:28.016 +03:00 [INF] Entity Framework Core 5.0.5 initialized 'Context' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: MigrationsAssembly=Api 
+2021-05-03 10:24:28.263 +03:00 [INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [u].[Id], [u].[Birthdate], [u].[Email], [u].[Name], [u].[Password], [u].[PhoneNumber], [u].[RoleId], [u].[Surname]
+FROM [Users] AS [u]
+2021-05-03 10:24:28.334 +03:00 [INF] Executing ObjectResult, writing value of type 'System.Collections.Generic.List`1[[HotelReservation.Data.Entities.UserEntity, Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2021-05-03 10:24:28.365 +03:00 [INF] Executed action HotelReservation.Api.Controllers.UserController.Get (Api) in 361.1565ms
+2021-05-03 10:24:28.366 +03:00 [INF] Executed endpoint 'HotelReservation.Api.Controllers.UserController.Get (Api)'
+2021-05-03 10:24:28.370 +03:00 [INF] Request finished in 443.7652ms 200 application/json; charset=utf-8
+2021-05-03 10:24:29.408 +03:00 [INF] Request starting HTTP/2.0 GET https://localhost:44377/favicon.ico  
+2021-05-03 10:24:29.412 +03:00 [INF] Request finished in 4.749ms 404 
+2021-05-03 10:24:37.071 +03:00 [INF] Request starting HTTP/2.0 GET https://localhost:44377/role  
+2021-05-03 10:24:37.077 +03:00 [INF] Executing endpoint 'HotelReservation.Api.Controllers.RoleController.Get (Api)'
+2021-05-03 10:24:37.095 +03:00 [INF] Route matched with {action = "Get", controller = "Role"}. Executing controller action with signature System.Collections.Generic.IEnumerable`1[HotelReservation.Data.Entities.RoleEntity] Get() on controller HotelReservation.Api.Controllers.RoleController (Api).
+2021-05-03 10:24:37.160 +03:00 [INF] Entity Framework Core 5.0.5 initialized 'Context' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: MigrationsAssembly=Api 
+2021-05-03 10:24:37.174 +03:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [r].[Id], [r].[Name]
+FROM [Roles] AS [r]
+2021-05-03 10:24:37.180 +03:00 [INF] Executing ObjectResult, writing value of type 'System.Collections.Generic.List`1[[HotelReservation.Data.Entities.RoleEntity, Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2021-05-03 10:24:37.182 +03:00 [INF] Executed action HotelReservation.Api.Controllers.RoleController.Get (Api) in 86.1322ms
+2021-05-03 10:24:37.182 +03:00 [INF] Executed endpoint 'HotelReservation.Api.Controllers.RoleController.Get (Api)'
+2021-05-03 10:24:37.182 +03:00 [INF] Request finished in 112.2736ms 200 application/json; charset=utf-8
+2021-05-03 10:24:47.527 +03:00 [INF] Request starting HTTP/2.0 GET https://localhost:44377/hotel  
+2021-05-03 10:24:47.530 +03:00 [INF] Request finished in 3.1588ms 404 
+2021-05-03 10:25:21.569 +03:00 [INF] Request starting HTTP/1.1 POST https://localhost:44377/api/account/login application/json 86
+2021-05-03 10:25:21.772 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo: '[PII is hidden. For more details, see https://aka.ms/IdentityModel/PII.]', Current time: '[PII is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, JwtSecurityToken jwtToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateTokenPayload(JwtSecurityToken jwtToken, TokenValidationParameters validationParameters)
+   at System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.ValidateToken(String token, TokenValidationParameters validationParameters, SecurityToken& validatedToken)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+2021-05-03 10:25:21.823 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo: '[PII is hidden. For more details, see https://aka.ms/IdentityModel/PII.]', Current time: '[PII is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+2021-05-03 10:25:21.823 +03:00 [INF] Executing endpoint 'HotelReservation.Api.Controllers.AccountController.Login (Api)'
+2021-05-03 10:25:21.836 +03:00 [INF] Route matched with {action = "Login", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Business.Models.LoginUserRequestModel) on controller HotelReservation.Api.Controllers.AccountController (Api).
+2021-05-03 10:25:22.020 +03:00 [INF] Entity Framework Core 5.0.5 initialized 'Context' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: MigrationsAssembly=Api 
+2021-05-03 10:25:22.153 +03:00 [INF] Executed DbCommand (27ms) [Parameters=[@__Trim_0='?' (Size = 100)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [u].[Id], [u].[Birthdate], [u].[Email], [u].[Name], [u].[Password], [u].[PhoneNumber], [u].[RoleId], [u].[Surname]
+FROM [Users] AS [u]
+WHERE LTRIM(RTRIM([u].[Email])) = @__Trim_0
+2021-05-03 10:25:22.193 +03:00 [INF] Executing ObjectResult, writing value of type 'System.String'.
+2021-05-03 10:25:22.198 +03:00 [INF] Executed action HotelReservation.Api.Controllers.AccountController.Login (Api) in 362.3734ms
+2021-05-03 10:25:22.198 +03:00 [INF] Executed endpoint 'HotelReservation.Api.Controllers.AccountController.Login (Api)'
+2021-05-03 10:25:22.200 +03:00 [INF] Request finished in 632.2905ms 200 text/plain; charset=utf-8
+2021-05-03 10:25:33.841 +03:00 [INF] Request starting HTTP/1.1 GET https://localhost:44377/api/account/test application/json 86
+2021-05-03 10:25:33.856 +03:00 [INF] Successfully validated the token.
+2021-05-03 10:25:33.864 +03:00 [INF] Authorization was successful.
+2021-05-03 10:25:33.864 +03:00 [INF] Executing endpoint 'HotelReservation.Api.Controllers.AccountController.Test (Api)'
+2021-05-03 10:25:33.866 +03:00 [INF] Route matched with {action = "Test", controller = "Account"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Test() on controller HotelReservation.Api.Controllers.AccountController (Api).
+2021-05-03 10:25:33.870 +03:00 [INF] Executing ObjectResult, writing value of type 'System.String'.
+2021-05-03 10:25:33.871 +03:00 [INF] Executed action HotelReservation.Api.Controllers.AccountController.Test (Api) in 5.3234ms
+2021-05-03 10:25:33.872 +03:00 [INF] Executed endpoint 'HotelReservation.Api.Controllers.AccountController.Test (Api)'
+2021-05-03 10:25:33.872 +03:00 [INF] Request finished in 31.4509ms 200 text/plain; charset=utf-8

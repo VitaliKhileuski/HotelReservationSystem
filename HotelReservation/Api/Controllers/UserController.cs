@@ -1,6 +1,9 @@
 ﻿using HotelReservation.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Business.Models;
+using Business.Services;
 using HotelReservation.Data;
 using HotelReservation.Data.Entities;
 
@@ -10,37 +13,34 @@ namespace HotelReservation.Api.Controllers
     [Route("api/[controller]")]
     public class UserController : Controller
     {
-        private readonly Context _db;
-        private readonly UserRepository _userRepository;
-        public UserController(Context context)
+        private readonly UsersService _usersService;
+        public UserController(UsersService usersService)
         {
-            _db = context;
-            _userRepository = new UserRepository(_db);
+            _usersService = usersService;
         }
         [HttpGet]
-        public IEnumerable<UserEntity> Get()
+        public   IEnumerable<UserModel> Get()
         {
-            return _userRepository.GetAll();
+            return _usersService.GetAll();
         }
 
         [HttpGet]
         [Route("{id:int}")]
-        public UserEntity Get(int id)
+        public UserModel GetById(int id)
         {
-            return _userRepository.Get(id);
+           return _usersService.GetById(id);
         }
         [HttpPost]
         public void Post([FromBody] UserEntity user)
         {
-            _userRepository.Create(user);
+            
         }
 
         [HttpDelete]
         [Route("{id:int}")]
         public void DeleteUser(int id)
         {
-            _userRepository.Delete(id);
-            _db.SaveChanges();
+            _usersService.DeleteById(id);
         }
 
 
