@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
 using Business.Interfaces;
-using Business.Models.RequestModels;
+using Business.Models;
 using HotelReservation.Data;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Repositories;
@@ -29,10 +29,10 @@ namespace Business.Services
             _tokenService = tokenService;
             _repository = new UserRepository(_db);
             _requestModelToUserEntity =
-                new Mapper(new MapperConfiguration(x => x.CreateMap<RegisterUserRequestModel, UserEntity>()));
+                new Mapper(new MapperConfiguration(x => x.CreateMap<RegisterUserModel, UserEntity>()));
 
         }
-        public async Task<string> Login(LoginUserRequestModel user)
+        public async Task<string> Login(LoginUserModel user)
         {
             var userFromDb = await GetUserFromDb(user.Email);
             if (userFromDb == null)
@@ -47,7 +47,7 @@ namespace Business.Services
             throw new IncorrectPasswordException("password is incorrect");
         }
 
-        public async Task<string> Registration(RegisterUserRequestModel user)
+        public async Task<string> Registration(RegisterUserModel user)
         {
             var dbUser = await GetUserFromDb(user.Email);
             if (dbUser != null)
@@ -56,12 +56,12 @@ namespace Business.Services
 
             }
             user.Password = _hash.GenerateHash(user.Password, SHA256.Create());
-            var userEntity = _requestModelToUserEntity.Map<RegisterUserRequestModel, UserEntity>(user);
+            var userEntity = _requestModelToUserEntity.Map<RegisterUserModel, UserEntity>(user);
             userEntity.RoleId = 2;
-            await _repository.CreateAsync(userEntity);
+            await  _repository.CreateAsync(userEntity);
             await _db.SaveChangesAsync();
 
-            return  _tokenService.BuildToken(_cfg["Secrets:secretKey"], user.Email,userEntity.Role.Name);
+            return  _tokenService.BuildToken(_cfg["Secrets:secretKey"], user.Email,"User");
         }
 
         public async Task<UserEntity> GetUserFromDb(string email)

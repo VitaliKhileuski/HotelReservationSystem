@@ -1,11 +1,20 @@
-﻿using HotelReservation.Data.Repositories;
+﻿using System;
+using HotelReservation.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Business.Exceptions;
+using Business.Interfaces;
 using Business.Models;
 using Business.Services;
+using HotelReservation.Api.Mappers;
+using HotelReservation.Api.Models.RequestModels;
+using HotelReservation.Api.Models.ResponseModels;
 using HotelReservation.Data;
 using HotelReservation.Data.Entities;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace HotelReservation.Api.Controllers
 {
@@ -14,33 +23,84 @@ namespace HotelReservation.Api.Controllers
     public class UserController : Controller
     {
         private readonly UsersService _usersService;
-        public UserController(UsersService usersService)
+        private readonly IAuthenticationService _authService;
+
+        private readonly RequestMapper _mapper = new RequestMapper();
+        public UserController(UsersService usersService, IAuthenticationService authService)
         {
             _usersService = usersService;
+            _authService = authService;
         }
         [HttpGet]
-        public   IEnumerable<UserModel> Get()
+        public   IEnumerable<UserResponseViewModel> Get()
         {
-            return _usersService.GetAll();
+           var responseUsers =
+                _mapper.MapItems<UserModel,UserResponseViewModel>(_usersService.GetAll().ToList());
+
+            return responseUsers;
         }
 
         [HttpGet]
         [Route("{id:int}")]
-        public UserModel GetById(int id)
+        public ActionResult<UserModel> GetById(int id)
         {
-           return _usersService.GetById(id);
+            try
+            {
+                var responseUser = _mapper.MapItem<UserModel,UserResponseViewModel>(_usersService.GetById(id));
+
+                return Ok(responseUser);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+           
         }
+
         [HttpPost]
-        public void Post([FromBody] UserEntity user)
+        public async Task<IActionResult> Add([FromBody] RegisterUserRequestModel user)
         {
-            
+            try
+            {
+                var registerModel = _mapper.MapItem<RegisterUserRequestModel,RegisterUserModel>(user);
+                return Ok(await _authService.Registration(registerModel));
+            }
+            catch (BadRequestException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete]
         [Route("{id:int}")]
-        public void DeleteUser(int id)
+        public IActionResult DeleteUser(int id)
         {
-            _usersService.DeleteById(id);
+            try
+            {
+                _usersService.DeleteById(id);
+                return Ok($"user with id {id} deleted successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
+        }
+
+        [HttpPut]
+        [Route("{id:int}")]
+        public IActionResult Update(int id, [FromBody] UserResponseViewModel user)
+        {
+            try
+            {
+                var userModel = _mapper.MapItem<UserResponseViewModel, UserModel>(user);
+                _usersService.Update(id, userModel);
+                return Ok($"user with id {id} updated successfully");
+            }
+            catch (NotFoundException ex)
+            {
+              return  BadRequest(ex.Message);
+            }
         }
 
 

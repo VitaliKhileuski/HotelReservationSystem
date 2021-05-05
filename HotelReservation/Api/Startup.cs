@@ -2,6 +2,7 @@ using System.Text;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Services;
+using HotelReservation.Api.Mappers;
 using HotelReservation.Data;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;

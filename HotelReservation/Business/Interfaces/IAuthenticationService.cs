@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
-using Business.Models.RequestModels;
+using Business.Models;
 
 namespace Business.Interfaces
 {
     public interface IAuthenticationService
     {
-        Task<string> Login(LoginUserRequestModel user);
-        Task<string> Registration(RegisterUserRequestModel user);
+        Task<string> Login(LoginUserModel user);
+        Task<string> Registration(RegisterUserModel user);
     }
 }

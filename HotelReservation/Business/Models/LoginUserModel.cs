@@ -1,6 +1,6 @@
-﻿namespace Business.Models.RequestModels
+﻿namespace Business.Models
 {
-    public class LoginUserRequestModel
+    public class LoginUserModel
     {
         public string Email { get; set; }
         public string Password { get; set; }

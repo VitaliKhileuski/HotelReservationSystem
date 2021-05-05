@@ -25,7 +25,7 @@ namespace Business.Services
                 new Claim("email", email),
                 new Claim("role",roleName)
             };
-            DateTime expires = DateTime.Now.AddMinutes(Convert.ToDouble(_cfg["AuthenticationOptions:lifetime"]))+ new TimeSpan(0, 0, 0, 30);
+            DateTime expires = DateTime.Now.AddMinutes(Convert.ToDouble(_cfg["AuthenticationOptions:lifetime"]));
             var jwt = new JwtSecurityToken(claims: claims,
                 signingCredentials: credentials,
                 expires: expires,

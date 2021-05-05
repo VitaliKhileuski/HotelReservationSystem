@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using AutoMapper;
 using Business.Models;
-using Business.Models.RequestModels;
-using Business.Models.ResponseModels;
 using HotelReservation.Data.Entities;
 
 namespace Business.Mappers

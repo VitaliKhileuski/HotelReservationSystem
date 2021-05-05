@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Security.Authentication.ExtendedProtection;
 using System.Text;
 using AutoMapper;
-using Business.Models.RequestModels;
-using Business.Models.ResponseModels;
+using Business.Models;
 using HotelReservation.Data.Entities;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 
@@ -16,14 +15,24 @@ namespace Business.Mappers
 
         public HotelModelsMapper()
         {
-            _mapper = new Mapper(new MapperConfiguration(x => x.CreateMap<HotelRequestModel, HotelEntity>()
-                .ForMember(x => x.Location, opt => opt.Ignore())));
+            _mapper = new Mapper(new MapperConfiguration(x =>
+            {
+                x.CreateMap<HotelModel, HotelEntity>()
+                    .ForMember(x => x.Location, opt => opt.Ignore());
+                x.CreateMap<HotelEntity, HotelModel>();
+                x.CreateMap<LocationEntity, LocationModel>();
+            }));
         }
 
-        public HotelEntity FromRequestToEntityModel(HotelRequestModel requestModel)
+        public HotelEntity FromRequestToEntityModel(HotelModel requestModel)
         {
-            return  _mapper.Map<HotelRequestModel, HotelEntity>(requestModel);
+            return  _mapper.Map<HotelModel, HotelEntity>(requestModel);
 
+        }
+
+        public HotelModel FromEntityToModel(HotelEntity hotelEntity)
+        {
+            return _mapper.Map<HotelEntity, HotelModel>(hotelEntity);
         }
     }
 }

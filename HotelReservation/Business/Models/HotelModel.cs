@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Business.Models.ResponseModels;
+﻿using System.Collections.Generic;
 
-namespace Business.Models.RequestModels
+namespace Business.Models
 {
-    public class HotelRequestModel
+    public class HotelModel
     {
         public string Name { get; set; }
         public LocationModel Location { get; set; }

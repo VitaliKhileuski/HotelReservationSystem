@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Business.Models.RequestModels
+namespace Business.Models
 {
-   public class RegisterUserRequestModel
+   public class RegisterUserModel
     {
         public string Email { get; set; }
         public string Name { get; set; }

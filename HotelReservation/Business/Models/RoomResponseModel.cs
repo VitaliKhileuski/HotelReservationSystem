@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Business.Models.ResponseModels
+﻿namespace Business.Models
 {
    public class RoomResponseModel
     {

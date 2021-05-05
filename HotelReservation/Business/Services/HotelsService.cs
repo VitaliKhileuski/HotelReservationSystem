@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Business.Interfaces;
 using Business.Mappers;
-using Business.Models.RequestModels;
+using Business.Models;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Repositories;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -27,7 +27,7 @@ namespace Business.Services
             _locationMapper = locationMapper;
         }
 
-        public async Task AddHotel(HotelRequestModel hotel)
+        public async Task AddHotel(HotelModel hotel)
         {
             var hotelEntity = _hotelMapper.FromRequestToEntityModel(hotel);
             var locationEntity = _locationMapper.FromRequestToEntityModel(hotel.Location);
@@ -36,9 +36,11 @@ namespace Business.Services
             await _hotelRepository.CreateAsync(hotelEntity);
         }
 
-        public async Task<HotelEntity> GetById(int id)
+        public async Task<HotelModel> GetById(int id)
         {
-          return  await _hotelRepository.GetAsync(id);
+            var hotelModel = _hotelMapper.FromEntityToModel(await _hotelRepository.GetAsync(id));
+            return hotelModel;
+
         }
     }
 }

@@ -2,7 +2,9 @@
 using System.Threading.Tasks;
 using Business.Exceptions;
 using Business.Interfaces;
-using Business.Models.RequestModels;
+using Business.Models;
+using HotelReservation.Api.Mappers;
+using HotelReservation.Api.Models.RequestModels;
 using Microsoft.AspNetCore.Authorization;
 
 namespace HotelReservation.Api.Controllers
@@ -12,9 +14,10 @@ namespace HotelReservation.Api.Controllers
     public class AccountController : Controller
     {
         private readonly IAuthenticationService _authService;
+        private readonly RequestMapper _mapper = new RequestMapper();
         public AccountController(IAuthenticationService authService)
         {
-            this._authService = authService;
+            _authService = authService;
         }
 
         [HttpPost("login")]
@@ -22,7 +25,8 @@ namespace HotelReservation.Api.Controllers
         {
             try
             {
-                return Ok(await _authService.Login(user));
+                var loginModel = _mapper.MapItem<LoginUserRequestModel,LoginUserModel>(user);
+                return Ok(await _authService.Login(loginModel));
             }
             catch (NotFoundException ex)
             {
@@ -38,7 +42,8 @@ namespace HotelReservation.Api.Controllers
         {
             try
             {
-                return Ok(await _authService.Registration(user));
+                var registerModel = _mapper.MapItem<RegisterUserRequestModel,RegisterUserModel>(user);
+                return Ok(await _authService.Registration(registerModel));
             }
             catch (BadRequestException ex)
             {
