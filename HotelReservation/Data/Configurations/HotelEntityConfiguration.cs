@@ -21,6 +21,10 @@ namespace HotelReservation.Data.Configurations
             builder.HasMany(x => x.Rooms)
                 .WithOne(x => x.Hotel)
                 .HasForeignKey(x => x.HotelId);
+            builder
+                .Property(x => x.HotelAdminId)
+                .IsRequired()
+                .HasDefaultValue(1);
         }
     }
 }

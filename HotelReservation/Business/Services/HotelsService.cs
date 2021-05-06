@@ -18,12 +18,14 @@ namespace Business.Services
     {
         private readonly HotelRepository _hotelRepository;
         private readonly LocationRepository _locationRepository;
+        private readonly UserRepository _userRepository;
         private readonly Mapper _locationMapper;
         private readonly Mapper _hotelMapper;
 
-        public HotelsService(HotelRepository hotelRepository,LocationRepository locationRepository,MapConfiguration cfg)
+        public HotelsService(HotelRepository hotelRepository,LocationRepository locationRepository,UserRepository userRepository, MapConfiguration cfg)
         {
             _hotelRepository = hotelRepository;
+            _userRepository = userRepository;
             _locationRepository = locationRepository;
             _locationMapper = new Mapper(cfg.LocationConfiguration);
             _hotelMapper = new Mapper(cfg.HotelConfiguration);
@@ -48,6 +50,16 @@ namespace Business.Services
         {
             var hotelModels = _hotelMapper.Map<List<HotelModel>>(_hotelRepository.GetAll().ToList());
             return hotelModels;
+        }
+
+        public void  UpdateHotelAdmin(int hotelId, int userId)
+        {
+            var hotelEntity = _hotelRepository.Get(hotelId);
+            var userEntity = _userRepository.Get(userId);
+            hotelEntity.HotelAdminId = userEntity.Id;
+            userEntity.RoleId = 3;
+            _hotelRepository.Update(hotelEntity);
+            _userRepository.Update(userEntity);
         }
     }
 }

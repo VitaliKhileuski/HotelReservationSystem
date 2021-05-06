@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Interfaces;
 using Business.Models;
 using Business.Services;
 using HotelReservation.Api.Mappers;
+using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
 using HotelReservation.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -24,10 +26,13 @@ namespace HotelReservation.Api.Controllers
             _mapper = new Mapper(cfg.HotelConfiguration);
             _hotelsService = hotelService;
         }
-        [Authorize(Policy = "AdminPermission")]
+        [Authorize(Policy = "HotelAdminPermission")]
         [HttpGet("test")]
         public IActionResult Test()
         {
+            var idClaim = int.Parse(User.Claims.FirstOrDefault(x =>
+                    x.Type.ToString().Equals("id", StringComparison.InvariantCultureIgnoreCase))
+                ?.Value ?? string.Empty);
             return Ok("ok");
         }
 
@@ -59,6 +64,14 @@ namespace HotelReservation.Api.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpPut]
+        [Authorize(Policy = "AdminPermission")]
+        [Route("hotelAdmin/{id:int}")]
+        public void UpdateHotelAdmin(int id, [FromBody] int userId)
+        {
+            _hotelsService.UpdateHotelAdmin(id, userId);
         }
     }
 }
