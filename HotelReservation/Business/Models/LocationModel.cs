@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace Business.Models
 {
     public class LocationModel
@@ -11,5 +8,6 @@ namespace Business.Models
         public string City { get; set; }
         public string Street { get; set; }
         public string BuildingNumber { get; set; }
+        public HotelModel Hotel { get; set; }
     }
 }

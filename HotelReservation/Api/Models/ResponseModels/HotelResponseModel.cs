@@ -9,7 +9,7 @@ namespace HotelReservation.Api.Models.ResponseModels
     public class HotelResponseModel
     {
         public string Name { get; set; }
-        public LocationRequestModel Location { get; set; }
+        public LocationResponseModel Location { get; set; }
         public ICollection<RoomRequestModel> Rooms { get; set; }
         public int Rating { get; set; }
     }

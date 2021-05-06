@@ -43,9 +43,8 @@ namespace HotelReservation.Api
             services.AddScoped<HotelRepository>();
             services.AddScoped<LocationRepository>();
             services.AddScoped<UserRepository>();
-            services.AddScoped<UserModelsMapper>();
-            services.AddScoped<LocationModelsMapper>();
-            services.AddScoped<HotelModelsMapper>();
+            services.AddScoped<MapConfiguration>();
+            services.AddScoped<CustomMapperConfiguration>();
             services.AddScoped<IHotelsService, HotelsService>();
             services.AddScoped<UsersService>();
             services.AddControllers();

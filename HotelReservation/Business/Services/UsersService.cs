@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Business.Exceptions;
 using Business.Mappers;
 using Business.Models;
+using HotelReservation.Data.Entities;
 using HotelReservation.Data.Repositories;
 
 namespace Business.Services
@@ -13,21 +15,21 @@ namespace Business.Services
     public class UsersService
     {
         private readonly UserRepository _userRepository;
-        private readonly UserModelsMapper _userMapper;
-        public UsersService(UserRepository userRepository, UserModelsMapper userMapper)
+        private readonly Mapper _mapper;
+        public UsersService(UserRepository userRepository, MapConfiguration cfg)
         {
+            _mapper = new Mapper(cfg.UserConfiguration);
             _userRepository = userRepository;
-            _userMapper = userMapper;
         }
 
         public List<UserModel>  GetAll()
         {
-            return  _userMapper.FromEntitiesToResponseModels(_userRepository.GetAll().ToList());
+            return  _mapper.Map<List<UserModel>>(_userRepository.GetAll().ToList());
         }
 
         public UserModel GetById(int id)
         {
-            return _userMapper.FromEntityToResponseModel(_userRepository.Get(id));
+            return _mapper.Map<UserEntity,UserModel>(_userRepository.Get(id));
         }
 
         public void DeleteById(int id)
@@ -41,7 +43,7 @@ namespace Business.Services
             {
                 throw new NotFoundException("user with that id not found");
             }
-            var newUser =  _userMapper.FromRequestToEntityModel(user);
+            var newUser =  _mapper.Map<UserModel,UserEntity>(user);
             dbUser.Email = newUser.Email;
             dbUser.Name = newUser.Name;
             dbUser.Surname = newUser.Surname;
@@ -52,7 +54,7 @@ namespace Business.Services
 
         public void Add(UserModel user)
         {
-           var userEntity = _userMapper.FromRequestToEntityModel(user);
+           var userEntity = _mapper.Map<UserModel,UserEntity>(user);
             _userRepository.Create(userEntity);
         }
 

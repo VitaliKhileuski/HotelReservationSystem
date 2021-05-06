@@ -14,4 +14,5 @@ namespace HotelReservation.Data.Entities
         public string BuildingNumber { get; set; }
 
     }
+
 }

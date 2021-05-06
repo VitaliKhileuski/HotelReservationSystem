@@ -7,6 +7,7 @@ namespace HotelReservation.Api.Models.ResponseModels
 {
     public class UserResponseViewModel
     {
+        public RoleResponseModel Role { get; set; }
         public string Email { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }

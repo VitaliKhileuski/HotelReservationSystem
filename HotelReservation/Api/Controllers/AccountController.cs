@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using AutoMapper;
 using Business.Exceptions;
 using Business.Interfaces;
 using Business.Models;
@@ -14,9 +15,11 @@ namespace HotelReservation.Api.Controllers
     public class AccountController : Controller
     {
         private readonly IAuthenticationService _authService;
-        private readonly RequestMapper _mapper = new RequestMapper();
-        public AccountController(IAuthenticationService authService)
+        private readonly Mapper _mapper;
+
+        public AccountController(IAuthenticationService authService,CustomMapperConfiguration cfg)
         {
+            _mapper = new Mapper(cfg.UsersConfiguration);
             _authService = authService;
         }
 
@@ -25,7 +28,7 @@ namespace HotelReservation.Api.Controllers
         {
             try
             {
-                var loginModel = _mapper.MapItem<LoginUserRequestModel,LoginUserModel>(user);
+                var loginModel = _mapper.Map<LoginUserRequestModel,LoginUserModel>(user);
                 return Ok(await _authService.Login(loginModel));
             }
             catch (NotFoundException ex)
@@ -42,7 +45,7 @@ namespace HotelReservation.Api.Controllers
         {
             try
             {
-                var registerModel = _mapper.MapItem<RegisterUserRequestModel,RegisterUserModel>(user);
+                var registerModel = _mapper.Map<RegisterUserRequestModel,RegisterUserModel>(user);
                 return Ok(await _authService.Registration(registerModel));
             }
             catch (BadRequestException ex)

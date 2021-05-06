@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using Business.Interfaces;
 using Business.Models;
 using Business.Services;
 using HotelReservation.Api.Mappers;
+using HotelReservation.Api.Models.ResponseModels;
 using HotelReservation.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +17,11 @@ namespace HotelReservation.Api.Controllers
     [Route("api/[controller]")]
     public class HotelController : Controller
     {
-        private readonly RequestMapper _mapper = new RequestMapper();
+        private readonly Mapper _mapper;
         private readonly IHotelsService _hotelsService;
-        public HotelController(IHotelsService  hotelService)
+        public HotelController(IHotelsService  hotelService,CustomMapperConfiguration cfg)
         {
+            _mapper = new Mapper(cfg.HotelConfiguration);
             _hotelsService = hotelService;
         }
         [Authorize(Policy = "AdminPermission")]
@@ -28,10 +32,17 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
+        public ICollection<HotelResponseModel> GetAll()
+        {
+            var hotelResponseModels = _mapper.Map<List<HotelResponseModel>>(_hotelsService.GetAll());
+            return hotelResponseModels;
+        }
+
+        [HttpGet]
         [Route("{id:int}")]
         public async Task<HotelResponseModel> GetByiD(int id)
         {
-            var responseHotel = _mapper.MapItem<HotelModel,HotelResponseModel>(await _hotelsService.GetById(id));
+            var responseHotel = _mapper.Map<HotelModel,HotelResponseModel>(await _hotelsService.GetById(id));
             return responseHotel;
         }
 

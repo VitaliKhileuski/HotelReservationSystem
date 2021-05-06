@@ -6,7 +6,7 @@ namespace Business.Models
     {
         public string Name { get; set; }
         public LocationModel Location { get; set; }
-        public ICollection<RoomResponseModel> Rooms { get; set; }
+        public ICollection<RoomModel> Rooms { get; set; }
         public int Rating { get; set; }
 
     }

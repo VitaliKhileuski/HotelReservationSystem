@@ -1,7 +1,10 @@
 ﻿namespace Business.Models
 {
-   public class RoomResponseModel
+   public class RoomModel
     {
+        public  UserModel User { get; set; }
+        public  OrderModel Order { get; set; }
+        public  HotelModel Hotel { get; set; }
         public int RoomNumber { get; set; }
         public int BedsNumber { get; set; }
         public double PaymentPerDay { get; set; }

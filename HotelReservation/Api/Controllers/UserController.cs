@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Business.Exceptions;
 using Business.Interfaces;
 using Business.Models;
@@ -24,20 +25,20 @@ namespace HotelReservation.Api.Controllers
     {
         private readonly UsersService _usersService;
         private readonly IAuthenticationService _authService;
+        private readonly Mapper _mapper;
 
-        private readonly RequestMapper _mapper = new RequestMapper();
-        public UserController(UsersService usersService, IAuthenticationService authService)
+        public UserController(UsersService usersService, IAuthenticationService authService,CustomMapperConfiguration cfg)
         {
+            _mapper = new Mapper(cfg.UsersConfiguration);
             _usersService = usersService;
             _authService = authService;
         }
         [HttpGet]
         public   IEnumerable<UserResponseViewModel> Get()
         {
-           var responseUsers =
-                _mapper.MapItems<UserModel,UserResponseViewModel>(_usersService.GetAll().ToList());
+            var responseUsers = _mapper.Map<List<UserResponseViewModel>>(_usersService.GetAll());
 
-            return responseUsers;
+           return responseUsers;
         }
 
         [HttpGet]
@@ -46,7 +47,7 @@ namespace HotelReservation.Api.Controllers
         {
             try
             {
-                var responseUser = _mapper.MapItem<UserModel,UserResponseViewModel>(_usersService.GetById(id));
+                var responseUser = _mapper.Map<UserModel,UserResponseViewModel>(_usersService.GetById(id));
 
                 return Ok(responseUser);
             }
@@ -62,7 +63,7 @@ namespace HotelReservation.Api.Controllers
         {
             try
             {
-                var registerModel = _mapper.MapItem<RegisterUserRequestModel,RegisterUserModel>(user);
+                var registerModel = _mapper.Map<RegisterUserRequestModel,RegisterUserModel>(user);
                 return Ok(await _authService.Registration(registerModel));
             }
             catch (BadRequestException ex)
@@ -93,7 +94,7 @@ namespace HotelReservation.Api.Controllers
         {
             try
             {
-                var userModel = _mapper.MapItem<UserResponseViewModel, UserModel>(user);
+                var userModel = _mapper.Map<UserResponseViewModel, UserModel>(user);
                 _usersService.Update(id, userModel);
                 return Ok($"user with id {id} updated successfully");
             }

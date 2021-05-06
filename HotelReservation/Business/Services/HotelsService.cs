@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -16,21 +18,21 @@ namespace Business.Services
     {
         private readonly HotelRepository _hotelRepository;
         private readonly LocationRepository _locationRepository;
-        private readonly HotelModelsMapper _hotelMapper;
-        private readonly LocationModelsMapper _locationMapper;
+        private readonly Mapper _locationMapper;
+        private readonly Mapper _hotelMapper;
 
-        public HotelsService(HotelRepository hotelRepository,LocationRepository locationRepository,HotelModelsMapper hotelMapper,LocationModelsMapper locationMapper)
+        public HotelsService(HotelRepository hotelRepository,LocationRepository locationRepository,MapConfiguration cfg)
         {
             _hotelRepository = hotelRepository;
             _locationRepository = locationRepository;
-            _hotelMapper = hotelMapper;
-            _locationMapper = locationMapper;
+            _locationMapper = new Mapper(cfg.LocationConfiguration);
+            _hotelMapper = new Mapper(cfg.HotelConfiguration);
         }
 
         public async Task AddHotel(HotelModel hotel)
         {
-            var hotelEntity = _hotelMapper.FromRequestToEntityModel(hotel);
-            var locationEntity = _locationMapper.FromRequestToEntityModel(hotel.Location);
+            var hotelEntity = _hotelMapper.Map<HotelModel,HotelEntity>(hotel);
+            var locationEntity = _locationMapper.Map<LocationModel,LocationEntity>(hotel.Location);
             hotelEntity.Location = locationEntity;
             locationEntity.Hotel = hotelEntity;
             await _hotelRepository.CreateAsync(hotelEntity);
@@ -38,9 +40,14 @@ namespace Business.Services
 
         public async Task<HotelModel> GetById(int id)
         {
-            var hotelModel = _hotelMapper.FromEntityToModel(await _hotelRepository.GetAsync(id));
+            var hotelModel = _hotelMapper.Map<HotelEntity,HotelModel>(await _hotelRepository.GetAsync(id));
             return hotelModel;
 
+        }
+        public List<HotelModel> GetAll()
+        {
+            var hotelModels = _hotelMapper.Map<List<HotelModel>>(_hotelRepository.GetAll().ToList());
+            return hotelModels;
         }
     }
 }
