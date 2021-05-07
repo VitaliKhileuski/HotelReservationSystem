@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Business.Exceptions;
 using Business.Interfaces;
 using Business.Models;
 using Business.Services;
@@ -17,11 +18,11 @@ namespace HotelReservation.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class HotelController : Controller
+    public class HotelsController : Controller
     {
         private readonly Mapper _mapper;
         private readonly IHotelsService _hotelsService;
-        public HotelController(IHotelsService  hotelService,CustomMapperConfiguration cfg)
+        public HotelsController(IHotelsService  hotelService,CustomMapperConfiguration cfg)
         {
             _mapper = new Mapper(cfg.HotelConfiguration);
             _hotelsService = hotelService;
@@ -72,6 +73,31 @@ namespace HotelReservation.Api.Controllers
         public void UpdateHotelAdmin(int id, [FromBody] int userId)
         {
             _hotelsService.UpdateHotelAdmin(id, userId);
+        }
+
+        [HttpPut]
+        [Authorize(Policy = "HotelAdminPermission")]
+        [Route("{id:int}/EditHotel")]
+        public async Task<IActionResult> EditHotel(int id,[FromBody] HotelRequestModel hotel)
+        {
+            if (hotel.Name == null && hotel.Location == null)
+            {
+                return BadRequest("incorrect input data");
+            }
+            var idClaim = int.Parse(User.Claims.FirstOrDefault(x =>
+                    x.Type.ToString().Equals("id", StringComparison.InvariantCultureIgnoreCase))
+                ?.Value ?? string.Empty);
+
+            try
+            {
+                var hotelModel = _mapper.Map<HotelRequestModel, HotelModel>(hotel);
+                await _hotelsService.UpdateHotel(id, hotelModel,idClaim);
+                return Ok("Updated Successfully");
+            }
+            catch (BadRequestException ex)
+            {
+              return  BadRequest(ex.Message);
+            }
         }
     }
 }

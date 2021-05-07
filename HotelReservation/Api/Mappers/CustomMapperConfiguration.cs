@@ -10,6 +10,7 @@ namespace HotelReservation.Api.Mappers
         public MapperConfiguration UsersConfiguration;
         public MapperConfiguration HotelConfiguration;
         public MapperConfiguration RoleConfiguration;
+        public MapperConfiguration RoomConfiguration;
 
         public CustomMapperConfiguration()
         {
@@ -18,6 +19,7 @@ namespace HotelReservation.Api.Mappers
                 x.CreateMap<HotelModel, HotelResponseModel>();
                 x.CreateMap<HotelRequestModel, HotelModel>();
                 x.CreateMap<LocationModel, LocationResponseModel>();
+                x.CreateMap<RoomModel, RoomResponseModel>();
             });
             RoleConfiguration = new MapperConfiguration(x =>
             {
@@ -31,6 +33,11 @@ namespace HotelReservation.Api.Mappers
                 x.CreateMap<RegisterUserRequestModel, RegisterUserModel>();
                 x.CreateMap<UserModel, UserResponseViewModel>();
                 x.CreateMap<RoleModel, RoleResponseModel>();
+            });
+            RoomConfiguration = new MapperConfiguration(x =>
+            {
+                x.CreateMap<RoomModel, RoomResponseModel>();
+                x.CreateMap<RoomRequestModel, RoomModel>();
             });
         }
     }

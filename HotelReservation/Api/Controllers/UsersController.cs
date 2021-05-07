@@ -21,13 +21,13 @@ namespace HotelReservation.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController : Controller
+    public class UsersController : Controller
     {
         private readonly UsersService _usersService;
         private readonly IAuthenticationService _authService;
         private readonly Mapper _mapper;
 
-        public UserController(UsersService usersService, IAuthenticationService authService,CustomMapperConfiguration cfg)
+        public UsersController(UsersService usersService, IAuthenticationService authService,CustomMapperConfiguration cfg)
         {
             _mapper = new Mapper(cfg.UsersConfiguration);
             _usersService = usersService;

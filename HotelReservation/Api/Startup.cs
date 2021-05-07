@@ -40,6 +40,8 @@ namespace HotelReservation.Api
             services.AddScoped<HashPassword>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<RoomsService>();
+            services.AddScoped<RoomRepository>();
             services.AddScoped<HotelRepository>();
             services.AddScoped<LocationRepository>();
             services.AddScoped<UserRepository>();

@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Business.Exceptions;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
@@ -21,6 +22,7 @@ namespace Business.Services
         private readonly UserRepository _userRepository;
         private readonly Mapper _locationMapper;
         private readonly Mapper _hotelMapper;
+        private readonly Mapper _roomMapper;
 
         public HotelsService(HotelRepository hotelRepository,LocationRepository locationRepository,UserRepository userRepository, MapConfiguration cfg)
         {
@@ -29,6 +31,7 @@ namespace Business.Services
             _locationRepository = locationRepository;
             _locationMapper = new Mapper(cfg.LocationConfiguration);
             _hotelMapper = new Mapper(cfg.HotelConfiguration);
+            _roomMapper = new Mapper(cfg.RoomConfiguration);
         }
 
         public async Task AddHotel(HotelModel hotel)
@@ -60,6 +63,48 @@ namespace Business.Services
             userEntity.RoleId = 3;
             _hotelRepository.Update(hotelEntity);
             _userRepository.Update(userEntity);
+        }
+
+        public async Task UpdateHotel(int hotelId, HotelModel hotel,int userId)
+        {
+            var userEntity = await _userRepository.GetAsync(userId);
+            var hotelEntity = await _hotelRepository.GetAsync(hotelId);
+            var newHotelEntity = _hotelMapper.Map<HotelModel, HotelEntity>(hotel);
+            if (newHotelEntity.Location != null)
+            {
+                hotelEntity.Location = newHotelEntity.Location;
+            }
+
+            if (newHotelEntity.Name != null)
+            {
+                hotelEntity.Name = newHotelEntity.Name;
+            }
+            if (hotelEntity.HotelAdminId == userId || userEntity.RoleId==1)
+            {
+                
+                await _hotelRepository.UpdateAsync(hotelEntity);
+
+            }
+            else
+            {
+                throw new BadRequestException("you don't have permission to edit this hotel");
+            }
+        }
+
+        public async Task AddRoom(int hotelId, RoomModel room, int userId)
+        {
+            var hotelEntity = await _hotelRepository.GetAsync(hotelId);
+            var userEntity = await _userRepository.GetAsync(userId);
+            var roomEntity = _roomMapper.Map<RoomModel, RoomEntity>(room);
+            if (hotelEntity.HotelAdminId == userId || userEntity.RoleId == 1)
+            {
+                hotelEntity.Rooms.Add(roomEntity);
+                await _hotelRepository.UpdateAsync(hotelEntity);
+            }
+            else
+            {
+                throw new BadRequestException("you don't have permission to edit this hotel");
+            }
         }
     }
 }

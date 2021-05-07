@@ -11,8 +11,7 @@ namespace HotelReservation.Api.Models.ResponseModels
         public string Name { get; set; }
         public int HotelAdminId { get; set; }
         public LocationResponseModel Location { get; set; }
-        public ICollection<RoomRequestModel> Rooms { get; set; }
-        public int Rating { get; set; }
-        
+        public ICollection<RoomResponseModel> Rooms { get; set; }
+
     }
 }

@@ -8,7 +8,6 @@ namespace Business.Models
         public int HotelAdminId { get; set; }
         public LocationModel Location { get; set; }
         public ICollection<RoomModel> Rooms { get; set; }
-        public int Rating { get; set; }
 
     }
 }

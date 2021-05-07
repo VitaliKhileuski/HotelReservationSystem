@@ -37,8 +37,21 @@ namespace HotelReservation.Data
             {
                 Id = 1,
                 Name = "Admin",
-                Users = null,
+                Users = null
             });
+            modelBuilder.Entity<RoleEntity>().HasData(new RoleEntity()
+            {
+                Id = 2,
+                Name = "User",
+                Users = null
+            });
+            modelBuilder.Entity<RoleEntity>().HasData(new RoleEntity()
+            {
+                Id = 3,
+                Name = "HotelAdmin",
+                Users = null
+            });
+
             modelBuilder.Entity<UserEntity>().HasData(new UserEntity()
             {
                 Id = 1,

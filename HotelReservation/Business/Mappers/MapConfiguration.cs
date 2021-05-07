@@ -32,6 +32,8 @@ namespace Business.Mappers
                 x.CreateMap<HotelEntity, HotelModel>();
                 x.CreateMap<LocationEntity, LocationModel>()
                     .ForMember(x => x.Hotel, opt => opt.Ignore());
+                x.CreateMap<RoomEntity, RoomModel>()
+                    .ForMember(x => x.Hotel, opt => opt.Ignore());
             });
             LocationConfiguration = new MapperConfiguration(x =>
             {
@@ -55,6 +57,7 @@ namespace Business.Mappers
                     .ForMember(x => x.Rooms, opt => opt.Ignore());
                 x.CreateMap<HotelEntity,HotelModel>()
                     .ForMember(x => x.Rooms, opt => opt.Ignore());
+                x.CreateMap<LocationEntity, LocationModel>();
             });
             RoleConfiguration = new MapperConfiguration(x =>
             {

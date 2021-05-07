@@ -10,6 +10,5 @@ namespace HotelReservation.Api.Models.RequestModels
         public string Name { get; set; }
         public LocationRequestModel Location { get; set; }
         public ICollection<RoomRequestModel> Rooms { get; set; }
-        public int Rating { get; set; }
     }
 }
