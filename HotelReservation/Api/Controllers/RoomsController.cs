@@ -86,12 +86,30 @@ namespace HotelReservation.Api.Controllers
         [HttpDelete]
         [Route("{hotelId:int}/{roomId:int}")]
         [Authorize(Policy = "HotelAdminPermission")]
-        public async Task<IActionResult> DeleteRoom(int hotelId, int roomId)
+        public async Task<IActionResult> DeleteRoom(int roomId)
         {
             try
             {
                 int userId = GetIdFromClaims();
+                await _roomsService.DeleteRoom(roomId, userId);
                 return Ok("Deleted Successfully");
+            }
+            catch (NotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut]
+        [Route("/{roomId:int}")]
+        [Authorize(Policy = "HotelAdminPermission")]
+        public async Task<IActionResult> UpdateRoom(int roomId,[FromBody] RoomRequestModel room)
+        {
+            try
+            {
+                var roomModel = _mapper.Map<RoomRequestModel, RoomModel>(room);
+                int userId = GetIdFromClaims();
+                await _roomsService.UpdateRoom(roomId, userId, roomModel);
+                return Ok("Updated Successfully");
             }
             catch (NotFoundException ex)
             {

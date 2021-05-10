@@ -7,6 +7,6 @@ namespace HotelReservation.Api.Models.ResponseModels
 {
     public class OrderResponseModel
     {
-
+        
     }
 }

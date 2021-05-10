@@ -42,7 +42,7 @@ namespace Business.Services
 
             if (_hash.CheckHash(user.Password, userFromDb.Password))
             {
-                return _tokenService.BuildToken(_cfg["Secrets:secretKey"], user.Email,userFromDb.Role.Name,userFromDb.Id);
+                return _tokenService.BuildToken(_cfg["Secrets:secretKey"], user.Email,"User",2);
             }
             throw new IncorrectPasswordException("password is incorrect");
         }
