@@ -59,7 +59,7 @@ namespace HotelReservation.Api.Controllers
             try
             {
                 await  _hotelsService.AddHotel(hotel);
-                return Ok();
+                return Ok("added successfully");
             }
             catch (Exception ex)
             {
@@ -69,7 +69,7 @@ namespace HotelReservation.Api.Controllers
 
         [HttpPut]
         [Authorize(Policy = "AdminPermission")]
-        [Route("hotelAdmin/{id:int}")]
+        [Route("{id:int}/SetHotelAdmin")]
         public void UpdateHotelAdmin(int id, [FromBody] int userId)
         {
             _hotelsService.UpdateHotelAdmin(id, userId);
