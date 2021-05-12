@@ -33,6 +33,8 @@ namespace HotelReservation.Data.Configurations
                 .HasMany(x => x.Orders)
                 .WithOne(x => x.Customer)
                 .HasForeignKey(x => x.UserId);
+            builder.HasOne(x => x.RefreshToken)
+                .WithOne(x => x.User);
         }
     }
 }

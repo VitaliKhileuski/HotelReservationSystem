@@ -56,6 +56,12 @@ namespace Business.Services
             return roomModels.ToList();
         }
 
+        public async Task<List<RoomModel>> GetAllEmptyRooms()
+        {
+            var emptyRooms = await GetAllRooms();
+            return emptyRooms.Where(x => x.IsEmpty).ToList();
+        }
+
         public async Task<List<RoomModel>> GetRoomsFromHotel(int hotelId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);

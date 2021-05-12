@@ -52,12 +52,5 @@ namespace Business.Services
             _userRepository.Update(dbUser);
         }
 
-        public void Add(UserModel user)
-        {
-           var userEntity = _mapper.Map<UserModel,UserEntity>(user);
-            _userRepository.Create(userEntity);
-        }
-
-
     }
 }

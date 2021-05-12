@@ -46,20 +46,23 @@ namespace HotelReservation.Api.Controllers
         [HttpPost]
         [Authorize]
         [Route("{roomId:int}/order")]
-        public async Task<IActionResult> CreateOrder(int roomId,[FromBody] OrderRequestModel order)
+        public async Task<IActionResult> CreateOrder(int roomId, [FromBody] OrderRequestModel order)
         {
             try
             {
                 var userId = GetIdFromClaims();
                 var orderModel = _mapper.Map<OrderRequestModel, OrderModel>(order);
-              await _orderService.CreateOrder(roomId,userId,orderModel);
-              return Ok("Ordered");
+                await _orderService.CreateOrder(roomId, userId, orderModel);
+                return Ok("Ordered");
+            }
+            catch (BadRequestException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (NotFoundException ex)
             {
                 return BadRequest(ex.Message);
             }
-
         }
 
 

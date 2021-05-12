@@ -22,17 +22,20 @@ namespace HotelReservation.Data
         public DbSet<OrderEntity> Orders { get; set; }
         public DbSet<RoleEntity> Roles { get; set; }
         public DbSet<RoomEntity> Rooms { get; set; }
+        public DbSet<RefreshTokenEntity> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            
+
 
             modelBuilder.ApplyConfiguration(new UserEntityConfiguration())
                 .ApplyConfiguration(new HotelEntityConfiguration())
                 .ApplyConfiguration(new LocationEntityConfiguration())
                 .ApplyConfiguration(new OrderEntityConfiguration())
-                .ApplyConfiguration(new RoomEntityConfiguration());
+                .ApplyConfiguration(new RoomEntityConfiguration())
+                .ApplyConfiguration(new RefreshTokenConfiguration());
+
             modelBuilder.Entity<RoleEntity>().HasData(new RoleEntity()
             {
                 Id = 1,
@@ -51,7 +54,6 @@ namespace HotelReservation.Data
                 Name = "HotelAdmin",
                 Users = null
             });
-
             modelBuilder.Entity<UserEntity>().HasData(new UserEntity()
             {
                 Id = 1,

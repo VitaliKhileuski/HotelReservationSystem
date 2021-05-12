@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Business.Exceptions;
 using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data.Entities;
@@ -29,14 +30,25 @@ namespace Business.Services
         public async Task CreateOrder(int roomId, int userId,OrderModel order)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
+            if (roomEntity == null)
+            {
+                throw new NotFoundException("thar room is not found");
+            }
+            if (!roomEntity.IsEmpty)
+            {
+                throw new BadRequestException("this room already reserved");
+            }
             var userEntity = await _userRepository.GetAsync(userId);
             var orderEntity = _mapper.Map<OrderModel, OrderEntity>(order);
             orderEntity.Customer = userEntity;
+            roomEntity.IsEmpty = false;
             orderEntity.DateOrdered = DateTime.Now;
             orderEntity.NumberOfDays = orderEntity.EndDate.Subtract(orderEntity.StartDate).Days;
             orderEntity.FullPrice = orderEntity.NumberOfDays * roomEntity.PaymentPerDay;
             orderEntity.Room = roomEntity;
+            
             await _orderRepository.CreateAsync(orderEntity);
+            await _roomRepository.UpdateAsync(roomEntity);
         }
     }
 }

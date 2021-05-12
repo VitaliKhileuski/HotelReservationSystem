@@ -10,7 +10,9 @@ namespace HotelReservation.Data.Entities
 
         public virtual  ICollection<RoomEntity> Rooms { get; set; }
         public virtual ICollection<OrderEntity> Orders { get; set; }
-        
+
+        public int RefreshTokenId { get; set; }
+        public virtual RefreshTokenEntity RefreshToken { get; set; }
         
         public int Id { get; set; }
         public string Email { get; set; }

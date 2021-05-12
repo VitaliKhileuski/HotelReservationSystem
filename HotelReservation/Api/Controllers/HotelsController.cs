@@ -27,16 +27,7 @@ namespace HotelReservation.Api.Controllers
             _mapper = new Mapper(cfg.HotelConfiguration);
             _hotelsService = hotelService;
         }
-        [Authorize(Policy = "HotelAdminPermission")]
-        [HttpGet("test")]
-        public IActionResult Test()
-        {
-            var idClaim = int.Parse(User.Claims.FirstOrDefault(x =>
-                    x.Type.ToString().Equals("id", StringComparison.InvariantCultureIgnoreCase))
-                ?.Value ?? string.Empty);
-            return Ok("ok");
-        }
-
+        
         [HttpGet]
         public ICollection<HotelResponseModel> GetAll()
         {
@@ -80,16 +71,15 @@ namespace HotelReservation.Api.Controllers
         [Route("{id:int}/EditHotel")]
         public async Task<IActionResult> EditHotel(int id,[FromBody] HotelRequestModel hotel)
         {
-            if (hotel.Name == null && hotel.Location == null)
-            {
-                return BadRequest("incorrect input data");
-            }
-            var idClaim = int.Parse(User.Claims.FirstOrDefault(x =>
-                    x.Type.ToString().Equals("id", StringComparison.InvariantCultureIgnoreCase))
-                ?.Value ?? string.Empty);
-
             try
             {
+                if (hotel.Name == null && hotel.Location == null)
+                {
+                    return BadRequest("incorrect input data");
+                }
+                var idClaim = int.Parse(User.Claims.FirstOrDefault(x =>
+                        x.Type.ToString().Equals("id", StringComparison.InvariantCultureIgnoreCase))
+                    ?.Value ?? string.Empty);
                 var hotelModel = _mapper.Map<HotelRequestModel, HotelModel>(hotel);
                 await _hotelsService.UpdateHotel(id, hotelModel,idClaim);
                 return Ok("Updated Successfully");

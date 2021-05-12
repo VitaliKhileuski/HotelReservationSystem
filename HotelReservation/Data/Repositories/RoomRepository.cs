@@ -62,6 +62,7 @@ namespace HotelReservation.Data.Repositories
 
         public RoomEntity Get(int id)
         {
+            var room = _db.Rooms.Find(id);
             return _db.Rooms.Find(id);
         }
 

@@ -43,10 +43,13 @@ namespace HotelReservation.Api
             services.AddScoped<RoomsService>();
             services.AddScoped<RoomRepository>();
             services.AddScoped<HotelRepository>();
+            services.AddScoped<OrderRepository>();
             services.AddScoped<LocationRepository>();
             services.AddScoped<UserRepository>();
             services.AddScoped<MapConfiguration>();
             services.AddScoped<CustomMapperConfiguration>();
+
+            services.AddScoped<OrdersService>();
             services.AddScoped<IHotelsService, HotelsService>();
             services.AddScoped<UsersService>();
             services.AddControllers();
