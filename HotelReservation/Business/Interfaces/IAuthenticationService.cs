@@ -6,7 +6,7 @@ namespace Business.Interfaces
 {
     public interface IAuthenticationService
     {
-        Task<string> Login(LoginUserModel user);
+        Task<List<string>> Login(LoginUserModel user);
         Task<List<string>> Registration(RegisterUserModel user);
     }
 }

@@ -24,8 +24,7 @@ namespace Business.Mappers
                  x.CreateMap<UserEntity, UserModel>();
                  x.CreateMap<UserModel, UserEntity>();
                  x.CreateMap<RoleEntity, RoleModel>();
-                 x.CreateMap<RefreshTokenEntity, TokenModel>()
-                     .ForMember(x => x.User, opt => opt.Ignore());
+                
             });
             HotelConfiguration = new MapperConfiguration( x =>
             {

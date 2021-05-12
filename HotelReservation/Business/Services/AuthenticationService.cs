@@ -38,7 +38,7 @@ namespace Business.Services
             _tokenMapper = new Mapper(cfg.TokenConfiguration);
 
         }
-        public async Task<string> Login(LoginUserModel user)
+        public async Task<List<string>> Login(LoginUserModel user)
         {
             var userFromDb = await GetUserFromDb(user.Email);
             if (userFromDb == null)
@@ -46,11 +46,31 @@ namespace Business.Services
                 throw new NotFoundException("no such user exists");
             }
 
+            string token;
             if (_hash.CheckHash(user.Password, userFromDb.Password))
             {
-                return _tokenService.BuildToken(_cfg["Secrets:secretKey"],user.Email,userFromDb.Role.Name,userFromDb.Id);
+                token = _tokenService.BuildToken(_cfg["Secrets:secretKey"], user.Email, userFromDb.Role.Name, userFromDb.Id);
             }
-            throw new IncorrectPasswordException("password is incorrect");
+            else
+            {
+                throw new IncorrectPasswordException("password is incorrect");
+            }
+
+            RefreshTokenEntity refreshToken = new RefreshTokenEntity
+            {
+                Token = _tokenService.GenerateRefreshToken(),
+                User = userFromDb
+            };
+
+            if (userFromDb.RefreshToken != null)
+            {
+                _db.RefreshTokens.Remove(userFromDb.RefreshToken);
+            }
+            await _db.RefreshTokens.AddAsync(refreshToken);
+
+            await _db.SaveChangesAsync();
+
+            return new List<string>() { token, refreshToken.Token };
         }
 
         public async Task<List<string>> Registration(RegisterUserModel user)
@@ -80,6 +100,39 @@ namespace Business.Services
         {
             return await _db.Users
                 .SingleOrDefaultAsync(x => x.Email.Trim() == email.Trim());
+        }
+
+        public async Task<UserEntity> GetDbUser(TokenModel refreshToken)
+        {
+            return await _db.
+                Users.SingleOrDefaultAsync(x => x.RefreshToken.Token == refreshToken.Token);
+        }
+        public async Task<List<string>> RefreshTokenVerification(TokenModel refreshToken)
+        {
+            var dbUser = await GetDbUser(refreshToken);
+
+            if (dbUser == null)
+            {
+                throw (new BadRequestException("Invalid refresh token."));
+            }
+
+            var newRefreshToken = new RefreshTokenEntity
+            {
+                Token = _tokenService.GenerateRefreshToken(),
+                User = dbUser
+            };
+
+            if (dbUser.RefreshToken != null)
+            {
+                _db.RefreshTokens.Remove(dbUser.RefreshToken);
+            }
+            await _db.RefreshTokens.AddAsync(newRefreshToken);
+
+            await _db.SaveChangesAsync();
+
+            var newJwtToken = _tokenService.BuildToken(_cfg["Secrets:secretKey"], dbUser.Email, dbUser.Role.Name, dbUser.Id);
+
+            return new List<string>() { newJwtToken, newRefreshToken.Token };
         }
     }
 }
