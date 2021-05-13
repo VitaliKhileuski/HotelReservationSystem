@@ -4,14 +4,16 @@ using HotelReservation.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HotelReservation.Api.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20210513114717_AddServicesConfiguration")]
+    partial class AddServicesConfiguration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -299,21 +301,6 @@ namespace HotelReservation.Api.Migrations
                             RoleId = 1,
                             Surname = "Admin"
                         });
-                });
-
-            modelBuilder.Entity("RoomEntityServiceEntity", b =>
-                {
-                    b.Property<int>("RoomsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ServicesId")
-                        .HasColumnType("int");
-
-                    b.HasKey("RoomsId", "ServicesId");
-
-                    b.HasIndex("ServicesId");
-
-                    b.ToTable("RoomEntityServiceEntity");
                 });
 
             modelBuilder.Entity("HotelReservation.Data.Entities.LocationEntity", b =>

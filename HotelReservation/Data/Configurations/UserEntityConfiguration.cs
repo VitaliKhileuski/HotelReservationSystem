@@ -34,7 +34,8 @@ namespace HotelReservation.Data.Configurations
                 .WithOne(x => x.Customer)
                 .HasForeignKey(x => x.UserId);
             builder.HasOne(x => x.RefreshToken)
-                .WithOne(x => x.User);
+                .WithOne(x => x.User)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

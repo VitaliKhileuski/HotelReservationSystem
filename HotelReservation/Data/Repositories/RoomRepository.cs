@@ -62,7 +62,6 @@ namespace HotelReservation.Data.Repositories
 
         public RoomEntity Get(int id)
         {
-            var room = _db.Rooms.Find(id);
             return _db.Rooms.Find(id);
         }
 
@@ -78,7 +77,7 @@ namespace HotelReservation.Data.Repositories
 
         public async Task<RoomEntity> GetAsync(int id)
         {
-            return await Task.Run((() => Get(id)));
+            return await Task.Run(() => Get(id));
         }
 
         public void Update(RoomEntity room)

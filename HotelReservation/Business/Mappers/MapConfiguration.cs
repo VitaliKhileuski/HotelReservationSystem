@@ -16,6 +16,7 @@ namespace Business.Mappers
         public MapperConfiguration RoomConfiguration;
         public MapperConfiguration RoleConfiguration;
         public MapperConfiguration TokenConfiguration;
+        public MapperConfiguration ServiceConfiguration;
 
         public MapConfiguration()
         {
@@ -36,6 +37,7 @@ namespace Business.Mappers
                     .ForMember(x => x.Hotel, opt => opt.Ignore());
                 x.CreateMap<RoomEntity, RoomModel>()
                     .ForMember(x => x.Hotel, opt => opt.Ignore());
+                x.CreateMap<ServiceEntity, ServiceModel>();
             });
             LocationConfiguration = new MapperConfiguration(x =>
             {
@@ -60,6 +62,7 @@ namespace Business.Mappers
                 x.CreateMap<HotelEntity,HotelModel>()
                     .ForMember(x => x.Rooms, opt => opt.Ignore());
                 x.CreateMap<LocationEntity, LocationModel>();
+                x.CreateMap<ServiceEntity,ServiceModel>();
             });
             RoleConfiguration = new MapperConfiguration(x =>
             {
@@ -72,6 +75,16 @@ namespace Business.Mappers
             {
                 x.CreateMap<RefreshTokenEntity, TokenModel>();
                 x.CreateMap<TokenModel, RefreshTokenEntity>();
+            });
+            ServiceConfiguration = new MapperConfiguration(x =>
+            {
+                x.CreateMap<ServiceEntity, ServiceModel>().ReverseMap();
+                x.CreateMap<ServiceEntity, ServiceModel>().ReverseMap();
+                x.CreateMap<HotelEntity, HotelModel>()
+                    .ForMember(x => x.Services, opt => opt.Ignore());
+                x.CreateMap<RoomEntity, RoomModel>()
+                    .ForMember(x => x.Services, opt => opt.Ignore());
+
             });
         }
     }

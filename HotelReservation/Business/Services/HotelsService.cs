@@ -69,26 +69,28 @@ namespace Business.Services
         {
             var userEntity = await _userRepository.GetAsync(userId);
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
-            var newHotelEntity = _hotelMapper.Map<HotelModel, HotelEntity>(hotel);
-            if (newHotelEntity.Location != null)
+            
+            if (hotelEntity.HotelAdminId == userId || userEntity.RoleId == 1)
             {
-                hotelEntity.Location = newHotelEntity.Location;
-            }
-
-            if (newHotelEntity.Name != null)
-            {
-                hotelEntity.Name = newHotelEntity.Name;
-            }
-            if (hotelEntity.HotelAdminId == userId || userEntity.RoleId==1)
-            {
+                var newHotelEntity = _hotelMapper.Map<HotelModel, HotelEntity>(hotel);
                 
-                await _hotelRepository.UpdateAsync(hotelEntity);
+                if (newHotelEntity.Location != null)
+                {
+                    hotelEntity.Location = newHotelEntity.Location;
+                }
 
+                if (newHotelEntity.Name != null)
+                {
+                    hotelEntity.Name = newHotelEntity.Name;
+                }
+                await _hotelRepository.UpdateAsync(hotelEntity);
             }
             else
             {
                 throw new BadRequestException("you don't have permission to edit this hotel");
             }
+            
+            
         }
 
         public async Task AddRoom(int hotelId, RoomModel room, int userId)

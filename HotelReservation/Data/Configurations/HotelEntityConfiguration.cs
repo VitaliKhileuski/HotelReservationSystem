@@ -25,6 +25,11 @@ namespace HotelReservation.Data.Configurations
                 .Property(x => x.HotelAdminId)
                 .IsRequired()
                 .HasDefaultValue(1);
+            builder
+                .HasMany(x => x.Services)
+                .WithOne(x => x.Hotel)
+                .HasForeignKey(x => x.HotelId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

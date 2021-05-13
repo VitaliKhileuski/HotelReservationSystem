@@ -1,4 +1,6 @@
-﻿namespace HotelReservation.Data.Entities
+﻿using System.Collections.Generic;
+
+namespace HotelReservation.Data.Entities
 {
    public  class RoomEntity
     {
@@ -10,6 +12,7 @@
 
         public int HotelId { get; set; }
         public virtual HotelEntity Hotel { get; set; }
+        public virtual List<ServiceEntity> Services { get; set; }
 
         public int RoomNumber { get; set; }
         public int BedsNumber { get; set; }

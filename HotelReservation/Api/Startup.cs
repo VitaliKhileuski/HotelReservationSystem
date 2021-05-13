@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using Business.Interfaces;
 using Business.Mappers;
@@ -46,12 +47,14 @@ namespace HotelReservation.Api
             services.AddScoped<OrderRepository>();
             services.AddScoped<LocationRepository>();
             services.AddScoped<UserRepository>();
+            services.AddScoped<ServiceRepository>();
             services.AddScoped<MapConfiguration>();
             services.AddScoped<CustomMapperConfiguration>();
 
             services.AddScoped<OrdersService>();
             services.AddScoped<IHotelsService, HotelsService>();
             services.AddScoped<UsersService>();
+            services.AddScoped<FacilitiesService>();
             services.AddControllers();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -66,6 +69,7 @@ namespace HotelReservation.Api
                     ValidateLifetime = bool.Parse(Configuration["AuthenticationOptions:ValidateLifetime"] ?? "false"),
                     IssuerSigningKey =  new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Secrets:secretKey"])),
                     ValidateIssuerSigningKey = bool.Parse(Configuration["AuthenticationOptions:ValidateIssuerSigningKey"] ?? "false"),
+                    ClockSkew = TimeSpan.Zero
                 };
             });
             services.AddAuthorization(opt =>

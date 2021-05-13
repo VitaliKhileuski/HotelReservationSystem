@@ -4,14 +4,16 @@ using HotelReservation.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HotelReservation.Api.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20210513074615_CascadeDelete")]
+    partial class CascadeDelete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -211,31 +213,6 @@ namespace HotelReservation.Api.Migrations
                     b.ToTable("Rooms");
                 });
 
-            modelBuilder.Entity("HotelReservation.Data.Entities.ServiceEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("HotelId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<double>("Payment")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("HotelId");
-
-                    b.ToTable("Services");
-                });
-
             modelBuilder.Entity("HotelReservation.Data.Entities.UserEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -266,7 +243,7 @@ namespace HotelReservation.Api.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
-                    b.Property<int?>("RefreshTokenId")
+                    b.Property<int>("RefreshTokenId")
                         .HasColumnType("int");
 
                     b.Property<int>("RoleId")
@@ -280,8 +257,7 @@ namespace HotelReservation.Api.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("RefreshTokenId")
-                        .IsUnique()
-                        .HasFilter("[RefreshTokenId] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("RoleId");
 
@@ -296,24 +272,10 @@ namespace HotelReservation.Api.Migrations
                             Name = "Admin",
                             Password = "wcIksDzZvHtqhtd/XazkAZF2bEhc1V3EjK+ayHMzXW8=T_CpC.rqbvX65ycC!dhK4I-0G(QAzSId",
                             PhoneNumber = "+375297809088",
+                            RefreshTokenId = 0,
                             RoleId = 1,
                             Surname = "Admin"
                         });
-                });
-
-            modelBuilder.Entity("RoomEntityServiceEntity", b =>
-                {
-                    b.Property<int>("RoomsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ServicesId")
-                        .HasColumnType("int");
-
-                    b.HasKey("RoomsId", "ServicesId");
-
-                    b.HasIndex("ServicesId");
-
-                    b.ToTable("RoomEntityServiceEntity");
                 });
 
             modelBuilder.Entity("HotelReservation.Data.Entities.LocationEntity", b =>
@@ -364,23 +326,13 @@ namespace HotelReservation.Api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("HotelReservation.Data.Entities.ServiceEntity", b =>
-                {
-                    b.HasOne("HotelReservation.Data.Entities.HotelEntity", "Hotel")
-                        .WithMany("Services")
-                        .HasForeignKey("HotelId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Hotel");
-                });
-
             modelBuilder.Entity("HotelReservation.Data.Entities.UserEntity", b =>
                 {
                     b.HasOne("HotelReservation.Data.Entities.RefreshTokenEntity", "RefreshToken")
                         .WithOne("User")
                         .HasForeignKey("HotelReservation.Data.Entities.UserEntity", "RefreshTokenId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("HotelReservation.Data.Entities.RoleEntity", "Role")
                         .WithMany("Users")
@@ -393,28 +345,11 @@ namespace HotelReservation.Api.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("RoomEntityServiceEntity", b =>
-                {
-                    b.HasOne("HotelReservation.Data.Entities.RoomEntity", null)
-                        .WithMany()
-                        .HasForeignKey("RoomsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HotelReservation.Data.Entities.ServiceEntity", null)
-                        .WithMany()
-                        .HasForeignKey("ServicesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("HotelReservation.Data.Entities.HotelEntity", b =>
                 {
                     b.Navigation("Location");
 
                     b.Navigation("Rooms");
-
-                    b.Navigation("Services");
                 });
 
             modelBuilder.Entity("HotelReservation.Data.Entities.RefreshTokenEntity", b =>

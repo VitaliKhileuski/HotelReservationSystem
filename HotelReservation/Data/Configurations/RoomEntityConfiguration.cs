@@ -40,6 +40,9 @@ namespace HotelReservation.Data.Configurations
                 .WithOne(x => x.Room)
                 .HasForeignKey<OrderEntity>(x => x.RoomId)
                 .OnDelete(DeleteBehavior.Restrict);
+            builder
+                .HasMany(x => x.Services)
+                .WithMany(x => x.Rooms);
         }
     }
 }

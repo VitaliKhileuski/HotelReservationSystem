@@ -60,10 +60,10 @@ namespace HotelReservation.Api.Controllers
 
         [HttpPut]
         [Authorize(Policy = "AdminPermission")]
-        [Route("{id:int}/SetHotelAdmin")]
-        public void UpdateHotelAdmin(int id, [FromBody] int userId)
+        [Route("{hotelId:int}/SetHotelAdmin")]
+        public void UpdateHotelAdmin(int hotelId, [FromBody] int userId)
         {
-            _hotelsService.UpdateHotelAdmin(id, userId);
+            _hotelsService.UpdateHotelAdmin(hotelId, userId);
         }
 
         [HttpPut]

@@ -11,47 +11,46 @@ using Business.Services;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using Microsoft.AspNetCore.Authorization;
-using Org.BouncyCastle.Bcpg;
 
 namespace HotelReservation.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class OrdersController : Controller
+    public class ServicesController : Controller
     {
-        private readonly OrdersService _orderService;
+        private readonly FacilitiesService _facilitiesService;
         private readonly Mapper _mapper;
 
-        public OrdersController(OrdersService orderService,CustomMapperConfiguration cfg)
+        public ServicesController(FacilitiesService facilitiesService, CustomMapperConfiguration cfg)
         {
-            _orderService = orderService;
-            _mapper = new Mapper(cfg.OrderConfiguration);
+            _facilitiesService = facilitiesService;
+            _mapper = new Mapper(cfg.ServiceConfiguration);
         }
 
+
+
+
         [HttpPost]
-        [Authorize]
-        [Route("{roomId:int}/order")]
-        public async Task<IActionResult> CreateOrder(int roomId, [FromBody] OrderRequestModel order)
+        [Route("{hotelId:int}/AddService")]
+        [Authorize(Policy = "HotelAdminPermission")]
+        public async Task<IActionResult> AddServiceToHotel(int hotelId, [FromBody] ServiceRequestModel service)
         {
             try
             {
+                var serviceModel = _mapper.Map<ServiceRequestModel, ServiceModel>(service);
                 var userId = GetIdFromClaims();
-                var orderModel = _mapper.Map<OrderRequestModel, OrderModel>(order);
-                await _orderService.CreateOrder(roomId, userId, orderModel);
-                return Ok("Ordered");
-            }
-            catch (BadRequestException ex)
-            {
-                return BadRequest(ex.Message);
+                await _facilitiesService.AddServiceToHotel(hotelId, userId, serviceModel);
+                return Ok("added successfully");
             }
             catch (NotFoundException ex)
             {
                 return BadRequest(ex.Message);
             }
+            catch (BadRequestException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-
-
-
         private int GetIdFromClaims()
         {
             int idClaim = int.Parse(User.Claims.FirstOrDefault(x =>
@@ -60,4 +59,5 @@ namespace HotelReservation.Api.Controllers
             return idClaim;
         }
     }
+    
 }
