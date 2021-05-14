@@ -52,6 +52,10 @@ namespace Business.Mappers
                 x.CreateMap<UserEntity, UserModel>()
                     .ForMember(x => x.Orders, opt => opt.Ignore());
                 x.CreateMap<RoomEntity, RoomModel>();
+                x.CreateMap<ServiceModel, ServiceEntity>().ReverseMap();
+                x.CreateMap<RoleEntity, RoleModel>();
+                x.CreateMap<HotelEntity, HotelModel>();
+                x.CreateMap<LocationEntity, LocationModel>();
             });
             RoomConfiguration = new MapperConfiguration(x =>
             {

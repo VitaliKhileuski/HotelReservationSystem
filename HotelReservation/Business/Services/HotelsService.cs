@@ -83,7 +83,7 @@ namespace Business.Services
                 {
                     hotelEntity.Name = newHotelEntity.Name;
                 }
-                await _hotelRepository.UpdateAsync(hotelEntity);
+                 _hotelRepository.Update(hotelEntity);
             }
             else
             {
@@ -101,7 +101,7 @@ namespace Business.Services
             if (hotelEntity.HotelAdminId == userId || userEntity.RoleId == 1)
             {
                 hotelEntity.Rooms.Add(roomEntity);
-                await _hotelRepository.UpdateAsync(hotelEntity);
+                 _hotelRepository.Update(hotelEntity);
             }
             else
             {

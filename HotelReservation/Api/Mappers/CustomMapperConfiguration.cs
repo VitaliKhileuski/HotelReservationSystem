@@ -2,6 +2,7 @@
 using Business.Models;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
+using HotelReservation.Data.Entities;
 
 namespace HotelReservation.Api.Mappers
 {
@@ -45,6 +46,13 @@ namespace HotelReservation.Api.Mappers
             OrderConfiguration = new MapperConfiguration(x =>
             {
                 x.CreateMap<OrderRequestModel, OrderModel>();
+                x.CreateMap<ServiceRequestModel, ServiceModel>();
+                x.CreateMap<ServiceModel, ServiceResponseModel>();
+                x.CreateMap<OrderModel, OrderResponseModel>();
+                x.CreateMap<RoleModel, RoleResponseModel>();
+                x.CreateMap<RoomModel, RoomResponseModel>();
+                x.CreateMap<HotelModel, HotelResponseModel>();
+                x.CreateMap<LocationModel, LocationResponseModel>();
             });
             TokenConfiguration = new MapperConfiguration(x =>
             {
@@ -53,6 +61,7 @@ namespace HotelReservation.Api.Mappers
             ServiceConfiguration = new MapperConfiguration(x =>
             {
                 x.CreateMap<ServiceRequestModel, ServiceModel>();
+                x.CreateMap<ServiceModel, ServiceResponseModel>();
             });
         }
     }

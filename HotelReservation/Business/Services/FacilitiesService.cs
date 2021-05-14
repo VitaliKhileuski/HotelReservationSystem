@@ -50,8 +50,8 @@ namespace Business.Services
 
                 var serviceEntity = _mapper.Map<ServiceModel, ServiceEntity>(serviceModel);
                 hotelEntity.Services.Add(serviceEntity);
-                serviceEntity.Hotel = hotelEntity;
-                await _hotelRepository.UpdateAsync(hotelEntity);
+                serviceEntity.Hotel = hotelEntity; 
+                _hotelRepository.Update(hotelEntity);
             }
             else
             {

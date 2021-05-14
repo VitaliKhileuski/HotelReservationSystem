@@ -22,7 +22,7 @@ namespace HotelReservation.Api.Controllers
     {
         private readonly Mapper _mapper;
         private readonly IHotelsService _hotelsService;
-        public HotelsController(IHotelsService  hotelService,CustomMapperConfiguration cfg)
+        public HotelsController(IHotelsService hotelService,CustomMapperConfiguration cfg)
         {
             _mapper = new Mapper(cfg.HotelConfiguration);
             _hotelsService = hotelService;

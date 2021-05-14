@@ -54,12 +54,6 @@ namespace HotelReservation.Data.Repositories
         {
             return _db.Rooms.Where(predicate).ToList();
         }
-
-        public async Task<IEnumerable<RoomEntity>> FindAsync(Func<RoomEntity, bool> predicate)
-        {
-            return await Task.Run((() => Find(predicate)));
-        }
-
         public RoomEntity Get(int id)
         {
             return _db.Rooms.Find(id);
@@ -77,19 +71,13 @@ namespace HotelReservation.Data.Repositories
 
         public async Task<RoomEntity> GetAsync(int id)
         {
-            return await Task.Run(() => Get(id));
+            return await _db.Rooms.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public void Update(RoomEntity room)
         {
             _db.Entry(room).State = EntityState.Modified;
             _db.SaveChanges();
-        }
-
-        public async Task UpdateAsync(RoomEntity room)
-        {
-            await Task.Run(() => Update(room));
-            await _db.SaveChangesAsync();
         }
     }
 }

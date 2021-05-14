@@ -12,13 +12,10 @@ namespace HotelReservation.Data.Entities
 
         public int HotelId { get; set; }
         public virtual HotelEntity Hotel { get; set; }
-        public virtual List<ServiceEntity> Services { get; set; }
 
-        public int RoomNumber { get; set; }
+        public string RoomNumber { get; set; }
         public int BedsNumber { get; set; }
         public double PaymentPerDay { get; set; }
-        public bool WiFi { get; set; }
-        public bool MiniBar { get; set; }
         public bool IsEmpty { get; set; }
     }
 }

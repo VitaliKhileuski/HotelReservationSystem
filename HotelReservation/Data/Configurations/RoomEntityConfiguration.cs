@@ -14,18 +14,6 @@ namespace HotelReservation.Data.Configurations
                 .Property(x => x.RoomNumber)
                 .HasMaxLength(10)
                 .IsRequired();
-            builder
-                .Property(x => x.IsEmpty)
-                .IsRequired();
-            builder.Property(x => x.PaymentPerDay)
-                .IsRequired()
-                .HasMaxLength(9);
-            builder
-                .Property(x => x.MiniBar)
-                .IsRequired();
-            builder
-                .Property(x => x.WiFi)
-                .IsRequired();
             builder.HasOne(x => x.Hotel)
                 .WithMany(x => x.Rooms)
                 .HasForeignKey(x => x.HotelId)
@@ -40,9 +28,6 @@ namespace HotelReservation.Data.Configurations
                 .WithOne(x => x.Room)
                 .HasForeignKey<OrderEntity>(x => x.RoomId)
                 .OnDelete(DeleteBehavior.Restrict);
-            builder
-                .HasMany(x => x.Services)
-                .WithMany(x => x.Rooms);
         }
     }
 }

@@ -34,8 +34,8 @@ namespace Business.Services
             var roomEntity = _roomMapper.Map<RoomModel, RoomEntity>(room);
             if (hotelEntity.HotelAdminId == userId || userEntity.RoleId == 1)
             {
-                hotelEntity.Rooms.Add(roomEntity);
-                await _hotelRepository.UpdateAsync(hotelEntity);
+                hotelEntity.Rooms.Add(roomEntity); 
+                _hotelRepository.Update(hotelEntity);
             }
             else
             {
@@ -86,11 +86,8 @@ namespace Business.Services
             if (hotelEntity.HotelAdminId == userId || userEntity.RoleId == 1)
             {
                 roomEntity.BedsNumber = room.BedsNumber;
-                roomEntity.MiniBar = room.MiniBar;
-                roomEntity.RoomNumber = room.RoomNumber;
                 roomEntity.PaymentPerDay = room.PaymentPerDay;
-                roomEntity.WiFi = room.WiFi;
-                await _roomRepository.UpdateAsync(roomEntity);
+                _roomRepository.Update(roomEntity);
             }
             else
             {

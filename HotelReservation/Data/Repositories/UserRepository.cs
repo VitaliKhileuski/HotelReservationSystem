@@ -63,11 +63,6 @@ namespace HotelReservation.Data.Repositories
             return _db.Users.Include(x => x.Role).Where(predicate).ToList();
         }
 
-        public async Task<IEnumerable<UserEntity>> FindAsync(Func<UserEntity, bool> predicate)
-        {
-            return await Task.Run((() => Find(predicate)));
-        }
-
         public UserEntity Get(int id)
         {
             var user = _db.Users.Find(id);
@@ -85,29 +80,19 @@ namespace HotelReservation.Data.Repositories
             {
                 throw new Exception("database doesn't contains any users");
             }
-            return _db.Users;
-        }
 
-        public async Task<IEnumerable<UserEntity>> GetAllAsync()
-        {
-            return await Task.Run(GetAll);
+            return _db.Users;
         }
 
         public async Task<UserEntity> GetAsync(int id)
         {
-            return await Task.Run((() => Get(id)));
+            return await _db.Users.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public void Update(UserEntity user)
         {
             _db.Entry(user).State = EntityState.Modified;
             _db.SaveChanges();
-        }
-
-        public async Task UpdateAsync(UserEntity user)
-        {
-            await Task.Run(() => Update(user));
-            await _db.SaveChangesAsync();
         }
     }
 }

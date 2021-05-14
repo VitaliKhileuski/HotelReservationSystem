@@ -12,10 +12,6 @@ using Business.Services;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
-using HotelReservation.Data;
-using HotelReservation.Data.Entities;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace HotelReservation.Api.Controllers
 {

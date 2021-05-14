@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace HotelReservation.Data.Entities
 {
@@ -9,6 +10,7 @@ namespace HotelReservation.Data.Entities
         public virtual UserEntity Customer { get; set; }
         public int RoomId { get; set; }
         public virtual RoomEntity Room { get; set; }
+        public virtual ICollection<ServiceEntity> Services { get; set; }
 
         public DateTime DateOrdered { get; set; }
         public DateTime StartDate { get; set; }
