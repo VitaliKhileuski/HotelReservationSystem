@@ -18,17 +18,15 @@ namespace Business.Services
     public class HotelsService : IHotelsService
     {
         private readonly HotelRepository _hotelRepository;
-        private readonly LocationRepository _locationRepository;
         private readonly UserRepository _userRepository;
         private readonly Mapper _locationMapper;
         private readonly Mapper _hotelMapper;
         private readonly Mapper _roomMapper;
 
-        public HotelsService(HotelRepository hotelRepository,LocationRepository locationRepository,UserRepository userRepository, MapConfiguration cfg)
+        public HotelsService(HotelRepository hotelRepository,UserRepository userRepository, MapConfiguration cfg)
         {
             _hotelRepository = hotelRepository;
             _userRepository = userRepository;
-            _locationRepository = locationRepository;
             _locationMapper = new Mapper(cfg.LocationConfiguration);
             _hotelMapper = new Mapper(cfg.HotelConfiguration);
             _roomMapper = new Mapper(cfg.RoomConfiguration);

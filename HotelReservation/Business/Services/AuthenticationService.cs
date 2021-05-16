@@ -23,10 +23,9 @@ namespace Business.Services
         private readonly ITokenService _tokenService;
         private readonly UserRepository _repository;
         private readonly Mapper _requestModelToUserEntity;
-        private readonly Mapper _tokenMapper;
+      
 
-
-        public AuthenticationService(Context context, IConfiguration configuration, HashPassword hashPassword, ITokenService tokenService,MapConfiguration cfg)
+        public AuthenticationService(Context context, IConfiguration configuration, HashPassword hashPassword, ITokenService tokenService)
         {
             _db = context;
             _cfg = configuration;
@@ -35,8 +34,6 @@ namespace Business.Services
             _repository = new UserRepository(_db);
             _requestModelToUserEntity =
                 new Mapper(new MapperConfiguration(x => x.CreateMap<RegisterUserModel, UserEntity>()));
-            _tokenMapper = new Mapper(cfg.TokenConfiguration);
-
         }
         public async Task<List<string>> Login(LoginUserModel user)
         {

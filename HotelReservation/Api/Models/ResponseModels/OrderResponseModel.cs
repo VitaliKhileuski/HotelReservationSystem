@@ -7,7 +7,8 @@ namespace HotelReservation.Api.Models.ResponseModels
 {
     public class OrderResponseModel
     {
-        public ICollection<ServiceResponseModel> Services;
+        public int Id { get; set; }
+        public ICollection<ServiceResponseModel> Services { get; set; }
         public RoomResponseModel Room { get; set; }
         public DateTime DateOrdered { get; set; }
         public DateTime StartDate { get; set; }

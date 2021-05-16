@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ using AutoMapper.Configuration.Conventions;
 using Business.Exceptions;
 using Business.Mappers;
 using Business.Models;
+using HotelReservation.Data;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Repositories;
 
@@ -26,7 +28,6 @@ namespace Business.Services
             _userRepository = userRepository;
             _roomRepository = roomRepository;
             _mapper = new Mapper(cfg.OrderConfiguration);
-
         }
 
 
@@ -71,7 +72,7 @@ namespace Business.Services
             {
                 foreach (var orderService in orderEntity.Services)
                 {
-                    if (service.Name == orderService.Name)
+                    if (service.Id == orderService.Id)
                     {
                         services.Add(service);
                     }   
@@ -93,21 +94,39 @@ namespace Business.Services
              _roomRepository.Update(roomEntity);
         }
 
-        public async Task UpdateOrder(int roomId, OrderModel newOrder)
+        public async Task UpdateOrder(int orderId, OrderModel newOrder)
         {
             if (newOrder == null)
             {
                 throw new BadRequestException("incorrect input data");
             }
-
+            var currentOrder = await _orderRepository.GetAsync(orderId);
             var orderEntity = _mapper.Map<OrderModel, OrderEntity>(newOrder);
-            var roomEntity = await  _roomRepository.GetAsync(roomId);
-            var currentOrder = roomEntity.Order;
+            if (currentOrder == null)
+            {
+                throw new NotFoundException("order with that id not exists");
+            }
+            var roomEntity = currentOrder.Room;
+            List<ServiceEntity> services = new List<ServiceEntity>();
+            foreach (var service in roomEntity.Hotel.Services)
+            {
+                foreach (var orderService in orderEntity.Services)
+                {
+                    if (service.Id == orderService.Id)
+                    {
+                        services.Add(service);
+                    }
+                }
+            }
+
+            orderEntity.Services = null;
             currentOrder.EndDate = orderEntity.EndDate;
             currentOrder.StartDate = orderEntity.StartDate;
             currentOrder.NumberOfDays = currentOrder.EndDate.Subtract(currentOrder.StartDate).Days;
             currentOrder.Services = orderEntity.Services;
             currentOrder.FullPrice = GetFullPrice(currentOrder,roomEntity);
+            _orderRepository.Update(currentOrder);
+            currentOrder.Services = services;
             _orderRepository.Update(currentOrder);
 
         }

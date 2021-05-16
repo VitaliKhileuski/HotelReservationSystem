@@ -6,7 +6,7 @@ namespace Business.Models
 {
     public class UserModel
     {
-
+        public int Id { get; set; }
         public  ICollection<RoomModel> Rooms { get; set; }
         public  ICollection<OrderModel> Orders { get; set; }
         public RoleModel Role { get; set; }

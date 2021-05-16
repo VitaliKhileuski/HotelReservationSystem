@@ -71,8 +71,14 @@ namespace HotelReservation.Api.Controllers
         {
             try
             {
+
                 var userId = GetIdFromClaims();
                 var orderModel = _mapper.Map<OrderRequestModel, OrderModel>(order);
+                orderModel.Services = new List<ServiceModel>();
+                foreach(var id in order.ServicesId)
+                {
+                    orderModel.Services.Add(new ServiceModel { Id = id });
+                }
                 await _orderService.CreateOrder(roomId, userId, orderModel);
                 return Ok("Ordered");
             }
@@ -88,16 +94,26 @@ namespace HotelReservation.Api.Controllers
 
         [HttpPut]
         [Authorize]
-        [Route("{roomId:int}/updateOrder")]
-        public async Task<IActionResult> UpdateOrder(int roomId, [FromBody] OrderRequestModel order)
+        [Route("{orderId:int}/updateOrder")]
+        public async Task<IActionResult> UpdateOrder(int orderId, [FromBody] OrderRequestModel order)
         {
             try
             {
+
                 var orderModel = _mapper.Map<OrderRequestModel, OrderModel>(order);
-                await _orderService.UpdateOrder(roomId, orderModel);
+                orderModel.Services = new List<ServiceModel>();
+                foreach (var id in order.ServicesId)
+                {
+                    orderModel.Services.Add(new ServiceModel { Id = id });
+                }
+                await _orderService.UpdateOrder(orderId, orderModel);
                 return Ok("Updated successfully");
             }
             catch (BadRequestException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch(NotFoundException ex)
             {
                 return BadRequest(ex.Message);
             }

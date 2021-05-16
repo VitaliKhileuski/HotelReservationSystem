@@ -11,6 +11,6 @@ namespace HotelReservation.Api.Models.RequestModels
     {
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public ICollection<ServiceRequestModel> Services { get; set; }
+        public ICollection<int> ServicesId { get; set; }
     }
 }

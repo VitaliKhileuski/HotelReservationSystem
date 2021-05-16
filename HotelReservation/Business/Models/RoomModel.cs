@@ -4,6 +4,7 @@ namespace Business.Models
 {
    public class RoomModel
     {
+        public int Id { get; set; }
         public  UserModel User { get; set; }
         public  OrderModel Order { get; set; }
         public  HotelModel Hotel { get; set; }

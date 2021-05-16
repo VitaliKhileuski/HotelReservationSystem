@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 namespace HotelReservation.Api.Models.ResponseModels
 {
     public class LocationResponseModel
-    { public string Country { get; set; }
+    { 
+        public int Id { get; set; }
+        public string Country { get; set; }
         public string Region { get; set; }
         public string City { get; set; }
         public string Street { get; set; }

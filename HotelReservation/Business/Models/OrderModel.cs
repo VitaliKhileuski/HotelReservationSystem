@@ -5,6 +5,7 @@ namespace Business.Models
 {
    public class OrderModel
    {
+        public int Id { get; set; }
        public ICollection<ServiceModel> Services;
         public  UserModel Customer { get; set; }
         public RoomModel Room { get; set; }
