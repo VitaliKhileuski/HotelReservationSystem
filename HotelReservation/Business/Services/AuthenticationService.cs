@@ -22,18 +22,17 @@ namespace Business.Services
         private readonly HashPassword _hash;
         private readonly ITokenService _tokenService;
         private readonly UserRepository _repository;
-        private readonly Mapper _requestModelToUserEntity;
+        private readonly Mapper _mapper;
       
 
-        public AuthenticationService(Context context, IConfiguration configuration, HashPassword hashPassword, ITokenService tokenService)
+        public AuthenticationService(Context context, IConfiguration configuration, HashPassword hashPassword, ITokenService tokenService,MapConfiguration cfg)
         {
             _db = context;
             _cfg = configuration;
             _hash = hashPassword;
             _tokenService = tokenService;
             _repository = new UserRepository(_db);
-            _requestModelToUserEntity =
-                new Mapper(new MapperConfiguration(x => x.CreateMap<RegisterUserModel, UserEntity>()));
+            _mapper = new Mapper(cfg.UserConfiguration);
         }
         public async Task<List<string>> Login(LoginUserModel user)
         {
@@ -78,7 +77,7 @@ namespace Business.Services
                 throw new BadRequestException("user with that email already exists");
             }
             user.Password = _hash.GenerateHash(user.Password, SHA256.Create());
-            var userEntity = _requestModelToUserEntity.Map<RegisterUserModel, UserEntity>(user);
+            var userEntity = _mapper.Map<RegisterUserModel, UserEntity>(user);
             userEntity.RoleId = 2;
             
             RefreshTokenEntity refreshToken = new RefreshTokenEntity
@@ -129,7 +128,7 @@ namespace Business.Services
 
             var newJwtToken = _tokenService.BuildToken(_cfg["Secrets:secretKey"], dbUser.Email, dbUser.Role.Name, dbUser.Id);
 
-            return new List<string>() { newJwtToken, newRefreshToken.Token };
+            return new List<string> { newJwtToken, newRefreshToken.Token };
         }
     }
 }

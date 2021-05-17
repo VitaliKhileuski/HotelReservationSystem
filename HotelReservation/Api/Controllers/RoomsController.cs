@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
+using Business.Interfaces;
 using Business.Models;
 using Business.Services;
 using HotelReservation.Api.Mappers;
@@ -21,9 +22,9 @@ namespace HotelReservation.Api.Controllers
     public class RoomsController : Controller
     {
         private readonly Mapper _mapper;
-        private readonly RoomsService _roomsService;
+        private readonly IRoomService _roomsService;
 
-        public RoomsController(CustomMapperConfiguration cfg, RoomsService roomsService)
+        public RoomsController(CustomMapperConfiguration cfg, IRoomService roomsService)
         {
             _roomsService = roomsService;
             _mapper = new Mapper(cfg.RoomConfiguration);
@@ -34,7 +35,7 @@ namespace HotelReservation.Api.Controllers
         {
             try
             {
-                var rooms = _mapper.Map<List<RoomResponseModel>>(await _roomsService.GetAllRooms());
+                var rooms = _mapper.Map<ICollection<RoomResponseModel>>(await _roomsService.GetAllRooms());
                 return Ok(rooms);
             }
             catch (NotFoundException ex)
@@ -50,7 +51,7 @@ namespace HotelReservation.Api.Controllers
             try
             {
                 var roomModels = await _roomsService.GetRoomsFromHotel(hotelId);
-                var roomResponseModels = _mapper.Map<List<RoomResponseModel>>(roomModels);
+                var roomResponseModels = _mapper.Map<ICollection<RoomResponseModel>>(roomModels);
                 return Ok(roomResponseModels);
             }
             catch (NotFoundException ex)
@@ -84,7 +85,7 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpDelete]
-        [Route("{hotelId:int}/{roomId:int}")]
+        [Route("{roomId:int}")]
         [Authorize(Policy = "HotelAdminPermission")]
         public async Task<IActionResult> DeleteRoom(int roomId)
         {

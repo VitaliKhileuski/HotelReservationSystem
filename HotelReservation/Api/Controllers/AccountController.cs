@@ -7,7 +7,6 @@ using Business.Interfaces;
 using Business.Models;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
-using Microsoft.AspNetCore.Authorization;
 
 namespace HotelReservation.Api.Controllers
 {
@@ -43,6 +42,7 @@ namespace HotelReservation.Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequestModel user)
         {
@@ -56,12 +56,7 @@ namespace HotelReservation.Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [Authorize(Policy = "ManageHotelsPermission")]
-        [HttpGet("test")]
-        public IActionResult Test()
-        {
-            return Ok("ok");
-        }
+
         [HttpPut("refreshTokenVerification")]
         public async Task<IActionResult> RefreshTokenVerification([FromBody] RefreshTokenRequestModel refreshToken)
         {

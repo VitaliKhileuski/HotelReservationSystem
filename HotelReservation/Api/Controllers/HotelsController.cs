@@ -44,7 +44,7 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Policy = "AdminPermission")]
+        [Authorize(Policy = "AdminPermission")]
         public async Task<IActionResult> AddHotel([FromBody] HotelModel hotel)
         {
             try
@@ -60,15 +60,24 @@ namespace HotelReservation.Api.Controllers
 
         [HttpPut]
         [Authorize(Policy = "AdminPermission")]
-        [Route("{hotelId:int}/SetHotelAdmin")]
-        public void UpdateHotelAdmin(int hotelId, [FromBody] int userId)
+        [Route("{hotelId:int}/setHotelAdmin")]
+        public IActionResult UpdateHotelAdmin(int hotelId, [FromBody] int userId)
         {
-            _hotelsService.UpdateHotelAdmin(hotelId, userId);
+            try
+            {
+                _hotelsService.UpdateHotelAdmin(hotelId, userId);
+                return Ok("admin setted successfully");
+            }
+            catch (NotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [HttpPut]
         [Authorize(Policy = "HotelAdminPermission")]
-        [Route("{id:int}/EditHotel")]
+        [Route("{id:int}/editHotel")]
         public async Task<IActionResult> EditHotel(int id,[FromBody] HotelRequestModel hotel)
         {
             try

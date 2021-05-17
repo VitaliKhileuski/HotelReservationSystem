@@ -13,6 +13,6 @@ namespace Business.Models
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int NumberOfDays { get; set; }
-        public double FullPrice { get; set; }
+        public decimal FullPrice { get; set; }
     }
 }

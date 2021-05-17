@@ -21,6 +21,7 @@ namespace HotelReservation.Data.Configurations
                 .IsRequired();
             builder
                 .Property(x => x.FullPrice)
+                .HasColumnType("decimal(18,4)")
                 .IsRequired();
             builder
                 .HasOne(x => x.Room)

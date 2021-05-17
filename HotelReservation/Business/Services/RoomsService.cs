@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
+using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data.Entities;
@@ -12,7 +11,7 @@ using HotelReservation.Data.Repositories;
 
 namespace Business.Services
 {
-    public class RoomsService
+    public class RoomsService : IRoomService
     {
         private readonly RoomRepository _roomRepository;
         private readonly HotelRepository _hotelRepository;
@@ -32,6 +31,7 @@ namespace Business.Services
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             var userEntity = await _userRepository.GetAsync(userId);
             var roomEntity = _roomMapper.Map<RoomModel, RoomEntity>(room);
+            roomEntity.IsEmpty = true;
             if (hotelEntity.HotelAdminId == userId || userEntity.RoleId == 1)
             {
                 hotelEntity.Rooms.Add(roomEntity); 
@@ -43,7 +43,7 @@ namespace Business.Services
             }
         }
 
-        public async Task<List<RoomModel>> GetAllRooms()
+        public async Task<ICollection<RoomModel>> GetAllRooms()
         {
             var roomEntities = await _roomRepository.GetAllAsync();
             if (!roomEntities.Any())
@@ -51,18 +51,12 @@ namespace Business.Services
                 throw new NotFoundException("no rooms in database");
             }
 
-            var roomModels = _roomMapper.Map<List<RoomModel>>(roomEntities);
+            var roomModels = _roomMapper.Map<ICollection<RoomModel>>(roomEntities);
 
             return roomModels.ToList();
         }
 
-        public async Task<List<RoomModel>> GetAllEmptyRooms()
-        {
-            var emptyRooms = await GetAllRooms();
-            return emptyRooms.Where(x => x.IsEmpty).ToList();
-        }
-
-        public async Task<List<RoomModel>> GetRoomsFromHotel(int hotelId)
+        public async Task<ICollection<RoomModel>> GetRoomsFromHotel(int hotelId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -75,7 +69,7 @@ namespace Business.Services
                 throw new NotFoundException("no room in this hotel");
             }
 
-            return _roomMapper.Map<List<RoomModel>>(hotelEntity.Rooms.ToList());
+            return _roomMapper.Map<ICollection<RoomModel>>(hotelEntity.Rooms.ToList());
         }
 
         public async Task UpdateRoom(int roomId, int userId,RoomModel room)

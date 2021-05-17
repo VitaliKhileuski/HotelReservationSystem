@@ -19,11 +19,11 @@ namespace HotelReservation.Api.Controllers
     [Route("api/[controller]")]
     public class UsersController : Controller
     {
-        private readonly UsersService _usersService;
+        private readonly IUserService _usersService;
         private readonly IAuthenticationService _authService;
         private readonly Mapper _mapper;
 
-        public UsersController(UsersService usersService, IAuthenticationService authService,CustomMapperConfiguration cfg)
+        public UsersController(IUserService usersService, IAuthenticationService authService,CustomMapperConfiguration cfg)
         {
             _mapper = new Mapper(cfg.UsersConfiguration);
             _usersService = usersService;
@@ -39,11 +39,11 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Route("{id:int}")]
-        public ActionResult<UserModel> GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             try
             {
-                var responseUser = _mapper.Map<UserModel,UserResponseViewModel>(_usersService.GetById(id));
+                var responseUser = _mapper.Map<UserModel,UserResponseViewModel>(await _usersService.GetById(id));
 
                 return Ok(responseUser);
             }
@@ -70,11 +70,11 @@ namespace HotelReservation.Api.Controllers
 
         [HttpDelete]
         [Route("{id:int}")]
-        public IActionResult DeleteUser(int id)
+        public async Task<IActionResult> DeleteUser(int id)
         {
             try
             {
-                _usersService.DeleteById(id);
+                await _usersService.DeleteById(id);
                 return Ok($"user with id {id} deleted successfully");
             }
             catch (Exception ex)

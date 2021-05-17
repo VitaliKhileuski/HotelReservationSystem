@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Runtime.InteropServices.ComTypes;
+using AutoMapper;
 using Business.Models;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
@@ -24,6 +25,7 @@ namespace HotelReservation.Api.Mappers
                 x.CreateMap<HotelRequestModel, HotelModel>();
                 x.CreateMap<LocationModel, LocationResponseModel>();
                 x.CreateMap<RoomModel, RoomResponseModel>();
+                x.CreateMap<ServiceModel, ServiceResponseModel>();
             });
             RoleConfiguration = new MapperConfiguration(x =>
             {
@@ -37,11 +39,22 @@ namespace HotelReservation.Api.Mappers
                 x.CreateMap<RegisterUserRequestModel, RegisterUserModel>();
                 x.CreateMap<UserModel, UserResponseViewModel>();
                 x.CreateMap<RoleModel, RoleResponseModel>();
+                x.CreateMap<OrderModel, OrderResponseModel>();
+                x.CreateMap<RoomModel, RoomResponseModel>();
+                x.CreateMap<ServiceModel, ServiceResponseModel>();
+                x.CreateMap<HotelModel, HotelResponseModel>()
+                    .ForMember(x => x.Rooms, opt => opt.Ignore())
+                    .ForMember(x => x.Services , opt => opt.Ignore());
+                x.CreateMap<LocationModel, LocationResponseModel>();
             });
             RoomConfiguration = new MapperConfiguration(x =>
             {
                 x.CreateMap<RoomModel, RoomResponseModel>();
                 x.CreateMap<RoomRequestModel, RoomModel>();
+                x.CreateMap<HotelModel,HotelResponseModel>()
+                    .ForMember(x => x.Services, opt => opt.Ignore())
+                    .ForMember(x => x.Rooms, opt => opt.Ignore());
+                x.CreateMap<LocationModel, LocationResponseModel>();
             });
             OrderConfiguration = new MapperConfiguration(x =>
             {
@@ -52,7 +65,9 @@ namespace HotelReservation.Api.Mappers
                 x.CreateMap<OrderModel, OrderResponseModel>();
                 x.CreateMap<RoleModel, RoleResponseModel>();
                 x.CreateMap<RoomModel, RoomResponseModel>();
-                x.CreateMap<HotelModel, HotelResponseModel>();
+                x.CreateMap<HotelModel, HotelResponseModel>()
+                    .ForMember(X => X.Services, opt => opt.Ignore())
+                    .ForMember(x => x.Rooms, opt => opt.Ignore());
                 x.CreateMap<LocationModel, LocationResponseModel>();
             });
             TokenConfiguration = new MapperConfiguration(x =>

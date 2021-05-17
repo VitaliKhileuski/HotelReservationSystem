@@ -10,6 +10,6 @@ namespace Business.Models
         public HotelModel Hotel { get; set; }
         public ICollection<RoomModel> Rooms { get; set; }
         public string Name { get; set; }
-        public double Payment { get; set; }
+        public decimal Payment { get; set; }
     }
 }

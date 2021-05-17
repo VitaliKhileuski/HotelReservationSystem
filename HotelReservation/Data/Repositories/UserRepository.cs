@@ -35,10 +35,6 @@ namespace HotelReservation.Data.Repositories
             {
                 _db.Users.Remove(user);
             }
-            else
-            {
-                throw new Exception("user with that id not found");
-            }
             _db.SaveChanges();
         }
 
@@ -49,10 +45,6 @@ namespace HotelReservation.Data.Repositories
             if (user != null)
             {
                 _db.Users.Remove(user);
-            }
-            else
-            {
-                throw new Exception("user with that id not found");
             }
 
             await _db.SaveChangesAsync();
@@ -65,22 +57,12 @@ namespace HotelReservation.Data.Repositories
 
         public UserEntity Get(int id)
         {
-            var user = _db.Users.Find(id);
-            if (user == null)
-            {
-                throw new Exception("user with that id not found");
-            }
             return _db.Users.Find(id);
             
         }
 
         public IEnumerable<UserEntity> GetAll()
         {
-            if (!_db.Users.Any())
-            {
-                throw new Exception("database doesn't contains any users");
-            }
-
             return _db.Users;
         }
 

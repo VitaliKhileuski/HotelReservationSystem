@@ -14,6 +14,5 @@ namespace Business.Interfaces
         List<HotelModel> GetAll();
         void UpdateHotelAdmin(int hotelId, int userId);
         Task UpdateHotel(int hotelId, HotelModel hotel,int userId);
-        Task AddRoom(int hotelId, RoomModel room, int userId);
     }
 }

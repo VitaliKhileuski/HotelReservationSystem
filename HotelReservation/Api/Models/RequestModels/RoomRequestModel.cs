@@ -9,6 +9,6 @@ namespace HotelReservation.Api.Models.RequestModels
     {
         public string RoomNumber { get; set; }
         public int BedsNumber { get; set; }
-        public double PaymentPerDay { get; set; }
+        public decimal PaymentPerDay { get; set; }
     }
 }

@@ -14,7 +14,7 @@ using HotelReservation.Data.Repositories;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Business.Services
-{ 
+{
     public class HotelsService : IHotelsService
     {
         private readonly HotelRepository _hotelRepository;
@@ -23,7 +23,7 @@ namespace Business.Services
         private readonly Mapper _hotelMapper;
         private readonly Mapper _roomMapper;
 
-        public HotelsService(HotelRepository hotelRepository,UserRepository userRepository, MapConfiguration cfg)
+        public HotelsService(HotelRepository hotelRepository, UserRepository userRepository, MapConfiguration cfg)
         {
             _hotelRepository = hotelRepository;
             _userRepository = userRepository;
@@ -34,8 +34,8 @@ namespace Business.Services
 
         public async Task AddHotel(HotelModel hotel)
         {
-            var hotelEntity = _hotelMapper.Map<HotelModel,HotelEntity>(hotel);
-            var locationEntity = _locationMapper.Map<LocationModel,LocationEntity>(hotel.Location);
+            var hotelEntity = _hotelMapper.Map<HotelModel, HotelEntity>(hotel);
+            var locationEntity = _locationMapper.Map<LocationModel, LocationEntity>(hotel.Location);
             hotelEntity.Location = locationEntity;
             locationEntity.Hotel = hotelEntity;
             await _hotelRepository.CreateAsync(hotelEntity);
@@ -43,17 +43,18 @@ namespace Business.Services
 
         public async Task<HotelModel> GetById(int id)
         {
-            var hotelModel = _hotelMapper.Map<HotelEntity,HotelModel>(await _hotelRepository.GetAsync(id));
+            var hotelModel = _hotelMapper.Map<HotelEntity, HotelModel>(await _hotelRepository.GetAsync(id));
             return hotelModel;
 
         }
+
         public List<HotelModel> GetAll()
         {
             var hotelModels = _hotelMapper.Map<List<HotelModel>>(_hotelRepository.GetAll().ToList());
             return hotelModels;
         }
 
-        public void  UpdateHotelAdmin(int hotelId, int userId)
+        public void UpdateHotelAdmin(int hotelId, int userId)
         {
             var hotelEntity = _hotelRepository.Get(hotelId);
             var userEntity = _userRepository.Get(userId);
@@ -63,15 +64,31 @@ namespace Business.Services
             _userRepository.Update(userEntity);
         }
 
-        public async Task UpdateHotel(int hotelId, HotelModel hotel,int userId)
+        public async Task UpdateHotel(int hotelId, HotelModel hotel, int userId)
         {
+            if (hotel == null)
+            {
+                throw new BadRequestException("incorrect input data");
+            }
+
             var userEntity = await _userRepository.GetAsync(userId);
+
+            if (userEntity == null)
+            {
+                throw new NotFoundException("user with that id not exists");
+            }
+
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
-            
+
+            if (hotelEntity == null)
+            {
+                throw new NotFoundException("hotel with that id not exists");
+            }
+
             if (hotelEntity.HotelAdminId == userId || userEntity.RoleId == 1)
             {
                 var newHotelEntity = _hotelMapper.Map<HotelModel, HotelEntity>(hotel);
-                
+
                 if (newHotelEntity.Location != null)
                 {
                     hotelEntity.Location = newHotelEntity.Location;
@@ -81,25 +98,8 @@ namespace Business.Services
                 {
                     hotelEntity.Name = newHotelEntity.Name;
                 }
-                 _hotelRepository.Update(hotelEntity);
-            }
-            else
-            {
-                throw new BadRequestException("you don't have permission to edit this hotel");
-            }
-            
-            
-        }
 
-        public async Task AddRoom(int hotelId, RoomModel room, int userId)
-        {
-            var hotelEntity = await _hotelRepository.GetAsync(hotelId);
-            var userEntity = await _userRepository.GetAsync(userId);
-            var roomEntity = _roomMapper.Map<RoomModel, RoomEntity>(room);
-            if (hotelEntity.HotelAdminId == userId || userEntity.RoleId == 1)
-            {
-                hotelEntity.Rooms.Add(roomEntity);
-                 _hotelRepository.Update(hotelEntity);
+                _hotelRepository.Update(hotelEntity);
             }
             else
             {

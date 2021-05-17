@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using HotelReservation.Data.Entities;
+﻿using HotelReservation.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -15,7 +12,8 @@ namespace HotelReservation.Data.Configurations
                 .HasKey(x => x.Id);
             builder
                 .Property(x => x.Payment)
-                .IsRequired();
+                .IsRequired()
+                .HasColumnType("decimal(18,4)");
             builder
                 .Property(x => x.Name)
                 .HasMaxLength(200)

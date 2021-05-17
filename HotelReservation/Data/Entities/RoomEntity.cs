@@ -15,7 +15,7 @@ namespace HotelReservation.Data.Entities
 
         public string RoomNumber { get; set; }
         public int BedsNumber { get; set; }
-        public double PaymentPerDay { get; set; }
-        public bool IsEmpty { get; set; }
+        public decimal PaymentPerDay { get; set; }
+        public bool? IsEmpty { get; set; }
     }
 }

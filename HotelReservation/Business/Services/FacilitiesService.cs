@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
@@ -9,25 +7,48 @@ using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Repositories;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Business.Services
 {
     public class FacilitiesService
     {
         private readonly HotelRepository _hotelRepository;
-        private readonly RoomRepository _roomRepository;
-        private readonly ServiceRepository _serviceRepository;
         private readonly UserRepository _userRepository;
+        private readonly ServiceRepository _serviceRepository;
         private readonly Mapper _mapper;
 
-        public FacilitiesService(HotelRepository hotelRepository, RoomRepository roomRepository,
-            ServiceRepository serviceRepository, UserRepository userRepository, MapConfiguration cfg)
+        public FacilitiesService(HotelRepository hotelRepository, UserRepository userRepository,ServiceRepository serviceRepository, MapConfiguration cfg)
         {
             _hotelRepository = hotelRepository;
-            _roomRepository = roomRepository;
-            _serviceRepository = serviceRepository;
             _userRepository = userRepository;
+            _serviceRepository = serviceRepository;
             _mapper = new Mapper(cfg.ServiceConfiguration);
+        }
+
+
+
+        public ICollection<ServiceModel> GetAllServices()
+        {
+            var services = _mapper.Map<ICollection<ServiceModel>>(_serviceRepository.GetAll());
+            if (services.Count == 0)
+            {
+                throw new NotFoundException("no data about services");
+            }
+
+            return services;
+        }
+
+        public async Task<ServiceModel> GetServiceById(int serviceId)
+        {
+            var service = await _serviceRepository.GetAsync(serviceId);
+            if (service == null)
+            {
+                throw new NotFoundException("service with that id not exists");
+            }
+
+            return _mapper.Map<ServiceEntity, ServiceModel>(service);
+
         }
 
         public async Task AddServiceToHotel(int hotelId, int userId, ServiceModel serviceModel)
@@ -35,7 +56,7 @@ namespace Business.Services
             var userEntity = await _userRepository.GetAsync(userId);
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
 
-            if (hotelEntity.HotelAdminId == userId || userEntity.RoleId == 1)
+            if (hotelEntity.HotelAdminId == userId || userEntity.Role.Name=="Admin")
             {
                 if (hotelEntity == null)
                 {
@@ -57,6 +78,22 @@ namespace Business.Services
             {
                 throw new BadRequestException("you don't have permission to edit this hotel");
             }
+        }
+
+        public async Task DeleteOrderFromHotel(int serviceId, int userId)
+        {
+            var serviceEntity = await _serviceRepository.GetAsync(serviceId);
+            var userEntity = await _userRepository.GetAsync(userId);
+            var hotelEntity = serviceEntity.Hotel;
+            if (hotelEntity.HotelAdminId == userId || userEntity.Role.Name == "Admin")
+            {
+               await _serviceRepository.DeleteAsync(serviceId);
+            }
+            else
+            {
+                throw new BadRequestException("you don't have permission to delete this service");
+            }
+
         }
 
     }

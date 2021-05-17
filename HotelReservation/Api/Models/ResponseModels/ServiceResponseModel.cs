@@ -9,6 +9,6 @@ namespace HotelReservation.Api.Models.ResponseModels
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public double Payment { get; set; }
+        public decimal Payment { get; set; }
     }
 }

@@ -12,6 +12,6 @@ namespace HotelReservation.Data.Entities
         public virtual ICollection<OrderEntity> Orders { get; set; }
 
         public string Name { get; set; }
-        public double Payment { get; set; }
+        public decimal Payment { get; set; }
     }
 }

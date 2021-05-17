@@ -1,18 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
+using Business.Interfaces;
 using Business.Models;
-using Business.Services;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.VisualBasic;
 
 namespace HotelReservation.Api.Controllers
 {
@@ -20,16 +18,14 @@ namespace HotelReservation.Api.Controllers
     [Route("api/[controller]")]
     public class OrdersController : Controller
     {
-        private readonly OrdersService _orderService;
+        private readonly IOrderService _orderService;
         private readonly Mapper _mapper;
 
-        public OrdersController(OrdersService orderService,CustomMapperConfiguration cfg)
+        public OrdersController(IOrderService orderService,CustomMapperConfiguration cfg)
         {
             _orderService = orderService;
             _mapper = new Mapper(cfg.OrderConfiguration);
         }
-
-
 
         [HttpGet]
         [Authorize]
@@ -134,8 +130,6 @@ namespace HotelReservation.Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        
-
 
         private int GetIdFromClaims()
         {

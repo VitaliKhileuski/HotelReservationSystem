@@ -51,8 +51,8 @@ namespace HotelReservation.Api
 
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
-            services.AddScoped<RoomsService>();
-            services.AddScoped<OrdersService>();
+            services.AddScoped<IRoomService,RoomsService>();
+            services.AddScoped<IOrderService,OrdersService>();
             services.AddScoped<IHotelsService, HotelsService>();
             services.AddScoped<UsersService>();
             services.AddScoped<FacilitiesService>();

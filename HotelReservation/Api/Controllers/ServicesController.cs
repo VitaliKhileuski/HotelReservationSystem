@@ -10,6 +10,7 @@ using Business.Models;
 using Business.Services;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
+using HotelReservation.Api.Models.ResponseModels;
 using Microsoft.AspNetCore.Authorization;
 
 namespace HotelReservation.Api.Controllers
@@ -27,11 +28,40 @@ namespace HotelReservation.Api.Controllers
             _mapper = new Mapper(cfg.ServiceConfiguration);
         }
 
+        [HttpGet]
+        [Authorize]
+        public IActionResult GetAllServices()
+        {
+            try
+            {
+                var orders = _mapper.Map<ICollection<ServiceResponseModel>>(_facilitiesService.GetAllServices());
+                return Ok(orders);
+            }
+            catch (NotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
-
+        [HttpGet]
+        [Route("{serviceId}")]
+        [Authorize]
+        public async Task<IActionResult> GetServiceById(int serviceId)
+        {
+            try
+            {
+                var service =
+                    _mapper.Map<ServiceModel, ServiceResponseModel>(await _facilitiesService.GetServiceById(serviceId));
+               return Ok(service);
+            }
+            catch (NotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         [HttpPost]
-        [Route("{hotelId:int}/AddService")]
+        [Route("{hotelId:int}/addService")]
         [Authorize(Policy = "HotelAdminPermission")]
         public async Task<IActionResult> AddServiceToHotel(int hotelId, [FromBody] ServiceRequestModel service)
         {
@@ -47,6 +77,27 @@ namespace HotelReservation.Api.Controllers
                 return BadRequest(ex.Message);
             }
             catch (BadRequestException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [Route("{serviceId:int}/deleteService")]
+        [Authorize(Policy = "HotelAdminPermission")]
+        public async Task<IActionResult> DeleteServiceFromHotel(int serviceId)
+        {
+            try
+            {
+                var userId = GetIdFromClaims();
+                await _facilitiesService.DeleteOrderFromHotel(serviceId, userId);
+                return Ok("deleted");
+            }
+            catch (BadRequestException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (NotFoundException ex)
             {
                 return BadRequest(ex.Message);
             }

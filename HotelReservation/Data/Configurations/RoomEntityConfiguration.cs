@@ -14,6 +14,14 @@ namespace HotelReservation.Data.Configurations
                 .Property(x => x.RoomNumber)
                 .HasMaxLength(10)
                 .IsRequired();
+            builder
+                .Property(x => x.IsEmpty)
+                .HasDefaultValue(true);
+            builder
+                .Property(x => x.PaymentPerDay)
+                .HasColumnType("decimal(18,4)")
+                .IsRequired();
+
             builder.HasOne(x => x.Hotel)
                 .WithMany(x => x.Rooms)
                 .HasForeignKey(x => x.HotelId)

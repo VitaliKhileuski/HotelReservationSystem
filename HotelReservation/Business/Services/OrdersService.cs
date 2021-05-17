@@ -1,21 +1,18 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using AutoMapper.Configuration.Conventions;
 using Business.Exceptions;
+using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
-using HotelReservation.Data;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Repositories;
 
 namespace Business.Services
 {
-    public class OrdersService
+    public class OrdersService : IOrderService
     {
         private readonly OrderRepository _orderRepository;
         private readonly UserRepository _userRepository;
@@ -44,10 +41,10 @@ namespace Business.Services
             return orderModel;
         }
 
-        public List<OrderModel> GetAll()
+        public ICollection<OrderModel> GetAll()
         {
-            var orders = _mapper.Map<List<OrderModel>>(_orderRepository.GetAll().ToList());
-            if (orders.Capacity == 0)
+            var orders = _mapper.Map<ICollection<OrderModel>>(_orderRepository.GetAll());
+            if (orders.Count == 0)
             {
                 throw new NotFoundException("no data about orders");
             }
@@ -62,7 +59,7 @@ namespace Business.Services
             {
                 throw new NotFoundException("thar room is not found");
             }
-            if (!roomEntity.IsEmpty)
+            if ((bool)!roomEntity.IsEmpty)
             {
                 throw new BadRequestException("this room already reserved");
             }
@@ -78,18 +75,17 @@ namespace Business.Services
                     }   
                 }
             }
-
             orderEntity.Services = services;
             var userEntity = await _userRepository.GetAsync(userId);
             
             orderEntity.Customer = userEntity;
             roomEntity.IsEmpty = false;
+            roomEntity.User = userEntity;
             orderEntity.DateOrdered = DateTime.Now;
             orderEntity.NumberOfDays = orderEntity.EndDate.Subtract(orderEntity.StartDate).Days;
             orderEntity.FullPrice = GetFullPrice(orderEntity,roomEntity);
             orderEntity.Room = roomEntity;
             userEntity.Orders.Add(orderEntity);
-            
             await _orderRepository.CreateAsync(orderEntity);
              _roomRepository.Update(roomEntity);
         }
@@ -107,7 +103,7 @@ namespace Business.Services
                 throw new NotFoundException("order with that id not exists");
             }
             var roomEntity = currentOrder.Room;
-            List<ServiceEntity> services = new List<ServiceEntity>();
+            var services = new List<ServiceEntity>();
             foreach (var service in roomEntity.Hotel.Services)
             {
                 foreach (var orderService in orderEntity.Services)
@@ -133,17 +129,17 @@ namespace Business.Services
 
         public async Task DeleteOrder(int orderId)
         {
-           await _orderRepository.DeleteAsync(orderId);
+            var order = await _orderRepository.GetAsync(orderId);
+            if (order == null)
+            {
+                throw new NotFoundException("order with that id not exists");
+            }
+            await _orderRepository.DeleteAsync(orderId);
         }
 
-        private double GetFullPrice(OrderEntity order,RoomEntity room)
+        private decimal GetFullPrice(OrderEntity order,RoomEntity room)
         {
-            var fullPrice = order.EndDate.Subtract(order.StartDate).Days*room.PaymentPerDay;
-            foreach (var service in order.Services)
-            {
-                fullPrice += service.Payment;
-            }
-            return fullPrice;
+            return order.EndDate.Subtract(order.StartDate).Days * room.PaymentPerDay + order.Services.Sum(service => service.Payment);
         }
     }
 }

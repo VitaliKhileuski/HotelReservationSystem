@@ -13,6 +13,7 @@ namespace HotelReservation.Api.Models.ResponseModels
         public int HotelAdminId { get; set; }
         public LocationResponseModel Location { get; set; }
         public ICollection<RoomResponseModel> Rooms { get; set; }
+        public ICollection<ServiceResponseModel> Services { get; set; }
 
     }
 }
