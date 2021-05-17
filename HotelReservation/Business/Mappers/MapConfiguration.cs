@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoMapper;
+﻿using AutoMapper;
 using Business.Models;
 using HotelReservation.Data.Entities;
 
@@ -29,7 +26,7 @@ namespace Business.Mappers
                 x.CreateMap<RoomEntity, RoomModel>()
                     .ForMember(x => x.Order, opt => opt.Ignore());
                 x.CreateMap<ServiceEntity, ServiceModel>()
-                    .ForMember(X => X.Rooms, opt => opt.Ignore());
+                    .ForMember(x => x.Rooms, opt => opt.Ignore());
                 x.CreateMap<HotelEntity, HotelModel>();
                 x.CreateMap<LocationEntity, LocationModel>();
             });
@@ -49,14 +46,12 @@ namespace Business.Mappers
             });
             LocationConfiguration = new MapperConfiguration(x =>
             {
-                x.CreateMap<LocationModel, LocationEntity>();
-                x.CreateMap<LocationEntity, LocationModel>();
+                x.CreateMap<LocationModel, LocationEntity>().ReverseMap();
                 x.CreateMap<HotelEntity, HotelModel>().ForMember(x => x.Location, opt => opt.Ignore());
             });
             OrderConfiguration = new MapperConfiguration(x =>
             {
-                x.CreateMap<OrderEntity, OrderModel>();
-                x.CreateMap<OrderModel, OrderEntity>();
+                x.CreateMap<OrderEntity, OrderModel>().ReverseMap();
                 x.CreateMap<UserEntity, UserModel>()
                     .ForMember(x => x.Orders, opt => opt.Ignore());
                 x.CreateMap<RoomEntity, RoomModel>();
@@ -103,4 +98,3 @@ namespace Business.Mappers
         }
     }
 }
-

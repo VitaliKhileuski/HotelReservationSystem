@@ -3,15 +3,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
+using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Repositories;
-using Microsoft.EntityFrameworkCore.Query;
 
 namespace Business.Services
 {
-    public class FacilitiesService
+    public class FacilitiesService : IFacilityService
     {
         private readonly HotelRepository _hotelRepository;
         private readonly UserRepository _userRepository;
@@ -93,8 +93,6 @@ namespace Business.Services
             {
                 throw new BadRequestException("you don't have permission to delete this service");
             }
-
         }
-
     }
 }

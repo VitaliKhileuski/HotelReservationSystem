@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
+using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data.Entities;
@@ -10,7 +11,7 @@ using HotelReservation.Data.Repositories;
 
 namespace Business.Services
 {
-    public class UsersService
+    public class UsersService : IUserService
     {
         private readonly UserRepository _userRepository;
         private readonly Mapper _mapper;
@@ -48,6 +49,7 @@ namespace Business.Services
             {
                 throw new NotFoundException("user with that id not exists");
             }
+
             await _userRepository.DeleteAsync(userId);
         }
 
@@ -66,6 +68,5 @@ namespace Business.Services
             userEntity.PhoneNumber = userEntity.PhoneNumber;
             _userRepository.Update(userEntity);
         }
-
     }
 }

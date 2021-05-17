@@ -1,17 +1,15 @@
 ﻿using System;
-using HotelReservation.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
 using Business.Interfaces;
 using Business.Models;
-using Business.Services;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelReservation.Api.Controllers
 {
@@ -30,6 +28,7 @@ namespace HotelReservation.Api.Controllers
             _authService = authService;
         }
         [HttpGet]
+        [Authorize(Policy = "AdminPermission")]
         public   IEnumerable<UserResponseViewModel> Get()
         {
             var responseUsers = _mapper.Map<List<UserResponseViewModel>>(_usersService.GetAll());
@@ -38,6 +37,7 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "AdminPermission")]
         [Route("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -55,6 +55,7 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "AdminPermission")]
         public async Task<IActionResult> Add([FromBody] RegisterUserRequestModel user)
         {
             try
@@ -69,6 +70,7 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Policy = "AdminPermission")]
         [Route("{id:int}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
@@ -85,6 +87,7 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         [Route("{id:int}")]
         public IActionResult Update(int id, [FromBody] UserResponseViewModel user)
         {
@@ -96,10 +99,8 @@ namespace HotelReservation.Api.Controllers
             }
             catch (NotFoundException ex)
             {
-              return  BadRequest(ex.Message);
+                return BadRequest(ex.Message);
             }
         }
-
-
     }
 }

@@ -67,7 +67,6 @@ namespace HotelReservation.Api.Controllers
         {
             try
             {
-
                 var userId = GetIdFromClaims();
                 var orderModel = _mapper.Map<OrderRequestModel, OrderModel>(order);
                 orderModel.Services = new List<ServiceModel>();
@@ -95,7 +94,6 @@ namespace HotelReservation.Api.Controllers
         {
             try
             {
-
                 var orderModel = _mapper.Map<OrderRequestModel, OrderModel>(order);
                 orderModel.Services = new List<ServiceModel>();
                 foreach (var id in order.ServicesId)

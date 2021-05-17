@@ -1,9 +1,7 @@
-﻿using System.Runtime.InteropServices.ComTypes;
-using AutoMapper;
+﻿using AutoMapper;
 using Business.Models;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
-using HotelReservation.Data.Entities;
 
 namespace HotelReservation.Api.Mappers
 {

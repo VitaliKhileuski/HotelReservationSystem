@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
+using Business.Interfaces;
 using Business.Models;
-using Business.Services;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
@@ -19,10 +18,10 @@ namespace HotelReservation.Api.Controllers
     [Route("api/[controller]")]
     public class ServicesController : Controller
     {
-        private readonly FacilitiesService _facilitiesService;
+        private readonly IFacilityService _facilitiesService;
         private readonly Mapper _mapper;
 
-        public ServicesController(FacilitiesService facilitiesService, CustomMapperConfiguration cfg)
+        public ServicesController(IFacilityService facilitiesService, CustomMapperConfiguration cfg)
         {
             _facilitiesService = facilitiesService;
             _mapper = new Mapper(cfg.ServiceConfiguration);
@@ -44,7 +43,7 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
-        [Route("{serviceId}")]
+        [Route("{serviceId:int}")]
         [Authorize]
         public async Task<IActionResult> GetServiceById(int serviceId)
         {
@@ -102,6 +101,7 @@ namespace HotelReservation.Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         private int GetIdFromClaims()
         {
             int idClaim = int.Parse(User.Claims.FirstOrDefault(x =>
@@ -110,5 +110,4 @@ namespace HotelReservation.Api.Controllers
             return idClaim;
         }
     }
-    
 }

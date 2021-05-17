@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HotelReservation.Data.Configurations
 {
-    class ServiceEntityConfiguration : IEntityTypeConfiguration<ServiceEntity>
+    public class ServiceEntityConfiguration : IEntityTypeConfiguration<ServiceEntity>
     {
         public void Configure(EntityTypeBuilder<ServiceEntity> builder)
         {
@@ -24,7 +24,6 @@ namespace HotelReservation.Data.Configurations
             builder
                 .HasMany(x => x.Orders)
                 .WithMany(x => x.Services);
-
         }
     }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using HotelReservation.Api.Models.RequestModels;
+﻿using System.Collections.Generic;
 
 namespace HotelReservation.Api.Models.ResponseModels
 {

@@ -17,7 +17,7 @@ namespace HotelReservation.Api.Controllers
         private readonly IAuthenticationService _authService;
         private readonly Mapper _userMapper;
         private readonly Mapper _tokenMapper;
-            
+
         public AccountController(IAuthenticationService authService,CustomMapperConfiguration cfg)
         {
             _userMapper = new Mapper(cfg.UsersConfiguration);

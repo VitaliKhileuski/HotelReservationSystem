@@ -2,13 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
 using Business.Interfaces;
 using Business.Models;
-using Business.Services;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
@@ -58,7 +56,6 @@ namespace HotelReservation.Api.Controllers
             {
                return BadRequest(ex.Message);
             }
-
         }
 
         [HttpPost]
@@ -100,6 +97,7 @@ namespace HotelReservation.Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpPut]
         [Route("/{roomId:int}")]
         [Authorize(Policy = "HotelAdminPermission")]

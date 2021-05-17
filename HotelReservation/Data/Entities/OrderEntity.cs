@@ -11,12 +11,10 @@ namespace HotelReservation.Data.Entities
         public int RoomId { get; set; }
         public virtual RoomEntity Room { get; set; }
         public virtual ICollection<ServiceEntity> Services { get; set; }
-
         public DateTime DateOrdered { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int NumberOfDays { get; set; }
         public decimal FullPrice { get; set; }
-
     }
 }

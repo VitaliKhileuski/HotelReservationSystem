@@ -23,9 +23,8 @@ namespace Business.Services
         private readonly ITokenService _tokenService;
         private readonly UserRepository _repository;
         private readonly Mapper _mapper;
-      
 
-        public AuthenticationService(Context context, IConfiguration configuration, HashPassword hashPassword, ITokenService tokenService,MapConfiguration cfg)
+        public AuthenticationService(Context context, IConfiguration configuration, HashPassword hashPassword, ITokenService tokenService, MapConfiguration cfg)
         {
             _db = context;
             _cfg = configuration;
@@ -66,7 +65,7 @@ namespace Business.Services
 
             await _db.SaveChangesAsync();
 
-            return new List<string>() { token, refreshToken.Token };
+            return new List<string> { token, refreshToken.Token };
         }
 
         public async Task<List<string>> Registration(RegisterUserModel user)
@@ -80,7 +79,7 @@ namespace Business.Services
             var userEntity = _mapper.Map<RegisterUserModel, UserEntity>(user);
             userEntity.RoleId = 2;
             
-            RefreshTokenEntity refreshToken = new RefreshTokenEntity
+            var refreshToken = new RefreshTokenEntity
             {
                 Token = _tokenService.GenerateRefreshToken(), User = userEntity
             };
@@ -106,7 +105,6 @@ namespace Business.Services
         public async Task<List<string>> RefreshTokenVerification(TokenModel refreshToken)
         {
             var dbUser = await GetDbUser(refreshToken);
-
             if (dbUser == null)
             {
                 throw (new BadRequestException("Invalid refresh token."));
@@ -122,12 +120,10 @@ namespace Business.Services
             {
                 _db.RefreshTokens.Remove(dbUser.RefreshToken);
             }
+
             await _db.RefreshTokens.AddAsync(newRefreshToken);
-
             await _db.SaveChangesAsync();
-
             var newJwtToken = _tokenService.BuildToken(_cfg["Secrets:secretKey"], dbUser.Email, dbUser.Role.Name, dbUser.Id);
-
             return new List<string> { newJwtToken, newRefreshToken.Token };
         }
     }

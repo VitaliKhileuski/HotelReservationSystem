@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HotelReservation.Data.Configurations
 {
-    class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshTokenEntity>
+    public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshTokenEntity>
     {
         public void Configure(EntityTypeBuilder<RefreshTokenEntity> builder)
         {

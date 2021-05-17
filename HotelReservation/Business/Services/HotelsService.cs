@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
@@ -11,7 +9,6 @@ using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Repositories;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Business.Services
 {

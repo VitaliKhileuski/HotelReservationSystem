@@ -1,5 +1,4 @@
 ﻿
-
 namespace Business.Interfaces
 {
     public interface ITokenService

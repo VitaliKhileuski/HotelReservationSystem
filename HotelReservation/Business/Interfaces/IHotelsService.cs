@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Business.Models;
-using HotelReservation.Data.Entities;
 
 namespace Business.Interfaces
 {

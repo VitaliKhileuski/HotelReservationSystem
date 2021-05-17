@@ -1,4 +1,5 @@
-﻿namespace Business.Models
+﻿
+namespace Business.Models
 {
     public class LoginUserModel
     {
