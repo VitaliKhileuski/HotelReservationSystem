@@ -1,11 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Business.Models;
 
 namespace Business.Interfaces
 {
     public interface IAuthenticationService
     {
-        Task<string> Login(LoginUserModel user);
-        Task<string> Registration(RegisterUserModel user);
+        Task<List<string>> Login(LoginUserModel user);
+        Task<List<string>> Registration(RegisterUserModel user);
+        Task<List<string>> RefreshTokenVerification(TokenModel refreshToken);
     }
 }

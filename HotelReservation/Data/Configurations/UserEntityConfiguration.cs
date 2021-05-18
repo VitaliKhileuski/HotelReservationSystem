@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HotelReservation.Data.Configurations
 {
-    class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
+    public class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
     {
         public void Configure(EntityTypeBuilder<UserEntity> builder)
         {
@@ -33,6 +33,9 @@ namespace HotelReservation.Data.Configurations
                 .HasMany(x => x.Orders)
                 .WithOne(x => x.Customer)
                 .HasForeignKey(x => x.UserId);
+            builder.HasOne(x => x.RefreshToken)
+                .WithOne(x => x.User)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

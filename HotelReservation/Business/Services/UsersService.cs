@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
+using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data.Entities;
@@ -12,7 +11,7 @@ using HotelReservation.Data.Repositories;
 
 namespace Business.Services
 {
-    public class UsersService
+    public class UsersService : IUserService
     {
         private readonly UserRepository _userRepository;
         private readonly Mapper _mapper;
@@ -22,42 +21,52 @@ namespace Business.Services
             _userRepository = userRepository;
         }
 
-        public List<UserModel>  GetAll()
+        public ICollection<UserModel>  GetAll()
         {
-            return  _mapper.Map<List<UserModel>>(_userRepository.GetAll().ToList());
+            var users = _userRepository.GetAll();
+            if (!users.Any())
+            {
+                throw new NotFoundException("no data about users");
+            }
+            return  _mapper.Map<ICollection<UserModel>>(users);
         }
 
-        public UserModel GetById(int id)
+        public async Task<UserModel> GetById(int userId)
         {
-            return _mapper.Map<UserEntity,UserModel>(_userRepository.Get(id));
+            var userEntity = await _userRepository.GetAsync(userId);
+            if (userEntity == null)
+            {
+                throw new NotFoundException("user with that id not exists");
+            }
+            return _mapper.Map<UserEntity,UserModel>(userEntity);
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteById(int userId)
         {
-            _userRepository.Delete(id);
+
+            var userEntity = await _userRepository.GetAsync(userId);
+            if (userEntity == null)
+            {
+                throw new NotFoundException("user with that id not exists");
+            }
+
+            await _userRepository.DeleteAsync(userId);
         }
+
         public void Update(int id,UserModel user)
         {
-            var dbUser = _userRepository.Get(id);
-            if (dbUser == null)
+            var userEntity = _userRepository.Get(id);
+            if (userEntity == null)
             {
                 throw new NotFoundException("user with that id not found");
             }
             var newUser =  _mapper.Map<UserModel,UserEntity>(user);
-            dbUser.Email = newUser.Email;
-            dbUser.Name = newUser.Name;
-            dbUser.Surname = newUser.Surname;
-            dbUser.Birthdate = dbUser.Birthdate;
-            dbUser.PhoneNumber = dbUser.PhoneNumber;
-            _userRepository.Update(dbUser);
+            userEntity.Email = newUser.Email;
+            userEntity.Name = newUser.Name;
+            userEntity.Surname = newUser.Surname;
+            userEntity.Birthdate = userEntity.Birthdate;
+            userEntity.PhoneNumber = userEntity.PhoneNumber;
+            _userRepository.Update(userEntity);
         }
-
-        public void Add(UserModel user)
-        {
-           var userEntity = _mapper.Map<UserModel,UserEntity>(user);
-            _userRepository.Create(userEntity);
-        }
-
-
     }
 }

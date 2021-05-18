@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using Business.Interfaces;
 using Business.Mappers;
@@ -38,15 +39,23 @@ namespace HotelReservation.Api
                     x => x.MigrationsAssembly("Api"));
             });
             services.AddScoped<HashPassword>();
-            services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<RoomRepository>();
             services.AddScoped<HotelRepository>();
+            services.AddScoped<OrderRepository>();
             services.AddScoped<LocationRepository>();
             services.AddScoped<UserRepository>();
+            services.AddScoped<ServiceRepository>();
+
             services.AddScoped<MapConfiguration>();
             services.AddScoped<CustomMapperConfiguration>();
+
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IRoomService,RoomsService>();
+            services.AddScoped<IOrderService,OrdersService>();
             services.AddScoped<IHotelsService, HotelsService>();
-            services.AddScoped<UsersService>();
+            services.AddScoped<IUserService,UsersService>();
+            services.AddScoped<IFacilityService,FacilitiesService>();
             services.AddControllers();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -61,6 +70,7 @@ namespace HotelReservation.Api
                     ValidateLifetime = bool.Parse(Configuration["AuthenticationOptions:ValidateLifetime"] ?? "false"),
                     IssuerSigningKey =  new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Secrets:secretKey"])),
                     ValidateIssuerSigningKey = bool.Parse(Configuration["AuthenticationOptions:ValidateIssuerSigningKey"] ?? "false"),
+                    ClockSkew = TimeSpan.Zero
                 };
             });
             services.AddAuthorization(opt =>
@@ -77,8 +87,6 @@ namespace HotelReservation.Api
                 });
             });
         }
-        
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -104,7 +112,6 @@ namespace HotelReservation.Api
                 .CreateScope();
             using var context = serviceScope.ServiceProvider.GetService<Context>();
             context?.Database.Migrate();
-
         }
     }
 }

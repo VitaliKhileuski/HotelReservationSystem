@@ -21,12 +21,16 @@ namespace HotelReservation.Data.Configurations
                 .IsRequired();
             builder
                 .Property(x => x.FullPrice)
+                .HasColumnType("decimal(18,4)")
                 .IsRequired();
             builder
                 .HasOne(x => x.Room)
                 .WithOne(x => x.Order);
             builder
                 .HasOne(x => x.Customer)
+                .WithMany(x => x.Orders);
+            builder
+                .HasMany(x => x.Services)
                 .WithMany(x => x.Orders);
         }
     }

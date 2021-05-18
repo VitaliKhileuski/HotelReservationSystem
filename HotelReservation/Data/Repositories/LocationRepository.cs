@@ -56,11 +56,6 @@ namespace HotelReservation.Data.Repositories
             return _db.Locations.Where(predicate).ToList();
         }
 
-        public Task<IEnumerable<LocationEntity>> FindAsync(Func<LocationEntity, bool> predicate)
-        {
-            return Task.Run(() => Find(predicate));
-        }
-
         public LocationEntity Get(int id)
         {
             return _db.Locations.Find(id);
@@ -71,26 +66,15 @@ namespace HotelReservation.Data.Repositories
             return _db.Locations;
         }
 
-        public async Task<IEnumerable<LocationEntity>> GetAllAsync()
-        {
-           return await Task.Run(GetAll);
-        }
-
         public async Task<LocationEntity> GetAsync(int id)
         {
-            return await Task.Run(() => Get(id));
+            return await _db.Locations.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public void Update(LocationEntity location)
         {
             _db.Entry(location).State = EntityState.Modified;
             _db.SaveChanges();
-        }
-
-        public async Task UpdateAsync(LocationEntity location)
-        {
-            await Task.Run(() => Update(location));
-            await _db.SaveChangesAsync();
         }
     }
 }

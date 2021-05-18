@@ -17,10 +17,21 @@ namespace HotelReservation.Data.Configurations
             builder
                 .HasOne(x => x.Location)
                 .WithOne(x => x.Hotel)
-                .HasForeignKey<LocationEntity>(x => x.HotelId);
+                .HasForeignKey<LocationEntity>(x => x.HotelId)
+                .OnDelete(DeleteBehavior.Restrict);
             builder.HasMany(x => x.Rooms)
                 .WithOne(x => x.Hotel)
-                .HasForeignKey(x => x.HotelId);
+                .HasForeignKey(x => x.HotelId)
+                .OnDelete(DeleteBehavior.Restrict);
+            builder
+                .Property(x => x.HotelAdminId)
+                .IsRequired()
+                .HasDefaultValue(1);
+            builder
+                .HasMany(x => x.Services)
+                .WithOne(x => x.Hotel)
+                .HasForeignKey(x => x.HotelId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

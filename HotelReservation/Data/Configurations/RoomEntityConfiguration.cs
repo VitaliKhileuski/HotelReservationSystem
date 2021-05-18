@@ -16,16 +16,12 @@ namespace HotelReservation.Data.Configurations
                 .IsRequired();
             builder
                 .Property(x => x.IsEmpty)
-                .IsRequired();
-            builder.Property(x => x.PaymentPerDay)
-                .IsRequired()
-                .HasMaxLength(9);
+                .HasDefaultValue(true);
             builder
-                .Property(x => x.MiniBar)
+                .Property(x => x.PaymentPerDay)
+                .HasColumnType("decimal(18,4)")
                 .IsRequired();
-            builder
-                .Property(x => x.WiFi)
-                .IsRequired();
+
             builder.HasOne(x => x.Hotel)
                 .WithMany(x => x.Rooms)
                 .HasForeignKey(x => x.HotelId)

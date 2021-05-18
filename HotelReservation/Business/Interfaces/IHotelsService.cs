@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Business.Models;
-using HotelReservation.Data.Entities;
 
 namespace Business.Interfaces
 {
@@ -12,5 +9,7 @@ namespace Business.Interfaces
         Task AddHotel(HotelModel hotel);
         Task<HotelModel> GetById(int id);
         List<HotelModel> GetAll();
+        void UpdateHotelAdmin(int hotelId, int userId);
+        Task UpdateHotel(int hotelId, HotelModel hotel,int userId);
     }
 }
