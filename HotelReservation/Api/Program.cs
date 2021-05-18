@@ -11,10 +11,6 @@ namespace HotelReservation.Api
         public static void Main(string[] args)
         {
             ConfigureLogger();
-            Log.Logger = new LoggerConfiguration()
-                .Enrich.FromLogContext()
-                .WriteTo.Console()
-                .CreateLogger();
             try
             {
                 Log.Information("Starting up");
@@ -35,7 +31,10 @@ namespace HotelReservation.Api
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>().UseSerilog();
+                    webBuilder.UseStartup<Startup>().UseSerilog((context, configuration) => configuration
+                        .ReadFrom.Configuration(context.Configuration)
+                        .Enrich.FromLogContext()
+                        .WriteTo.Console());
                 });
 
         public static void ConfigureLogger()

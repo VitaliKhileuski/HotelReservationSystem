@@ -12,6 +12,7 @@ using HotelReservation.Data.Entities;
 using HotelReservation.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Business.Services
 {
@@ -23,8 +24,9 @@ namespace Business.Services
         private readonly ITokenService _tokenService;
         private readonly UserRepository _repository;
         private readonly Mapper _mapper;
+        private readonly ILogger<AuthenticationService> _logger;
 
-        public AuthenticationService(Context context, IConfiguration configuration, HashPassword hashPassword, ITokenService tokenService, MapConfiguration cfg)
+        public AuthenticationService(ILogger<AuthenticationService> logger, Context context, IConfiguration configuration, HashPassword hashPassword, ITokenService tokenService, MapConfiguration cfg)
         {
             _db = context;
             _cfg = configuration;
@@ -32,12 +34,14 @@ namespace Business.Services
             _tokenService = tokenService;
             _repository = new UserRepository(_db);
             _mapper = new Mapper(cfg.UserConfiguration);
+            _logger = logger;
         }
         public async Task<List<string>> Login(LoginUserModel user)
         {
             var userFromDb = await GetUserFromDb(user.Email);
             if (userFromDb == null)
             {
+                _logger.LogError("no such user exists");
                 throw new NotFoundException("no such user exists");
             }
 
