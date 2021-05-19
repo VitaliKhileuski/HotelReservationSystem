@@ -52,6 +52,7 @@ namespace Business.Services
             }
             else
             {
+                _logger.LogError("password is incorrect");
                 throw new IncorrectPasswordException("password is incorrect");
             }
 
@@ -77,6 +78,7 @@ namespace Business.Services
             var dbUser = await GetUserFromDb(user.Email);
             if (dbUser != null)
             {
+                _logger.LogError("user with that email already exists");
                 throw new BadRequestException("user with that email already exists");
             }
             user.Password = _hash.GenerateHash(user.Password, SHA256.Create());
@@ -111,6 +113,7 @@ namespace Business.Services
             var dbUser = await GetDbUser(refreshToken);
             if (dbUser == null)
             {
+                _logger.LogError("Invalid refresh token");
                 throw (new BadRequestException("Invalid refresh token."));
             }
 

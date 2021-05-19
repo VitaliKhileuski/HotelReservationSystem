@@ -8,6 +8,7 @@ using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace Business.Services
 {
@@ -17,13 +18,15 @@ namespace Business.Services
         private readonly UserRepository _userRepository;
         private readonly ServiceRepository _serviceRepository;
         private readonly Mapper _mapper;
+        private readonly ILogger<FacilitiesService> _logger;
 
-        public FacilitiesService(HotelRepository hotelRepository, UserRepository userRepository,ServiceRepository serviceRepository, MapConfiguration cfg)
+        public FacilitiesService(ILogger<FacilitiesService> logger,HotelRepository hotelRepository, UserRepository userRepository,ServiceRepository serviceRepository, MapConfiguration cfg)
         {
             _hotelRepository = hotelRepository;
             _userRepository = userRepository;
             _serviceRepository = serviceRepository;
             _mapper = new Mapper(cfg.ServiceConfiguration);
+            _logger = logger;
         }
 
 
@@ -33,6 +36,7 @@ namespace Business.Services
             var services = _mapper.Map<ICollection<ServiceModel>>(_serviceRepository.GetAll());
             if (services.Count == 0)
             {
+                _logger.LogError("no data about services");
                 throw new NotFoundException("no data about services");
             }
 
@@ -44,7 +48,8 @@ namespace Business.Services
             var service = await _serviceRepository.GetAsync(serviceId);
             if (service == null)
             {
-                throw new NotFoundException("service with that id not exists");
+                _logger.LogError($"service with {serviceId} id not exists");
+                throw new NotFoundException($"service with {serviceId} id not exists");
             }
 
             return _mapper.Map<ServiceEntity, ServiceModel>(service);
@@ -60,7 +65,8 @@ namespace Business.Services
             {
                 if (hotelEntity == null)
                 {
-                    throw new NotFoundException("that hotel doesn't exists");
+                    _logger.LogError($"hotel with {hotelId} id doesn't exists");
+                    throw new NotFoundException($"hotel with {hotelId} id doesn't exists");
                 }
 
                 var service = hotelEntity.Services.FirstOrDefault(x => x.Name == serviceModel.Name);
@@ -76,6 +82,7 @@ namespace Business.Services
             }
             else
             {
+                _logger.LogError("you don't have permission to edit this hotel");
                 throw new BadRequestException("you don't have permission to edit this hotel");
             }
         }
@@ -91,6 +98,7 @@ namespace Business.Services
             }
             else
             {
+                _logger.LogError("you don't have permission to delete this service");
                 throw new BadRequestException("you don't have permission to delete this service");
             }
         }

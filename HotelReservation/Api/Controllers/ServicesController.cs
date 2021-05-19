@@ -31,15 +31,8 @@ namespace HotelReservation.Api.Controllers
         [Authorize]
         public IActionResult GetAllServices()
         {
-            try
-            {
-                var orders = _mapper.Map<ICollection<ServiceResponseModel>>(_facilitiesService.GetAllServices());
-                return Ok(orders);
-            }
-            catch (NotFoundException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var orders = _mapper.Map<ICollection<ServiceResponseModel>>(_facilitiesService.GetAllServices());
+            return Ok(orders);
         }
 
         [HttpGet]
@@ -47,16 +40,8 @@ namespace HotelReservation.Api.Controllers
         [Authorize]
         public async Task<IActionResult> GetServiceById(int serviceId)
         {
-            try
-            {
-                var service =
-                    _mapper.Map<ServiceModel, ServiceResponseModel>(await _facilitiesService.GetServiceById(serviceId));
-               return Ok(service);
-            }
-            catch (NotFoundException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var service = _mapper.Map<ServiceModel, ServiceResponseModel>(await _facilitiesService.GetServiceById(serviceId));
+            return Ok(service);
         }
 
         [HttpPost]
@@ -64,21 +49,10 @@ namespace HotelReservation.Api.Controllers
         [Authorize(Policy = "HotelAdminPermission")]
         public async Task<IActionResult> AddServiceToHotel(int hotelId, [FromBody] ServiceRequestModel service)
         {
-            try
-            {
-                var serviceModel = _mapper.Map<ServiceRequestModel, ServiceModel>(service);
-                var userId = GetIdFromClaims();
-                await _facilitiesService.AddServiceToHotel(hotelId, userId, serviceModel);
-                return Ok("added successfully");
-            }
-            catch (NotFoundException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (BadRequestException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var serviceModel = _mapper.Map<ServiceRequestModel, ServiceModel>(service);
+            var userId = GetIdFromClaims();
+            await _facilitiesService.AddServiceToHotel(hotelId, userId, serviceModel);
+            return Ok("added successfully");
         }
 
         [HttpDelete]
@@ -86,20 +60,9 @@ namespace HotelReservation.Api.Controllers
         [Authorize(Policy = "HotelAdminPermission")]
         public async Task<IActionResult> DeleteServiceFromHotel(int serviceId)
         {
-            try
-            {
-                var userId = GetIdFromClaims();
-                await _facilitiesService.DeleteOrderFromHotel(serviceId, userId);
-                return Ok("deleted");
-            }
-            catch (BadRequestException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (NotFoundException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var userId = GetIdFromClaims();
+            await _facilitiesService.DeleteOrderFromHotel(serviceId, userId);
+            return Ok("deleted");
         }
 
         private int GetIdFromClaims()

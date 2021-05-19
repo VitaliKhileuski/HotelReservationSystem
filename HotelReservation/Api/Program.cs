@@ -32,9 +32,7 @@ namespace HotelReservation.Api
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>().UseSerilog((context, configuration) => configuration
-                        .ReadFrom.Configuration(context.Configuration)
-                        .Enrich.FromLogContext()
-                        .WriteTo.Console());
+                        .ReadFrom.Configuration(context.Configuration));
                 });
 
         public static void ConfigureLogger()

@@ -45,15 +45,8 @@ namespace HotelReservation.Api.Controllers
         [Authorize(Policy = "AdminPermission")]
         public async Task<IActionResult> AddHotel([FromBody] HotelModel hotel)
         {
-            try
-            {
-                await  _hotelsService.AddHotel(hotel);
-                return Ok("added successfully");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            await  _hotelsService.AddHotel(hotel);
+            return Ok("added successfully");
         }
 
         [HttpPut]
@@ -61,15 +54,8 @@ namespace HotelReservation.Api.Controllers
         [Route("{hotelId:int}/setHotelAdmin")]
         public IActionResult UpdateHotelAdmin(int hotelId, [FromBody] int userId)
         {
-            try
-            {
-                _hotelsService.UpdateHotelAdmin(hotelId, userId);
-                return Ok("admin setted successfully");
-            }
-            catch (NotFoundException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            _hotelsService.UpdateHotelAdmin(hotelId, userId);
+            return Ok("admin setted successfully");
         }
 
         [HttpPut]
@@ -77,23 +63,21 @@ namespace HotelReservation.Api.Controllers
         [Route("{id:int}/editHotel")]
         public async Task<IActionResult> EditHotel(int id,[FromBody] HotelRequestModel hotel)
         {
-            try
-            {
-                if (hotel.Name == null && hotel.Location == null)
-                {
-                    return BadRequest("incorrect input data");
-                }
-                var idClaim = int.Parse(User.Claims.FirstOrDefault(x =>
-                        x.Type.ToString().Equals("id", StringComparison.InvariantCultureIgnoreCase))
-                    ?.Value ?? string.Empty);
-                var hotelModel = _mapper.Map<HotelRequestModel, HotelModel>(hotel);
-                await _hotelsService.UpdateHotel(id, hotelModel,idClaim);
-                return Ok("Updated Successfully");
-            }
-            catch (BadRequestException ex)
-            {
-              return  BadRequest(ex.Message);
-            }
+            var idClaim = int.Parse(User.Claims.FirstOrDefault(x =>
+                x.Type.ToString().Equals("id", StringComparison.InvariantCultureIgnoreCase))
+                ?.Value ?? string.Empty);
+            var hotelModel = _mapper.Map<HotelRequestModel, HotelModel>(hotel);
+            await _hotelsService.UpdateHotel(id, hotelModel,idClaim);
+            return Ok("Updated Successfully");
+        }
+
+        [HttpDelete]
+        [Authorize(Policy = "AdminPermission")]
+        [Route("{hotelId:int}/deleteHotel")]
+        public async Task<IActionResult> DeleteHotelById(int hotelId)
+        {
+            await _hotelsService.DeleteHotelById(hotelId);
+            return Ok("Deleted successfully");
         }
     }
 }

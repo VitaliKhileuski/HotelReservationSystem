@@ -28,48 +28,23 @@ namespace HotelReservation.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserRequestModel user)
         {
-            try
-            {
-                var loginModel = _userMapper.Map<LoginUserRequestModel,LoginUserModel>(user);
-                return Ok(await _authService.Login(loginModel));
-            }
-            catch (NotFoundException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (IncorrectPasswordException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var loginModel = _userMapper.Map<LoginUserRequestModel,LoginUserModel>(user);
+            return Ok(await _authService.Login(loginModel));    
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequestModel user)
         {
-            try
-            {
-                var registerModel = _userMapper.Map<RegisterUserRequestModel,RegisterUserModel>(user);
-                return Ok(await _authService.Registration(registerModel));
-            }
-            catch (BadRequestException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var registerModel = _userMapper.Map<RegisterUserRequestModel,RegisterUserModel>(user);
+            return Ok(await _authService.Registration(registerModel));
         }
 
         [HttpPut("refreshTokenVerification")]
         public async Task<IActionResult> RefreshTokenVerification([FromBody] RefreshTokenRequestModel refreshToken)
         {
-            try
-            {
-              var tokenModel = _tokenMapper.Map<RefreshTokenRequestModel, TokenModel>(refreshToken);
-                var result = await _authService.RefreshTokenVerification(tokenModel);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var tokenModel = _tokenMapper.Map<RefreshTokenRequestModel, TokenModel>(refreshToken);
+            var result = await _authService.RefreshTokenVerification(tokenModel);
+            return Ok(result);
         }
     }
 }
