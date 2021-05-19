@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
-using Business.Exceptions;
 using Business.Interfaces;
 using Business.Models;
 using HotelReservation.Api.Mappers;
@@ -18,14 +17,12 @@ namespace HotelReservation.Api.Controllers
     public class UsersController : Controller
     {
         private readonly IUserService _usersService;
-        private readonly IAuthenticationService _authService;
         private readonly Mapper _mapper;
 
-        public UsersController(IUserService usersService, IAuthenticationService authService,CustomMapperConfiguration cfg)
+        public UsersController(IUserService usersService, CustomMapperConfiguration cfg)
         {
             _mapper = new Mapper(cfg.UsersConfiguration);
             _usersService = usersService;
-            _authService = authService;
         }
         [HttpGet]
         [Authorize(Policy = "AdminPermission")]
@@ -46,10 +43,11 @@ namespace HotelReservation.Api.Controllers
 
         [HttpPost]
         [Authorize(Policy = "AdminPermission")]
-        public async Task<IActionResult> Add([FromBody] RegisterUserRequestModel user)
+        public async Task<IActionResult> AddUser([FromBody] UserRequestModel user)
         {
-            var registerModel = _mapper.Map<RegisterUserRequestModel,RegisterUserModel>(user);
-            return Ok(await _authService.Registration(registerModel));
+            var userModel = _mapper.Map<UserRequestModel,UserModel>(user);
+            await _usersService.AddUser(userModel);
+            return Ok("added successfully");
         }
 
         [HttpDelete]

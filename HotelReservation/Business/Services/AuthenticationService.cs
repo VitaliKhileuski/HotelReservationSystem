@@ -91,7 +91,6 @@ namespace Business.Services
             };
             userEntity.RefreshToken = refreshToken;
             await _repository.CreateAsync(userEntity);
-            await _db.SaveChangesAsync();
             var userEntityFromDb =  _db.Users.FirstOrDefault(x => x.Email == userEntity.Email);
             var token = _tokenService.BuildToken(_cfg["Secrets:secretKey"], user.Email, "User", userEntityFromDb.Id);
             return new List<string> { token, refreshToken.Token };
