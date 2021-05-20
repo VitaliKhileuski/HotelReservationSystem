@@ -87,6 +87,17 @@ namespace HotelReservation.Api
                     policy.RequireRole("Admin", "HotelAdmin");
                 });
             });
+            services.AddCors(options =>
+            {
+                options.AddPolicy(
+                    "ApiCorsPolicy",
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost:3000")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -99,7 +110,8 @@ namespace HotelReservation.Api
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            
+            app.UseCors("ApiCorsPolicy");
+
             app.UseMiddleware<CustomExceptionMiddleware>();
             app.UseEndpoints(endpoints =>
             {
