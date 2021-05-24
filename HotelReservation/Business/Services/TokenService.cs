@@ -18,7 +18,7 @@ namespace Business.Services
             _cfg = configuration;
         }
 
-        public string BuildToken(string key, string email, string roleName, int id)
+        public string BuildToken(string key, string email, string roleName,string firstname, int id)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -26,6 +26,7 @@ namespace Business.Services
             {
                 new Claim("email", email),
                 new Claim("role", roleName),
+                new Claim("firstname",firstname),
                 new Claim("id", id.ToString())
 
             };

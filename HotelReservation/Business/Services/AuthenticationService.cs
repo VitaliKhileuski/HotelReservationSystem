@@ -48,7 +48,7 @@ namespace Business.Services
             string token;
             if (_hash.CheckHash(user.Password, userFromDb.Password))
             {
-                token = _tokenService.BuildToken(_cfg["Secrets:secretKey"], user.Email, userFromDb.Role.Name, userFromDb.Id);
+                token = _tokenService.BuildToken(_cfg["Secrets:secretKey"], user.Email, userFromDb.Role.Name,userFromDb.Name,userFromDb.Id);
             }
             else
             {
@@ -91,8 +91,8 @@ namespace Business.Services
             };
             userEntity.RefreshToken = refreshToken;
             await _repository.CreateAsync(userEntity);
-            var userEntityFromDb =  _db.Users.FirstOrDefault(x => x.Email == userEntity.Email);
-            var token = _tokenService.BuildToken(_cfg["Secrets:secretKey"], user.Email, "User", userEntityFromDb.Id);
+            var userEntityFromDb = _db.Users.FirstOrDefault(x => x.Email == userEntity.Email);
+            var token = _tokenService.BuildToken(_cfg["Secrets:secretKey"], user.Email, "User",user.Name,userEntityFromDb.Id);
             return new List<string> { token, refreshToken.Token };
         }
 
@@ -129,7 +129,7 @@ namespace Business.Services
 
             await _db.RefreshTokens.AddAsync(newRefreshToken);
             await _db.SaveChangesAsync();
-            var newJwtToken = _tokenService.BuildToken(_cfg["Secrets:secretKey"], dbUser.Email, dbUser.Role.Name, dbUser.Id);
+            var newJwtToken = _tokenService.BuildToken(_cfg["Secrets:secretKey"], dbUser.Email, dbUser.Role.Name,dbUser.Name, dbUser.Id);
             return new List<string> { newJwtToken, newRefreshToken.Token };
         }
     }
