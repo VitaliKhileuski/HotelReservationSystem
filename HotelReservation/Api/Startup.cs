@@ -57,6 +57,7 @@ namespace HotelReservation.Api
             services.AddScoped<IHotelsService, HotelsService>();
             services.AddScoped<IUserService,UsersService>();
             services.AddScoped<IFacilityService,FacilitiesService>();
+            services.AddScoped<LocationsService>();
             services.AddControllers();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -95,7 +96,8 @@ namespace HotelReservation.Api
                     {
                         builder.WithOrigins("http://localhost:3000")
                             .AllowAnyHeader()
-                            .AllowAnyMethod();
+                            .AllowAnyMethod()
+                            .AllowCredentials();
                     });
             });
         }
@@ -110,7 +112,12 @@ namespace HotelReservation.Api
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors("ApiCorsPolicy");
+            app.UseCors(options => {
+                options.WithOrigins("http://localhost:3000")
+               .AllowAnyHeader()
+               .AllowAnyMethod()
+               .AllowCredentials();
+            });
 
             app.UseMiddleware<CustomExceptionMiddleware>();
             app.UseEndpoints(endpoints =>
