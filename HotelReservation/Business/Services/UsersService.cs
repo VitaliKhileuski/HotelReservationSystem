@@ -105,7 +105,6 @@ namespace Business.Services
             userEntity.Email = newUser.Email;
             userEntity.Name = newUser.Name;
             userEntity.Surname = newUser.Surname;
-            userEntity.Birthdate = userEntity.Birthdate;
             userEntity.PhoneNumber = userEntity.PhoneNumber;
             _userRepository.Update(userEntity);
         }
