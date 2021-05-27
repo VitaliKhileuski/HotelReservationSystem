@@ -41,6 +41,13 @@ namespace HotelReservation.Api.Controllers
             return responseHotel;
         }
 
+        [HttpGet]
+        [Route("filter={checkInDate}&{checkOutDate}&{country}&{city}")]
+        public IActionResult GetFilteredGHotels(DateTime checkInDate,DateTime checkOutDate,string country,string city)
+        {
+            return Ok(_hotelsService.GetFilteredHotels(checkInDate,checkOutDate,country,city));
+        }
+
         [HttpPost]
         [Authorize(Policy = "AdminPermission")]
         public async Task<IActionResult> AddHotel([FromBody] HotelModel hotel)

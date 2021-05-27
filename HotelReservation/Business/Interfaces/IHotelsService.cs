@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Business.Models;
 
@@ -12,5 +13,6 @@ namespace Business.Interfaces
         void UpdateHotelAdmin(int hotelId, int userId);
         Task UpdateHotel(int hotelId, HotelModel hotel,int userId);
         Task DeleteHotelById(int hotelId);
+        ICollection<HotelModel> GetFilteredHotels(DateTime checkInDate, DateTime checkOutDate, string country, string city);
     }
 }

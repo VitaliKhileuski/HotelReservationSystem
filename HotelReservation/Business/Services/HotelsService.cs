@@ -144,5 +144,24 @@ namespace Business.Services
             }
             await _hotelRepository.DeleteAsync(hotelId);
         }
+
+        public ICollection<HotelModel> GetFilteredHotels(DateTime checkInDate,DateTime checkOutDate,string country,string city)
+        {
+            var filteredHotel = new List<HotelModel>();
+            var hotels = GetAll();
+            foreach (var hotel in hotels)
+            {
+                if (hotel.Location.Country!=string.Empty && hotel.Location.Country == country)
+                {
+                    if (hotel.Location.City != string.Empty && hotel.Location.City == city)
+                    {
+
+                    }
+                }
+            }
+
+
+            return new List<HotelModel>();
+        }
     }
 }
