@@ -12,6 +12,7 @@ using HotelReservation.Data.Entities;
 using HotelReservation.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Business.Services
 {
@@ -23,8 +24,9 @@ namespace Business.Services
         private readonly ITokenService _tokenService;
         private readonly UserRepository _repository;
         private readonly Mapper _mapper;
+        private readonly ILogger<AuthenticationService> _logger;
 
-        public AuthenticationService(Context context, IConfiguration configuration, HashPassword hashPassword, ITokenService tokenService, MapConfiguration cfg)
+        public AuthenticationService(ILogger<AuthenticationService> logger, Context context, IConfiguration configuration, HashPassword hashPassword, ITokenService tokenService, MapConfiguration cfg)
         {
             _db = context;
             _cfg = configuration;
@@ -32,22 +34,25 @@ namespace Business.Services
             _tokenService = tokenService;
             _repository = new UserRepository(_db);
             _mapper = new Mapper(cfg.UserConfiguration);
+            _logger = logger;
         }
         public async Task<List<string>> Login(LoginUserModel user)
         {
             var userFromDb = await GetUserFromDb(user.Email);
             if (userFromDb == null)
             {
+                _logger.LogError("no such user exists");
                 throw new NotFoundException("no such user exists");
             }
 
             string token;
             if (_hash.CheckHash(user.Password, userFromDb.Password))
             {
-                token = _tokenService.BuildToken(_cfg["Secrets:secretKey"], user.Email, userFromDb.Role.Name, userFromDb.Id);
+                token = _tokenService.BuildToken(_cfg["Secrets:secretKey"], user.Email, userFromDb.Role.Name,userFromDb.Name,userFromDb.Id);
             }
             else
             {
+                _logger.LogError("password is incorrect");
                 throw new IncorrectPasswordException("password is incorrect");
             }
 
@@ -73,6 +78,7 @@ namespace Business.Services
             var dbUser = await GetUserFromDb(user.Email);
             if (dbUser != null)
             {
+                _logger.LogError("user with that email already exists");
                 throw new BadRequestException("user with that email already exists");
             }
             user.Password = _hash.GenerateHash(user.Password, SHA256.Create());
@@ -85,9 +91,8 @@ namespace Business.Services
             };
             userEntity.RefreshToken = refreshToken;
             await _repository.CreateAsync(userEntity);
-            await _db.SaveChangesAsync();
-            var userEntityFromDb =  _db.Users.FirstOrDefault(x => x.Email == userEntity.Email);
-            var token = _tokenService.BuildToken(_cfg["Secrets:secretKey"], user.Email, "User", userEntityFromDb.Id);
+            var userEntityFromDb = _db.Users.FirstOrDefault(x => x.Email == userEntity.Email);
+            var token = _tokenService.BuildToken(_cfg["Secrets:secretKey"], user.Email, "User",user.Name,userEntityFromDb.Id);
             return new List<string> { token, refreshToken.Token };
         }
 
@@ -107,6 +112,7 @@ namespace Business.Services
             var dbUser = await GetDbUser(refreshToken);
             if (dbUser == null)
             {
+                _logger.LogError("Invalid refresh token");
                 throw (new BadRequestException("Invalid refresh token."));
             }
 
@@ -123,7 +129,7 @@ namespace Business.Services
 
             await _db.RefreshTokens.AddAsync(newRefreshToken);
             await _db.SaveChangesAsync();
-            var newJwtToken = _tokenService.BuildToken(_cfg["Secrets:secretKey"], dbUser.Email, dbUser.Role.Name, dbUser.Id);
+            var newJwtToken = _tokenService.BuildToken(_cfg["Secrets:secretKey"], dbUser.Email, dbUser.Role.Name,dbUser.Name, dbUser.Id);
             return new List<string> { newJwtToken, newRefreshToken.Token };
         }
     }

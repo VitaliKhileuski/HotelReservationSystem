@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
-using Business.Exceptions;
 using Business.Interfaces;
 using Business.Models;
 using HotelReservation.Api.Mappers;
@@ -18,21 +17,18 @@ namespace HotelReservation.Api.Controllers
     public class UsersController : Controller
     {
         private readonly IUserService _usersService;
-        private readonly IAuthenticationService _authService;
         private readonly Mapper _mapper;
 
-        public UsersController(IUserService usersService, IAuthenticationService authService,CustomMapperConfiguration cfg)
+        public UsersController(IUserService usersService, CustomMapperConfiguration cfg)
         {
             _mapper = new Mapper(cfg.UsersConfiguration);
             _usersService = usersService;
-            _authService = authService;
         }
         [HttpGet]
         [Authorize(Policy = "AdminPermission")]
-        public   IEnumerable<UserResponseViewModel> Get()
+        public IEnumerable<UserResponseViewModel> Get()
         {
             var responseUsers = _mapper.Map<List<UserResponseViewModel>>(_usersService.GetAll());
-
            return responseUsers;
         }
 
@@ -41,32 +37,17 @@ namespace HotelReservation.Api.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            try
-            {
-                var responseUser = _mapper.Map<UserModel,UserResponseViewModel>(await _usersService.GetById(id));
-
-                return Ok(responseUser);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-           
+            var responseUser = _mapper.Map<UserModel, UserResponseViewModel>(await _usersService.GetById(id));
+            return Ok(responseUser);
         }
 
         [HttpPost]
         [Authorize(Policy = "AdminPermission")]
-        public async Task<IActionResult> Add([FromBody] RegisterUserRequestModel user)
+        public async Task<IActionResult> AddUser([FromBody] UserRequestModel user)
         {
-            try
-            {
-                var registerModel = _mapper.Map<RegisterUserRequestModel,RegisterUserModel>(user);
-                return Ok(await _authService.Registration(registerModel));
-            }
-            catch (BadRequestException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var userModel = _mapper.Map<UserRequestModel,UserModel>(user);
+            await _usersService.AddUser(userModel);
+            return Ok("added successfully");
         }
 
         [HttpDelete]
@@ -74,16 +55,8 @@ namespace HotelReservation.Api.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            try
-            {
-                await _usersService.DeleteById(id);
-                return Ok($"user with id {id} deleted successfully");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            
+            await _usersService.DeleteById(id);
+            return Ok($"user with id {id} deleted successfully");
         }
 
         [HttpPut]
@@ -91,16 +64,9 @@ namespace HotelReservation.Api.Controllers
         [Route("{id:int}")]
         public IActionResult Update(int id, [FromBody] UserResponseViewModel user)
         {
-            try
-            {
-                var userModel = _mapper.Map<UserResponseViewModel, UserModel>(user);
-                _usersService.Update(id, userModel);
-                return Ok($"user with id {id} updated successfully");
-            }
-            catch (NotFoundException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var userModel = _mapper.Map<UserResponseViewModel, UserModel>(user);
+            _usersService.Update(id, userModel);
+            return Ok($"user with id {id} updated successfully");
         }
     }
 }

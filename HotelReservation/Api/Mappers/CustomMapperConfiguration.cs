@@ -35,6 +35,7 @@ namespace HotelReservation.Api.Mappers
             {
                 x.CreateMap<LoginUserRequestModel, LoginUserModel>();
                 x.CreateMap<RegisterUserRequestModel, RegisterUserModel>();
+                x.CreateMap<UserRequestModel, UserModel>();
                 x.CreateMap<UserModel, UserResponseViewModel>();
                 x.CreateMap<RoleModel, RoleResponseModel>();
                 x.CreateMap<OrderModel, OrderResponseModel>();

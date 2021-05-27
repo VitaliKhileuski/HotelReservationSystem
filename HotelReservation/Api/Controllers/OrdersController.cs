@@ -32,32 +32,18 @@ namespace HotelReservation.Api.Controllers
         [Route("{orderId:int}")]
         public async Task<IActionResult> GetOrderById(int orderId)
         {
-            try
-            {
-              var order = await _orderService.GetOrderById(orderId);
-              var result = _mapper.Map<OrderModel, OrderResponseModel>(order);
-              return Ok(result);
-            }
-            catch (NotFoundException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var order = await _orderService.GetOrderById(orderId);
+            var result = _mapper.Map<OrderModel, OrderResponseModel>(order);
+            return Ok(result);
         }
 
         [HttpGet]
         [Authorize]
         public IActionResult GetAll()
         {
-            try
-            {
-                var orders = _orderService.GetAll();
-                var result = _mapper.Map<List<OrderResponseModel>>(orders);
-                return Ok(result);
-            }
-            catch (NotFoundException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var orders = _orderService.GetAll();
+            var result = _mapper.Map<List<OrderResponseModel>>(orders);
+            return Ok(result);
         }
 
         [HttpPost]
@@ -65,26 +51,15 @@ namespace HotelReservation.Api.Controllers
         [Route("{roomId:int}/order")]
         public async Task<IActionResult> CreateOrder(int roomId, [FromBody] OrderRequestModel order)
         {
-            try
+            var userId = GetIdFromClaims();
+            var orderModel = _mapper.Map<OrderRequestModel, OrderModel>(order);
+            orderModel.Services = new List<ServiceModel>();
+            foreach(var id in order.ServicesId)
             {
-                var userId = GetIdFromClaims();
-                var orderModel = _mapper.Map<OrderRequestModel, OrderModel>(order);
-                orderModel.Services = new List<ServiceModel>();
-                foreach(var id in order.ServicesId)
-                {
-                    orderModel.Services.Add(new ServiceModel { Id = id });
-                }
-                await _orderService.CreateOrder(roomId, userId, orderModel);
-                return Ok("Ordered");
+                orderModel.Services.Add(new ServiceModel { Id = id });
             }
-            catch (BadRequestException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (NotFoundException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            await _orderService.CreateOrder(roomId, userId, orderModel);
+            return Ok("Ordered");
         }
 
         [HttpPut]
@@ -92,25 +67,15 @@ namespace HotelReservation.Api.Controllers
         [Route("{orderId:int}/updateOrder")]
         public async Task<IActionResult> UpdateOrder(int orderId, [FromBody] OrderRequestModel order)
         {
-            try
+            var orderModel = _mapper.Map<OrderRequestModel, OrderModel>(order);
+            orderModel.Services = new List<ServiceModel>();
+            foreach (var id in order.ServicesId)
             {
-                var orderModel = _mapper.Map<OrderRequestModel, OrderModel>(order);
-                orderModel.Services = new List<ServiceModel>();
-                foreach (var id in order.ServicesId)
-                {
-                    orderModel.Services.Add(new ServiceModel { Id = id });
-                }
-                await _orderService.UpdateOrder(orderId, orderModel);
-                return Ok("Updated successfully");
+                orderModel.Services.Add(new ServiceModel { Id = id });
             }
-            catch (BadRequestException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch(NotFoundException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+
+            await _orderService.UpdateOrder(orderId, orderModel);
+            return Ok("Updated successfully");
         }
 
         [HttpDelete]
@@ -118,15 +83,8 @@ namespace HotelReservation.Api.Controllers
         [Route("{orderId:int}/deleteOrder")]
         public async Task<IActionResult> DeleteOrder(int orderId)
         {
-            try
-            {
-                await _orderService.DeleteOrder(orderId);
-                return Ok("Deleted Successfully");
-            }
-            catch (NotFoundException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            await _orderService.DeleteOrder(orderId);
+            return Ok("Deleted Successfully");
         }
 
         private int GetIdFromClaims()

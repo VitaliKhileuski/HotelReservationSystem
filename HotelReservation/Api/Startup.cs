@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
@@ -56,6 +57,7 @@ namespace HotelReservation.Api
             services.AddScoped<IHotelsService, HotelsService>();
             services.AddScoped<IUserService,UsersService>();
             services.AddScoped<IFacilityService,FacilitiesService>();
+            services.AddScoped<LocationsService>();
             services.AddControllers();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -86,6 +88,18 @@ namespace HotelReservation.Api
                     policy.RequireRole("Admin", "HotelAdmin");
                 });
             });
+            services.AddCors(options =>
+            {
+                options.AddPolicy(
+                    "ApiCorsPolicy",
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost:3000")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .AllowCredentials();
+                    });
+            });
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -93,11 +107,19 @@ namespace HotelReservation.Api
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseSerilogRequestLogging();
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseSerilogRequestLogging();
+            app.UseCors(options => {
+                options.WithOrigins("http://localhost:3000")
+               .AllowAnyHeader()
+               .AllowAnyMethod()
+               .AllowCredentials();
+            });
+
+            app.UseMiddleware<CustomExceptionMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

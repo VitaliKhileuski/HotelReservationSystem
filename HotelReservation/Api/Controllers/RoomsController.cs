@@ -31,31 +31,17 @@ namespace HotelReservation.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetRooms()
         {
-            try
-            {
-                var rooms = _mapper.Map<ICollection<RoomResponseModel>>(await _roomsService.GetAllRooms());
-                return Ok(rooms);
-            }
-            catch (NotFoundException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var rooms = _mapper.Map<ICollection<RoomResponseModel>>(await _roomsService.GetAllRooms());
+            return Ok(rooms);
         }
 
         [HttpGet]
         [Route("{hotelId:int}")]
         public async Task<IActionResult> GetRooms(int hotelId)
         {
-            try
-            {
-                var roomModels = await _roomsService.GetRoomsFromHotel(hotelId);
-                var roomResponseModels = _mapper.Map<ICollection<RoomResponseModel>>(roomModels);
-                return Ok(roomResponseModels);
-            }
-            catch (NotFoundException ex)
-            {
-               return BadRequest(ex.Message);
-            }
+            var roomModels = await _roomsService.GetRoomsFromHotel(hotelId);
+            var roomResponseModels = _mapper.Map<ICollection<RoomResponseModel>>(roomModels);
+            return Ok(roomResponseModels);
         }
 
         [HttpPost]
@@ -63,22 +49,16 @@ namespace HotelReservation.Api.Controllers
         [Route("{hotelId:int}/addRoom")]
         public async Task<IActionResult> CreateRoom(int hotelId,RoomRequestModel room)
         {
-            try
+            int idClaim = GetIdFromClaims();
+            if(room == null)
             {
-                int idClaim = GetIdFromClaims();
-                if (room == null)
-                {
-                    return BadRequest("incorrect input data");
-                }
+                return BadRequest("incorrect input data");
+            }
 
-                var roomModel = _mapper.Map<RoomRequestModel, RoomModel>(room);
-                await _roomsService.AddRoom(hotelId, roomModel, idClaim);
-                return Ok("Added successfully");
-            }
-            catch (BadRequestException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var roomModel = _mapper.Map<RoomRequestModel, RoomModel>(room);
+            await _roomsService.AddRoom(hotelId, roomModel, idClaim);
+            return Ok("Added successfully");
+            
         }
 
         [HttpDelete]
@@ -86,16 +66,9 @@ namespace HotelReservation.Api.Controllers
         [Authorize(Policy = "HotelAdminPermission")]
         public async Task<IActionResult> DeleteRoom(int roomId)
         {
-            try
-            {
-                int userId = GetIdFromClaims();
-                await _roomsService.DeleteRoom(roomId, userId);
-                return Ok("Deleted Successfully");
-            }
-            catch (NotFoundException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            int userId = GetIdFromClaims();
+            await _roomsService.DeleteRoom(roomId, userId);
+            return Ok("Deleted Successfully");
         }
 
         [HttpPut]
@@ -103,17 +76,10 @@ namespace HotelReservation.Api.Controllers
         [Authorize(Policy = "HotelAdminPermission")]
         public async Task<IActionResult> UpdateRoom(int roomId,[FromBody] RoomRequestModel room)
         {
-            try
-            {
-                var roomModel = _mapper.Map<RoomRequestModel, RoomModel>(room);
-                int userId = GetIdFromClaims();
-                await _roomsService.UpdateRoom(roomId, userId, roomModel);
-                return Ok("Updated Successfully");
-            }
-            catch (NotFoundException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var roomModel = _mapper.Map<RoomRequestModel, RoomModel>(room);
+            int userId = GetIdFromClaims();
+            await _roomsService.UpdateRoom(roomId, userId, roomModel);
+            return Ok("Updated Successfully");
         }
 
         private int GetIdFromClaims()

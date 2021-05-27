@@ -60,10 +60,9 @@ namespace HotelReservation.Data
             {
                 Id = 1,
                 RoleId = 1,
-                Birthdate = new DateTime(2000,10,10),
                 Name = "Admin",
-                Email = "Admin@gmail.com",
-                Password = _hashPass.GenerateHash("Admin", SHA256.Create()),
+                Email = "admin@gmail.com",
+                Password = _hashPass.GenerateHash("admin111", SHA256.Create()),
                 Surname = "Admin",
                 PhoneNumber = "+375297809088"
             });

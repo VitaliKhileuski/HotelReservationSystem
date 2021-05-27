@@ -9,6 +9,7 @@ using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace Business.Services
 {
@@ -18,22 +19,24 @@ namespace Business.Services
         private readonly UserRepository _userRepository;
         private readonly RoomRepository _roomRepository;
         private readonly Mapper _mapper;
-        public OrdersService(OrderRepository orderRepository, UserRepository userRepository,
+        private readonly ILogger<OrdersService> _logger;
+        public OrdersService(ILogger<OrdersService> logger, OrderRepository orderRepository, UserRepository userRepository,
             RoomRepository roomRepository, MapConfiguration cfg)
         {
             _orderRepository = orderRepository;
             _userRepository = userRepository;
             _roomRepository = roomRepository;
             _mapper = new Mapper(cfg.OrderConfiguration);
+            _logger = logger;
         }
-
 
         public async Task<OrderModel> GetOrderById(int orderId)
         {
-            var order =await _orderRepository.GetAsync(orderId);
+            var order = await _orderRepository.GetAsync(orderId);
             if (order == null)
             {
-                throw new NotFoundException("order not found");
+                _logger.LogError($"order with {orderId} id not found");
+                throw new NotFoundException($"order with {orderId} id not found");
             }
 
             var orderModel = _mapper.Map<OrderEntity, OrderModel>(order);
@@ -46,9 +49,9 @@ namespace Business.Services
             var orders = _mapper.Map<ICollection<OrderModel>>(_orderRepository.GetAll());
             if (orders.Count == 0)
             {
+                _logger.LogError("no data about orders");
                 throw new NotFoundException("no data about orders");
             }
-
             return orders;
         }
 
@@ -57,10 +60,12 @@ namespace Business.Services
             var roomEntity = await _roomRepository.GetAsync(roomId);
             if (roomEntity == null)
             {
-                throw new NotFoundException("thar room is not found");
+                _logger.LogError($"room with {roomId} id not exists");
+                throw new NotFoundException($"room with {roomId} id not exists");
             }
             if ((bool)!roomEntity.IsEmpty)
             {
+                _logger.LogError("this room already reserved");
                 throw new BadRequestException("this room already reserved");
             }
             var orderEntity = _mapper.Map<OrderModel, OrderEntity>(order);
@@ -94,13 +99,15 @@ namespace Business.Services
         {
             if (newOrder == null)
             {
+                _logger.LogError("incorrect input data");
                 throw new BadRequestException("incorrect input data");
             }
             var currentOrder = await _orderRepository.GetAsync(orderId);
             var orderEntity = _mapper.Map<OrderModel, OrderEntity>(newOrder);
             if (currentOrder == null)
             {
-                throw new NotFoundException("order with that id not exists");
+                _logger.LogError($"order with {orderId} id not exists");
+                throw new NotFoundException($"order with {orderId} id not exists");
             }
             var roomEntity = currentOrder.Room;
             var services = new List<ServiceEntity>();
@@ -124,7 +131,6 @@ namespace Business.Services
             _orderRepository.Update(currentOrder);
             currentOrder.Services = services;
             _orderRepository.Update(currentOrder);
-
         }
 
         public async Task DeleteOrder(int orderId)
@@ -132,7 +138,8 @@ namespace Business.Services
             var order = await _orderRepository.GetAsync(orderId);
             if (order == null)
             {
-                throw new NotFoundException("order with that id not exists");
+                _logger.LogError($"order with {orderId} id not exists");
+                throw new NotFoundException($"order with {orderId} id not exists");
             }
             await _orderRepository.DeleteAsync(orderId);
         }

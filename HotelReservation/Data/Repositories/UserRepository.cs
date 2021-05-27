@@ -71,6 +71,11 @@ namespace HotelReservation.Data.Repositories
             return await _db.Users.FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<UserEntity> GetAsyncByEmail(string email)
+        {
+            return await _db.Users.FirstOrDefaultAsync(x => x.Email == email);
+        }
+
         public void Update(UserEntity user)
         {
             _db.Entry(user).State = EntityState.Modified;
