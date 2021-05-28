@@ -15,9 +15,6 @@ namespace HotelReservation.Data.Configurations
                 .HasMaxLength(10)
                 .IsRequired();
             builder
-                .Property(x => x.IsEmpty)
-                .HasDefaultValue(true);
-            builder
                 .Property(x => x.PaymentPerDay)
                 .HasColumnType("decimal(18,4)")
                 .IsRequired();
@@ -32,9 +29,8 @@ namespace HotelReservation.Data.Configurations
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
             builder
-                .HasOne(x => x.Order)
+                .HasMany(x => x.Order)
                 .WithOne(x => x.Room)
-                .HasForeignKey<OrderEntity>(x => x.RoomId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

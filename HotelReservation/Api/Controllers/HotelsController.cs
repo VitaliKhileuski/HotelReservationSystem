@@ -47,6 +47,13 @@ namespace HotelReservation.Api.Controllers
         {
             return Ok(_hotelsService.GetFilteredHotels(checkInDate,checkOutDate,country,city));
         }
+        [HttpGet]
+        [Route("filter={checkInDate}&{checkOutDate}&{country}&")]
+        public IActionResult GetFilteredGHotelsWithoutCity(DateTime checkInDate, DateTime checkOutDate, string country, string city)
+        {
+            return Ok(_hotelsService.GetFilteredHotels(checkInDate, checkOutDate, country, city));
+        }
+
 
         [HttpPost]
         [Authorize(Policy = "AdminPermission")]

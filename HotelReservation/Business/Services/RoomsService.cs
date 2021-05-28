@@ -51,7 +51,6 @@ namespace Business.Services
                 throw new NotFoundException($"user with {userId} id not exists");
             }
             var roomEntity = _roomMapper.Map<RoomModel, RoomEntity>(room);
-            roomEntity.IsEmpty = true;
             if (hotelEntity.HotelAdminId == userId || userEntity.Role.Name == "Admin")
             {
                 hotelEntity.Rooms.Add(roomEntity); 

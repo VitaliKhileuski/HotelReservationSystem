@@ -59,6 +59,10 @@ namespace HotelReservation.Api
             services.AddScoped<IFacilityService,FacilitiesService>();
             services.AddScoped<LocationsService>();
             services.AddControllers();
+            services.AddControllersWithViews()
+    .AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
             {

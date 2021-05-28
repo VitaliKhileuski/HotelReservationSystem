@@ -147,21 +147,50 @@ namespace Business.Services
 
         public ICollection<HotelModel> GetFilteredHotels(DateTime checkInDate,DateTime checkOutDate,string country,string city)
         {
-            var filteredHotel = new List<HotelModel>();
+            var filteredHotels = new List<HotelModel>();
+            bool flag = false;
             var hotels = GetAll();
             foreach (var hotel in hotels)
             {
-                if (hotel.Location.Country!=string.Empty && hotel.Location.Country == country)
+                if (string.IsNullOrEmpty(country) || hotel.Location.Country == country)
                 {
-                    if (hotel.Location.City != string.Empty && hotel.Location.City == city)
+                    if (string.IsNullOrEmpty(city) || hotel.Location.City == city)
                     {
-
+                        if (hotel.Rooms == null)
+                        {
+                            foreach (var room in hotel.Rooms)
+                            {
+                                if (room.Orders != null)
+                                {
+                                    foreach (var order in room.Orders)
+                                    {
+                                        if (!(((checkInDate > order.StartDate && checkInDate < order.EndDate) || (checkOutDate > order.StartDate && checkOutDate < order.EndDate))
+                                            || ((order.StartDate > checkInDate && order.StartDate < checkOutDate) || (order.EndDate > checkInDate && order.EndDate < checkOutDate))))
+                                        {
+                                            filteredHotels.Add(hotel);
+                                            flag = true;
+                                            break;
+                                        }
+                                    }
+                                    if (flag) break;
+                                }
+                                else
+                                {
+                                    filteredHotels.Add(hotel);
+                                }
+                            }
+                        
+                        }
+                        else
+                        {
+                            filteredHotels.Add(hotel);
+                        }
                     }
                 }
             }
 
 
-            return new List<HotelModel>();
+            return filteredHotels;
         }
     }
 }

@@ -63,11 +63,6 @@ namespace Business.Services
                 _logger.LogError($"room with {roomId} id not exists");
                 throw new NotFoundException($"room with {roomId} id not exists");
             }
-            if ((bool)!roomEntity.IsEmpty)
-            {
-                _logger.LogError("this room already reserved");
-                throw new BadRequestException("this room already reserved");
-            }
             var orderEntity = _mapper.Map<OrderModel, OrderEntity>(order);
             List<ServiceEntity> services = new List<ServiceEntity>();
             foreach (var service in roomEntity.Hotel.Services)
@@ -84,7 +79,6 @@ namespace Business.Services
             var userEntity = await _userRepository.GetAsync(userId);
             
             orderEntity.Customer = userEntity;
-            roomEntity.IsEmpty = false;
             roomEntity.User = userEntity;
             orderEntity.DateOrdered = DateTime.Now;
             orderEntity.NumberOfDays = orderEntity.EndDate.Subtract(orderEntity.StartDate).Days;
