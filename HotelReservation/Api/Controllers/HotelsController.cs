@@ -20,36 +20,33 @@ namespace HotelReservation.Api.Controllers
     {
         private readonly Mapper _mapper;
         private readonly IHotelsService _hotelsService;
-        public HotelsController(IHotelsService hotelService,CustomMapperConfiguration cfg)
+
+        public HotelsController(IHotelsService hotelService, CustomMapperConfiguration cfg)
         {
             _mapper = new Mapper(cfg.HotelConfiguration);
             _hotelsService = hotelService;
-        }
-        
-        [HttpGet]
-        public ICollection<HotelResponseModel> GetAll()
-        {
-            var hotelResponseModels = _mapper.Map<List<HotelResponseModel>>(_hotelsService.GetAll());
-            return hotelResponseModels;
         }
 
         [HttpGet]
         [Route("{id:int}")]
         public async Task<HotelResponseModel> GetByiD(int id)
         {
-            var responseHotel = _mapper.Map<HotelModel,HotelResponseModel>(await _hotelsService.GetById(id));
+            var responseHotel = _mapper.Map<HotelModel, HotelResponseModel>(await _hotelsService.GetById(id));
             return responseHotel;
         }
 
         [HttpGet]
-        [Route("filter={checkInDate}&{checkOutDate}&{country}&{city}")]
-        public IActionResult GetFilteredGHotels(DateTime checkInDate,DateTime checkOutDate,string country,string city)
-        {
-            return Ok(_hotelsService.GetFilteredHotels(checkInDate,checkOutDate,country,city));
+        [Route("pages")]
+        public async Task<IActionResult> GetAll([FromQuery] HotelPagination filter)
+        { 
+            var validFilter = new HotelPagination(filter.PageNumber, filter.PageSize);
+            var page =await  _hotelsService.GetHotelsPage(validFilter);
+            return Ok(page);
         }
+
         [HttpGet]
-        [Route("filter={checkInDate}&{checkOutDate}&{country}&")]
-        public IActionResult GetFilteredGHotelsWithoutCity(DateTime checkInDate, DateTime checkOutDate, string country, string city)
+        public IActionResult GetFilteredGHotels(DateTime checkInDate, DateTime checkOutDate, string country,
+            string city)
         {
             return Ok(_hotelsService.GetFilteredHotels(checkInDate, checkOutDate, country, city));
         }

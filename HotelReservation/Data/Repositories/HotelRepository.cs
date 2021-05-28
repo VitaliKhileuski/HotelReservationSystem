@@ -73,6 +73,16 @@ namespace HotelReservation.Data.Repositories
             return await _db.Hotels.FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<List<HotelEntity>> GetPage(int PageNumber, int PageSize)
+        {
+            var pagedData = await _db.Hotels
+                .Skip((PageNumber - 1) * PageSize)
+                .Take(PageSize)
+                .ToListAsync();
+
+            return pagedData;
+        }
+
         public void Update(HotelEntity hotel)
         {
             _db.Entry(hotel).State = EntityState.Modified;

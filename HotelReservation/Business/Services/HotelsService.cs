@@ -145,33 +145,44 @@ namespace Business.Services
             await _hotelRepository.DeleteAsync(hotelId);
         }
 
-        public ICollection<HotelModel> GetFilteredHotels(DateTime checkInDate,DateTime checkOutDate,string country,string city)
+        public async Task<List<HotelModel>> GetHotelsPage(HotelPagination hotelPagination)
+        {
+            var hotels = _hotelMapper.Map<List<HotelModel>>(await _hotelRepository.GetPage(hotelPagination.PageNumber,hotelPagination.PageSize));
+            return hotels;
+        }
+
+    public ICollection<HotelModel> GetFilteredHotels(DateTime checkInDate,DateTime checkOutDate,string country,string city)
         {
             var filteredHotels = new List<HotelModel>();
             bool flag = false;
             var hotels = GetAll();
+            if (country == "null")
+            {
+                country = null;//fix
+            }
+            if (city == "null")
+            {
+                city = null;//fix
+            }
             foreach (var hotel in hotels)
             {
                 if (string.IsNullOrEmpty(country) || hotel.Location.Country == country)
                 {
                     if (string.IsNullOrEmpty(city) || hotel.Location.City == city)
                     {
-                        if (hotel.Rooms == null)
+                        if (hotel.Rooms == null)//fix
                         {
                             foreach (var room in hotel.Rooms)
                             {
                                 if (room.Orders != null)
                                 {
-                                    foreach (var order in room.Orders)
+                                    if (room.Orders.Any(order => !(((checkInDate > order.StartDate && checkInDate < order.EndDate) || (checkOutDate > order.StartDate && checkOutDate < order.EndDate))
+                                                                   || (order.StartDate > checkInDate && order.StartDate < checkOutDate) || (order.EndDate > checkInDate && order.EndDate < checkOutDate))))
                                     {
-                                        if (!(((checkInDate > order.StartDate && checkInDate < order.EndDate) || (checkOutDate > order.StartDate && checkOutDate < order.EndDate))
-                                            || ((order.StartDate > checkInDate && order.StartDate < checkOutDate) || (order.EndDate > checkInDate && order.EndDate < checkOutDate))))
-                                        {
-                                            filteredHotels.Add(hotel);
-                                            flag = true;
-                                            break;
-                                        }
+                                        filteredHotels.Add(hotel);
+                                        flag = true;
                                     }
+
                                     if (flag) break;
                                 }
                                 else

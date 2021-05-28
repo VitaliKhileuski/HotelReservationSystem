@@ -14,5 +14,6 @@ namespace Business.Interfaces
         Task UpdateHotel(int hotelId, HotelModel hotel,int userId);
         Task DeleteHotelById(int hotelId);
         ICollection<HotelModel> GetFilteredHotels(DateTime checkInDate, DateTime checkOutDate, string country, string city);
+        Task<List<HotelModel>> GetHotelsPage(HotelPagination hotelPagination);
     }
 }
