@@ -145,14 +145,16 @@ namespace Business.Services
             await _hotelRepository.DeleteAsync(hotelId);
         }
 
-        public async Task<List<HotelModel>> GetHotelsPage(HotelPagination hotelPagination)
+        public async Task<Tuple<List<HotelModel>,int>> GetHotelsPage(HotelPagination hotelPagination)
         {
+            int numberOfPages = 0;
             var hotels = _hotelMapper.Map<List<HotelModel>>(await _hotelRepository.GetPage(hotelPagination.PageNumber,hotelPagination.PageSize));
-            return hotels;
+            return Tuple.Create(hotels,numberOfPages);
         }
 
-    public ICollection<HotelModel> GetFilteredHotels(DateTime checkInDate,DateTime checkOutDate,string country,string city)
+    public Tuple<List<HotelModel>,int> GetFilteredHotels(DateTime checkInDate,DateTime checkOutDate,string country,string city, HotelPagination hotelPagination)
         {
+            int pages=0;
             var filteredHotels = new List<HotelModel>();
             bool flag = false;
             var hotels = GetAll();
@@ -199,9 +201,17 @@ namespace Business.Services
                     }
                 }
             }
+            pages = filteredHotels.Count / hotelPagination.PageSize;
+            if (filteredHotels.Count % hotelPagination.PageSize != 0)
+            {
+                pages++;
+            }
+            var pagedData = filteredHotels
+                .Skip((hotelPagination.PageNumber - 1) * hotelPagination.PageSize)
+                .Take(hotelPagination.PageSize)
+                .ToList();
 
-
-            return filteredHotels;
+            return Tuple.Create(pagedData, pages);
         }
     }
 }

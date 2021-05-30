@@ -76,7 +76,6 @@ namespace HotelReservation.Api
                     ValidateLifetime = bool.Parse(Configuration["AuthenticationOptions:ValidateLifetime"] ?? "false"),
                     IssuerSigningKey =  new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Secrets:secretKey"])),
                     ValidateIssuerSigningKey = bool.Parse(Configuration["AuthenticationOptions:ValidateIssuerSigningKey"] ?? "false"),
-                    ClockSkew = TimeSpan.Zero
                 };
             });
             services.AddAuthorization(opt =>
@@ -121,6 +120,7 @@ namespace HotelReservation.Api
                .AllowAnyHeader()
                .AllowAnyMethod()
                .AllowCredentials();
+               
             });
 
             app.UseMiddleware<CustomExceptionMiddleware>();

@@ -37,7 +37,7 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Route("pages")]
-        public async Task<IActionResult> GetAll([FromQuery] HotelPagination filter)
+        public async Task<IActionResult> GetPage([FromQuery] HotelPagination filter)
         { 
             var validFilter = new HotelPagination(filter.PageNumber, filter.PageSize);
             var page =await  _hotelsService.GetHotelsPage(validFilter);
@@ -46,9 +46,10 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         public IActionResult GetFilteredGHotels(DateTime checkInDate, DateTime checkOutDate, string country,
-            string city)
+            string city, [FromQuery] HotelPagination filter)
         {
-            return Ok(_hotelsService.GetFilteredHotels(checkInDate, checkOutDate, country, city));
+            var validFilter = new HotelPagination(filter.PageNumber, filter.PageSize);
+            return Ok(_hotelsService.GetFilteredHotels(checkInDate, checkOutDate, country, city,validFilter));
         }
 
 

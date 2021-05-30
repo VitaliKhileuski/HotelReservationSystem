@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -13,6 +14,8 @@ using HotelReservation.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using System;
 
 namespace Business.Services
 {
@@ -131,6 +134,22 @@ namespace Business.Services
             await _db.SaveChangesAsync();
             var newJwtToken = _tokenService.BuildToken(_cfg["Secrets:secretKey"], dbUser.Email, dbUser.Role.Name,dbUser.Name, dbUser.Id);
             return new List<string> { newJwtToken, newRefreshToken.Token };
+        }
+        public void JWTTokenVerification(string token)
+        {
+
+            var tokenParts = token.Split('.');
+            var key = Encoding.ASCII.GetBytes(_cfg["Secrets:secretKey"]);
+            var PartsInBytes = Encoding.ASCII.GetBytes(tokenParts[0]+'.'+tokenParts[1]);
+            var hash = new HMACSHA256(key);
+            var thirdPartInbytes = hash.ComputeHash(PartsInBytes);
+            var thirdPart = Convert.ToBase64String(thirdPartInbytes);
+            var tokenPartsBytes =  Encoding.ASCII.GetBytes(tokenParts[2]);
+            if (tokenParts[2] != thirdPart)
+            {
+                _logger.LogError("problems with token verification");
+                throw new BadRequestException("problems with token verification");
+            }
         }
     }
 }

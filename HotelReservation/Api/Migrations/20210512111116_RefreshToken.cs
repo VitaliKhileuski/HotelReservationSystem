@@ -10,7 +10,7 @@ namespace HotelReservation.Api.Migrations
                 name: "RefreshTokenId",
                 table: "Users",
                 type: "int",
-                nullable: false,
+                nullable: true,
                 defaultValue: 0);
 
             migrationBuilder.CreateTable(

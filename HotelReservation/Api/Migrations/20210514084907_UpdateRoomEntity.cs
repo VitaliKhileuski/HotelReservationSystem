@@ -6,16 +6,7 @@ namespace HotelReservation.Api.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "RoomEntityServiceEntity");
-
-            migrationBuilder.DropColumn(
-                name: "MiniBar",
-                table: "Rooms");
-
-            migrationBuilder.DropColumn(
-                name: "WiFi",
-                table: "Rooms");
+            
 
             migrationBuilder.AlterColumn<string>(
                 name: "RoomNumber",

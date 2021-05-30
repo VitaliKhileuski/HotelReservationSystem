@@ -13,7 +13,7 @@ namespace Business.Interfaces
         void UpdateHotelAdmin(int hotelId, int userId);
         Task UpdateHotel(int hotelId, HotelModel hotel,int userId);
         Task DeleteHotelById(int hotelId);
-        ICollection<HotelModel> GetFilteredHotels(DateTime checkInDate, DateTime checkOutDate, string country, string city);
-        Task<List<HotelModel>> GetHotelsPage(HotelPagination hotelPagination);
+        Tuple<List<HotelModel>,int> GetFilteredHotels(DateTime checkInDate, DateTime checkOutDate, string country, string city, HotelPagination hotelPagination);
+        Task<Tuple<List<HotelModel>,int>> GetHotelsPage(HotelPagination hotelPagination);
     }
 }
