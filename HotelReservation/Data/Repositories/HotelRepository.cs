@@ -73,14 +73,19 @@ namespace HotelReservation.Data.Repositories
             return await _db.Hotels.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<List<HotelEntity>> GetPage(int PageNumber, int PageSize)
+        public Tuple<List<HotelEntity>,int> GetPage(int pageNumber, int pageSize)
         {
-            var pagedData = await _db.Hotels
-                .Skip((PageNumber - 1) * PageSize)
-                .Take(PageSize)
-                .ToListAsync();
+            int numberOfPages = _db.Hotels.Count() / pageSize;
+            if (_db.Hotels.Count() % pageSize != 0)
+            {
+                numberOfPages++;
+            }
+            var pagedData =  _db.Hotels
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
 
-            return pagedData;
+            return Tuple.Create(pagedData,numberOfPages);
         }
 
         public void Update(HotelEntity hotel)

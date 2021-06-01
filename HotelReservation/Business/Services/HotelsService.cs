@@ -82,7 +82,7 @@ namespace Business.Services
                 _logger.LogError($"user with {userId} id not exists");
                 throw new NotFoundException($"user with {userId} id not exists");
             }
-            hotelEntity.HotelAdminId = userEntity.Id;
+            hotelEntity.Admin = userEntity;
             userEntity.RoleId = 3;
             _hotelRepository.Update(hotelEntity);
             _userRepository.Update(userEntity);
@@ -112,7 +112,7 @@ namespace Business.Services
                 throw new NotFoundException($"hotel with {hotelId} id not exists");
             }
 
-            if (hotelEntity.HotelAdminId == userId || userEntity.Role.Name == "Admin")
+            if (hotelEntity.Admin.Id == userId || userEntity.Role.Name == "Admin")
             {
                 var newHotelEntity = _hotelMapper.Map<HotelModel, HotelEntity>(hotel);
 
@@ -145,10 +145,11 @@ namespace Business.Services
             await _hotelRepository.DeleteAsync(hotelId);
         }
 
-        public async Task<Tuple<List<HotelModel>,int>> GetHotelsPage(HotelPagination hotelPagination)
+        public Tuple<List<HotelModel>,int> GetHotelsPage(HotelPagination hotelPagination)
         {
-            int numberOfPages = 0;
-            var hotels = _hotelMapper.Map<List<HotelModel>>(await _hotelRepository.GetPage(hotelPagination.PageNumber,hotelPagination.PageSize));
+            var hotels = _hotelMapper.Map<List<HotelModel>>(_hotelRepository.GetPage(hotelPagination.PageNumber,hotelPagination.PageSize).Item1);
+            var numberOfPages = _hotelRepository.GetPage(hotelPagination.PageNumber, hotelPagination.PageSize).Item2;
+
             return Tuple.Create(hotels,numberOfPages);
         }
 

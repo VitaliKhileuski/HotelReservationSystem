@@ -123,7 +123,7 @@ namespace HotelReservation.Api
                
             });
 
-            app.UseMiddleware<CustomExceptionMiddleware>();
+                //app.UseMiddleware<CustomExceptionMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

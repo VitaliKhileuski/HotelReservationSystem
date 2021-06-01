@@ -61,7 +61,7 @@ namespace Business.Services
             var userEntity = await _userRepository.GetAsync(userId);
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
 
-            if (hotelEntity.HotelAdminId == userId || userEntity.Role.Name=="Admin")
+            if (hotelEntity.Admin.Id == userId || userEntity.Role.Name=="Admin")
             {
                 if (hotelEntity == null)
                 {
@@ -92,7 +92,7 @@ namespace Business.Services
             var serviceEntity = await _serviceRepository.GetAsync(serviceId);
             var userEntity = await _userRepository.GetAsync(userId);
             var hotelEntity = serviceEntity.Hotel;
-            if (hotelEntity.HotelAdminId == userId || userEntity.Role.Name == "Admin")
+            if (hotelEntity.Admin.Id == userId || userEntity.Role.Name == "Admin")
             {
                await _serviceRepository.DeleteAsync(serviceId);
             }

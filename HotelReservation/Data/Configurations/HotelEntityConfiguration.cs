@@ -24,13 +24,13 @@ namespace HotelReservation.Data.Configurations
                 .HasForeignKey(x => x.HotelId)
                 .OnDelete(DeleteBehavior.Restrict);
             builder
-                .Property(x => x.HotelAdminId)
-                .IsRequired()
-                .HasDefaultValue(1);
-            builder
                 .HasMany(x => x.Services)
                 .WithOne(x => x.Hotel)
                 .HasForeignKey(x => x.HotelId)
+                .OnDelete(DeleteBehavior.Restrict);
+            builder
+                .HasOne(x => x.Admin)
+                .WithMany(x => x.OwnedHotels)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

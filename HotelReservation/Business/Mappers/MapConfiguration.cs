@@ -43,6 +43,11 @@ namespace Business.Mappers
                     .ForMember(x => x.Orders,opt => opt.Ignore())
                     .ForMember(x => x.User, opt => opt.Ignore());
                 x.CreateMap<ServiceEntity, ServiceModel>();
+                x.CreateMap<UserEntity, UserModel>()
+                    .ForMember(x => x.OwnedHotels, opt => opt.Ignore())
+                    .ForMember(x => x.Orders, opt => opt.Ignore())
+                    .ForMember(x => x.Rooms, opt => opt.Ignore())
+                    .ForMember(x => x.Role, opt => opt.Ignore());
             });
             LocationConfiguration = new MapperConfiguration(x =>
             {

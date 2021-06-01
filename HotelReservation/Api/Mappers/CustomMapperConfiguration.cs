@@ -24,6 +24,7 @@ namespace HotelReservation.Api.Mappers
                 x.CreateMap<LocationModel, LocationResponseModel>();
                 x.CreateMap<RoomModel, RoomResponseModel>();
                 x.CreateMap<ServiceModel, ServiceResponseModel>();
+                x.CreateMap<UserModel, UserResponseViewModel>();
             });
             RoleConfiguration = new MapperConfiguration(x =>
             {

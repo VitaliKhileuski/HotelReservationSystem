@@ -6,10 +6,11 @@ namespace HotelReservation.Api.Models.ResponseModels
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int HotelAdminId { get; set; }
+        public UserResponseViewModel Admin { get; set; }
         public LocationResponseModel Location { get; set; }
         public ICollection<RoomResponseModel> Rooms { get; set; }
         public ICollection<ServiceResponseModel> Services { get; set; }
+
 
     }
 }

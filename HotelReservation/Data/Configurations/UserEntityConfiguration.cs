@@ -36,6 +36,9 @@ namespace HotelReservation.Data.Configurations
             builder.HasOne(x => x.RefreshToken)
                 .WithOne(x => x.User)
                 .OnDelete(DeleteBehavior.Restrict);
+            builder.HasMany(x => x.OwnedHotels)
+                .WithOne(x => x.Admin)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

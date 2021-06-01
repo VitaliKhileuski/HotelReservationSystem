@@ -7,6 +7,7 @@ namespace HotelReservation.Data.Entities
     {
         public int RoleId { get; set; }
         public virtual RoleEntity Role { get; set; }
+        public virtual ICollection<HotelEntity> OwnedHotels { get; set; }
         public virtual  ICollection<RoomEntity> Rooms { get; set; }
         public virtual ICollection<OrderEntity> Orders { get; set; }
         public int? RefreshTokenId { get; set; }

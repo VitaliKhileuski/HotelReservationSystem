@@ -37,10 +37,11 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Route("pages")]
-        public async Task<IActionResult> GetPage([FromQuery] HotelPagination filter)
+        public IActionResult GetPage([FromQuery] HotelPagination filter)
         { 
             var validFilter = new HotelPagination(filter.PageNumber, filter.PageSize);
-            var page =await  _hotelsService.GetHotelsPage(validFilter);
+            var page =_mapper.Map<List<HotelResponseModel>>(_hotelsService.GetHotelsPage(validFilter).Item1);
+
             return Ok(page);
         }
 

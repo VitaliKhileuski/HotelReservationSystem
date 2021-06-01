@@ -51,7 +51,7 @@ namespace Business.Services
                 throw new NotFoundException($"user with {userId} id not exists");
             }
             var roomEntity = _roomMapper.Map<RoomModel, RoomEntity>(room);
-            if (hotelEntity.HotelAdminId == userId || userEntity.Role.Name == "Admin")
+            if (hotelEntity.Admin.Id == userId || userEntity.Role.Name == "Admin")
             {
                 hotelEntity.Rooms.Add(roomEntity); 
                 _hotelRepository.Update(hotelEntity);
@@ -99,7 +99,7 @@ namespace Business.Services
             var roomEntity = await _roomRepository.GetAsync(roomId);
             var userEntity =await _userRepository.GetAsync(userId);
             var hotelEntity = roomEntity.Hotel; 
-            if (hotelEntity.HotelAdminId == userId || userEntity.Role.Name=="Admin")
+            if (hotelEntity.Admin.Id == userId || userEntity.Role.Name=="Admin")
             {
                 roomEntity.BedsNumber = room.BedsNumber;
                 roomEntity.PaymentPerDay = room.PaymentPerDay;
@@ -128,7 +128,7 @@ namespace Business.Services
                 throw new NotFoundException($"user with {userId} id not exists");
             }
             var hotelEntity = roomEntity.Hotel;
-            if (hotelEntity.HotelAdminId == userId || userEntity.Role.Name=="Admin")
+            if (hotelEntity.Admin.Id == userId || userEntity.Role.Name=="Admin")
             {
                 await _roomRepository.DeleteAsync(roomId);
             }
