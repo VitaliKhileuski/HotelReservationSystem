@@ -4,6 +4,7 @@ using Business.Interfaces;
 using Business.Mappers;
 using Business.Services;
 using HotelReservation.Api.Mappers;
+using HotelReservation.Api.Policy;
 using HotelReservation.Data;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
@@ -78,30 +79,16 @@ namespace HotelReservation.Api
                     ValidateIssuerSigningKey = bool.Parse(Configuration["AuthenticationOptions:ValidateIssuerSigningKey"] ?? "false"),
                 };
             });
-            services.AddAuthorization(opt =>
+            services.AddAuthorization(options =>
             {
-                opt.AddPolicy("AdminPermission", policy =>
-                {
-                    policy.RequireAuthenticatedUser();
-                    policy.RequireRole("Admin");
-                });
-                opt.AddPolicy("HotelAdminPermission", policy =>
-                {
-                    policy.RequireAuthenticatedUser();
-                    policy.RequireRole("Admin", "HotelAdmin");
-                });
+                options.AddPolicy(Policies.AdminPermission, builder => builder.Combine(Policies.AdminPermissionPolicy()));
+                options.AddPolicy(Policies.HotelAdminPermission, builder => builder.Combine(Policies.HotelAdminPermissionPolicy()));
+                options.AddPolicy(Policies.AllAdminsPermission, builder => builder.Combine(Policies.HotelAdminPermissionPolicy()));
+                options.AddPolicy(Policies.UserPermission, builder => builder.Combine(Policies.UserPermissionPolicy()));
             });
             services.AddCors(options =>
             {
-                options.AddPolicy(
-                    "ApiCorsPolicy",
-                    builder =>
-                    {
-                        builder.WithOrigins("http://localhost:3000")
-                            .AllowAnyHeader()
-                            .AllowAnyMethod()
-                            .AllowCredentials();
-                    });
+                options.AddPolicy(Policies.ApiCors, builder => Policies.ApiCorsPolicy());
             });
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -115,13 +102,7 @@ namespace HotelReservation.Api
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors(options => {
-                options.WithOrigins("http://localhost:3000")
-               .AllowAnyHeader()
-               .AllowAnyMethod()
-               .AllowCredentials();
-               
-            });
+            app.UseCors(options => Policies.ApiCorsPolicy());
 
                 //app.UseMiddleware<CustomExceptionMiddleware>();
             app.UseEndpoints(endpoints =>

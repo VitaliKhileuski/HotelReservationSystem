@@ -9,6 +9,7 @@ using Business.Models;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
+using HotelReservation.Api.Policy;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,9 +41,11 @@ namespace HotelReservation.Api.Controllers
         public IActionResult GetPage([FromQuery] HotelPagination filter)
         { 
             var validFilter = new HotelPagination(filter.PageNumber, filter.PageSize);
-            var page =_mapper.Map<List<HotelResponseModel>>(_hotelsService.GetHotelsPage(validFilter).Item1);
+            var  HotelsWithCount =_hotelsService.GetHotelsPage(validFilter);
+            var hotels = _mapper.Map<List<HotelResponseModel>>(HotelsWithCount.Item1);
+            var maxNumberOfHotels = HotelsWithCount.Item2;
 
-            return Ok(page);
+            return Ok(Tuple.Create(hotels,maxNumberOfHotels));
         }
 
         [HttpGet]
@@ -55,7 +58,7 @@ namespace HotelReservation.Api.Controllers
 
 
         [HttpPost]
-        [Authorize(Policy = "AdminPermission")]
+        [Authorize(Policy = Policies.AllAdminsPermission)]
         public async Task<IActionResult> AddHotel([FromBody] HotelModel hotel)
         {
             await  _hotelsService.AddHotel(hotel);

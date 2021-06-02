@@ -75,17 +75,13 @@ namespace HotelReservation.Data.Repositories
 
         public Tuple<List<HotelEntity>,int> GetPage(int pageNumber, int pageSize)
         {
-            int numberOfPages = _db.Hotels.Count() / pageSize;
-            if (_db.Hotels.Count() % pageSize != 0)
-            {
-                numberOfPages++;
-            }
+            int numberOfHotels = _db.Hotels.Count();
             var pagedData =  _db.Hotels
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
 
-            return Tuple.Create(pagedData,numberOfPages);
+            return Tuple.Create(pagedData,numberOfHotels);
         }
 
         public void Update(HotelEntity hotel)

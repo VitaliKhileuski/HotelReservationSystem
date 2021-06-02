@@ -8,6 +8,7 @@ using Business.Models;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
+using HotelReservation.Api.Policy;
 using Microsoft.AspNetCore.Authorization;
 
 namespace HotelReservation.Api.Controllers
@@ -25,7 +26,7 @@ namespace HotelReservation.Api.Controllers
             _usersService = usersService;
         }
         [HttpGet]
-        [Authorize(Policy = "AdminPermission")]
+        [Authorize(Policy = Policies.AdminPermission)]
         public IEnumerable<UserResponseViewModel> Get()
         {
             var responseUsers = _mapper.Map<List<UserResponseViewModel>>(_usersService.GetAll());
