@@ -8,6 +8,7 @@ using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data.Entities;
+using HotelReservation.Data.Interfaces;
 using HotelReservation.Data.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -15,13 +16,13 @@ namespace Business.Services
 {
     public class HotelsService : IHotelsService
     {
-        private readonly HotelRepository _hotelRepository;
-        private readonly UserRepository _userRepository;
+        private readonly  IBaseRepository<HotelEntity> _hotelRepository;
+        private readonly IUserRepository _userRepository;
         private readonly Mapper _locationMapper;
         private readonly Mapper _hotelMapper;
         private readonly ILogger<HotelsService> _logger;
 
-        public HotelsService(ILogger<HotelsService>  logger, HotelRepository hotelRepository, UserRepository userRepository, MapConfiguration cfg)
+        public HotelsService(ILogger<HotelsService>  logger, IBaseRepository<HotelEntity> hotelRepository, IUserRepository userRepository, MapConfiguration cfg)
         {
             _hotelRepository = hotelRepository;
             _userRepository = userRepository;
@@ -60,23 +61,19 @@ namespace Business.Services
         public List<HotelModel> GetAll()
         {
             var hotelModels = _hotelMapper.Map<List<HotelModel>>(_hotelRepository.GetAll().ToList());
-            if (hotelModels.Count == 0)
-            {
-                _logger.LogError("no data about hotels");
-                throw new NotFoundException("no data about hotels");
-            }
+
             return hotelModels;
         }
 
-        public void UpdateHotelAdmin(int hotelId, int userId)
+        public async Task UpdateHotelAdmin(int hotelId, int userId)
         {
-            var hotelEntity = _hotelRepository.Get(hotelId);
+            var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
             {
                 _logger.LogError($"hotel with {hotelId} id not exists");
                 throw new NotFoundException($"hotel with {hotelId} id not exists");
             }
-            var userEntity = _userRepository.Get(userId);
+            var userEntity = await _userRepository.GetAsync(userId);
             if (userEntity == null)
             {
                 _logger.LogError($"user with {userId} id not exists");
@@ -84,8 +81,8 @@ namespace Business.Services
             }
             hotelEntity.Admin = userEntity;
             userEntity.RoleId = 3;
-            _hotelRepository.Update(hotelEntity);
-            _userRepository.Update(userEntity);
+           await _hotelRepository.UpdateAsync(hotelEntity);
+           await _userRepository.UpdateAsync(userEntity);
         }
 
         public async Task UpdateHotel(int hotelId, HotelModel hotel, int userId)
@@ -126,7 +123,7 @@ namespace Business.Services
                     hotelEntity.Name = newHotelEntity.Name;
                 }
 
-                _hotelRepository.Update(hotelEntity);
+                await _hotelRepository.UpdateAsync(hotelEntity);
             }
             else
             {
@@ -145,10 +142,11 @@ namespace Business.Services
             await _hotelRepository.DeleteAsync(hotelId);
         }
 
-        public Tuple<List<HotelModel>,int> GetHotelsPage(HotelPagination hotelPagination)
+        public async Task<Tuple<IEnumerable<HotelModel>,int>> GetHotelsPage(HotelPagination hotelPagination)
         {
-            var hotels = _hotelMapper.Map<List<HotelModel>>(_hotelRepository.GetPage(hotelPagination.PageNumber,hotelPagination.PageSize).Item1);
-            var numberOfPages = _hotelRepository.GetPage(hotelPagination.PageNumber, hotelPagination.PageSize).Item2;
+            var hotels = _hotelMapper.Map<IEnumerable<HotelModel>>(_hotelRepository.Find(hotelPagination.PageNumber,hotelPagination.PageSize));
+            var numberOfPages = await  _hotelRepository.GetCountAsync();
+
 
             return Tuple.Create(hotels,numberOfPages);
         }

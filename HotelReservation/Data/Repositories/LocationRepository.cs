@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelReservation.Data.Repositories
 {
-   public  class LocationRepository : IRepository<LocationEntity>, IRepositoryAsync<LocationEntity>
+   public  class LocationRepository 
     {
         private readonly Context _db;
 
@@ -17,27 +17,10 @@ namespace HotelReservation.Data.Repositories
             _db = context;
         }
 
-        public void Create(LocationEntity location)
-        {
-            _db.Locations.Add(location);
-            _db.SaveChanges();
-        }
-
         public async Task CreateAsync(LocationEntity location)
         {
             await _db.Locations.AddAsync(location);
             await _db.SaveChangesAsync();
-        }
-
-        public void Delete(int id)
-        {
-            LocationEntity location = _db.Locations.Find(id);
-            if (location != null)
-            {
-                _db.Locations.Remove(location);
-            }
-
-            _db.SaveChanges();
         }
 
         public async Task DeleteAsync(int id)
@@ -54,11 +37,6 @@ namespace HotelReservation.Data.Repositories
         public IEnumerable<LocationEntity> Find(Func<LocationEntity, bool> predicate)
         {
             return _db.Locations.Where(predicate).ToList();
-        }
-
-        public LocationEntity Get(int id)
-        {
-            return _db.Locations.Find(id);
         }
 
         public IEnumerable<LocationEntity> GetAll()

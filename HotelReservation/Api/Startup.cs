@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using Business;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Services;
@@ -27,6 +28,7 @@ namespace HotelReservation.Api
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            
         }
 
         public IConfiguration Configuration { get; }
@@ -40,13 +42,14 @@ namespace HotelReservation.Api
                 opt.UseSqlServer(Configuration.GetConnectionString("HotelContextConnection"),
                     x => x.MigrationsAssembly("Api"));
             });
-            services.AddScoped<HashPassword>();
-            services.AddScoped<RoomRepository>();
-            services.AddScoped<HotelRepository>();
-            services.AddScoped<OrderRepository>();
-            services.AddScoped<LocationRepository>();
-            services.AddScoped<UserRepository>();
-            services.AddScoped<ServiceRepository>();
+            services.Configure<AuthOptions>(Configuration.GetSection(AuthOptions.Authentication));
+            services.AddScoped<IPasswordHasher,PasswordHasher>();
+            services.AddScoped<IBaseRepository<RoomEntity>, BaseRepository<RoomEntity>>();
+            services.AddScoped<IBaseRepository<HotelEntity>, BaseRepository<HotelEntity>>();
+            services.AddScoped<IBaseRepository<OrderEntity>, BaseRepository<OrderEntity>>();
+            services.AddScoped<IBaseRepository<LocationEntity>, BaseRepository<LocationEntity>>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IBaseRepository<ServiceEntity>, BaseRepository<ServiceEntity>>();
 
             services.AddScoped<MapConfiguration>();
             services.AddScoped<CustomMapperConfiguration>();
@@ -56,18 +59,17 @@ namespace HotelReservation.Api
             services.AddScoped<IRoomService,RoomsService>();
             services.AddScoped<IOrderService,OrdersService>();
             services.AddScoped<IHotelsService, HotelsService>();
-            services.AddScoped<IUserService,UsersService>();
+            services.AddTransient<IUserService,UsersService>();
             services.AddScoped<IFacilityService,FacilitiesService>();
             services.AddScoped<LocationsService>();
             services.AddControllers();
             services.AddControllersWithViews()
-    .AddNewtonsoftJson(options =>
+                .AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
 );
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
             {
-                options.RequireHttpsMetadata = bool.Parse(Configuration["AuthenticationOptions:RequireHttpsMetadata"] ?? "false");
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidIssuer = Configuration["AuthenticationOptions:issuer"],
@@ -75,8 +77,9 @@ namespace HotelReservation.Api
                     ValidAudience = Configuration["AuthenticationOptions:audience"],
                     ValidateAudience = bool.Parse(Configuration["AuthenticationOptions:ValidateAudience"] ?? "false"),
                     ValidateLifetime = bool.Parse(Configuration["AuthenticationOptions:ValidateLifetime"] ?? "false"),
-                    IssuerSigningKey =  new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Secrets:secretKey"])),
+                    IssuerSigningKey =  new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["AuthenticationOptions:secretKey"])),
                     ValidateIssuerSigningKey = bool.Parse(Configuration["AuthenticationOptions:ValidateIssuerSigningKey"] ?? "false"),
+                    ClockSkew = TimeSpan.Zero
                 };
             });
             services.AddAuthorization(options =>
@@ -88,7 +91,7 @@ namespace HotelReservation.Api
             });
             services.AddCors(options =>
             {
-                options.AddPolicy(Policies.ApiCors, builder => Policies.ApiCorsPolicy());
+                options.AddPolicy(Policies.ApiCors, builder => Policies.ApiCorsPolicy(builder));
             });
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -102,9 +105,8 @@ namespace HotelReservation.Api
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors(options => Policies.ApiCorsPolicy());
-
-                //app.UseMiddleware<CustomExceptionMiddleware>();
+            app.UseCors(builder => Policies.ApiCorsPolicy(builder));
+            app.UseMiddleware<CustomExceptionMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

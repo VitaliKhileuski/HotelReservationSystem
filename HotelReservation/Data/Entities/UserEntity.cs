@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace HotelReservation.Data.Entities
 {
-    public class UserEntity
+    public class UserEntity : Entity
     {
         public int RoleId { get; set; }
         public virtual RoleEntity Role { get; set; }
@@ -12,7 +12,6 @@ namespace HotelReservation.Data.Entities
         public virtual ICollection<OrderEntity> Orders { get; set; }
         public int? RefreshTokenId { get; set; }
         public virtual RefreshTokenEntity RefreshToken { get; set; }
-        public int Id { get; set; }
         public string Email { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }

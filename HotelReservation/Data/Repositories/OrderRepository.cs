@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelReservation.Data.Repositories
 {
-    public class OrderRepository : IRepository<OrderEntity>, IRepositoryAsync<OrderEntity>
+    public class OrderRepository 
     {
         private readonly Context _db;
 
@@ -16,27 +16,10 @@ namespace HotelReservation.Data.Repositories
         {
             _db = context;
         }
-        public void Create(OrderEntity order)
-        {
-            _db.Orders.Add(order);
-            _db.SaveChanges();
-        }
-
         public async Task CreateAsync(OrderEntity order)
         {
             await _db.Orders.AddAsync(order);
             await _db.SaveChangesAsync();
-        }
-
-        public void Delete(int id)
-        {
-            OrderEntity order = _db.Orders.Find(id);
-            if (order != null)
-            {
-                _db.Orders.Remove(order);
-            }
-
-            _db.SaveChanges();
         }
 
         public async Task DeleteAsync(int id)

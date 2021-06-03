@@ -9,7 +9,7 @@ namespace Business.Interfaces
         public ICollection<UserModel> GetAll();
         public Task<UserModel> GetById(int userId);
         public Task DeleteById(int userId);
-        public void Update(int id, UserModel user); 
+        public Task Update(int id, UserModel user); 
         Task AddUser(UserModel user);
     }
 }

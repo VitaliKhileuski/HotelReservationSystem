@@ -5,22 +5,23 @@ using System.Security.Cryptography;
 using System.Text;
 using Business.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Business.Services
 {
     public class TokenService : ITokenService
     {
-        private readonly IConfiguration _cfg;
+        private readonly AuthOptions _options;
 
-        public TokenService(IConfiguration configuration)
+        public TokenService(IOptions<AuthOptions> options)
         {
-            _cfg = configuration;
+            _options = options.Value;
         }
 
-        public string BuildToken(string key, string email, string roleName,string firstname, int id)
+        public string BuildToken(string email, string roleName,string firstname, int id)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var claims = new Claim[]
             {
@@ -30,12 +31,12 @@ namespace Business.Services
                 new Claim("id", id.ToString())
 
             };
-            DateTime expires = DateTime.Now.AddMinutes(Convert.ToDouble(_cfg["AuthenticationOptions:lifetime"]));
+            DateTime expires = DateTime.Now.AddMinutes(Convert.ToDouble(_options.Lifetime));
             var jwt = new JwtSecurityToken(claims: claims,
                 signingCredentials: credentials,
                 expires: expires,
-                audience: _cfg["AuthenticationOptions:audience"],
-                issuer: _cfg["AuthenticationOptions:issuer"]);
+                audience:_options.Audience,
+                issuer: _options.Issuer);
             return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
 

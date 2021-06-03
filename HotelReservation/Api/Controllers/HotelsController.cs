@@ -38,10 +38,10 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Route("pages")]
-        public IActionResult GetPage([FromQuery] HotelPagination filter)
+        public async Task<IActionResult> GetPage([FromQuery] HotelPagination filter)
         { 
             var validFilter = new HotelPagination(filter.PageNumber, filter.PageSize);
-            var  HotelsWithCount =_hotelsService.GetHotelsPage(validFilter);
+            var  HotelsWithCount =await _hotelsService.GetHotelsPage(validFilter);
             var hotels = _mapper.Map<List<HotelResponseModel>>(HotelsWithCount.Item1);
             var maxNumberOfHotels = HotelsWithCount.Item2;
 

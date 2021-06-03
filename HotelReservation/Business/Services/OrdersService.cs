@@ -8,6 +8,7 @@ using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data.Entities;
+using HotelReservation.Data.Interfaces;
 using HotelReservation.Data.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -15,13 +16,13 @@ namespace Business.Services
 {
     public class OrdersService : IOrderService
     {
-        private readonly OrderRepository _orderRepository;
-        private readonly UserRepository _userRepository;
-        private readonly RoomRepository _roomRepository;
+        private readonly IBaseRepository<OrderEntity> _orderRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IBaseRepository<RoomEntity> _roomRepository;
         private readonly Mapper _mapper;
         private readonly ILogger<OrdersService> _logger;
-        public OrdersService(ILogger<OrdersService> logger, OrderRepository orderRepository, UserRepository userRepository,
-            RoomRepository roomRepository, MapConfiguration cfg)
+        public OrdersService(ILogger<OrdersService> logger, IBaseRepository<OrderEntity> orderRepository, IUserRepository userRepository,
+            IBaseRepository<RoomEntity> roomRepository, MapConfiguration cfg)
         {
             _orderRepository = orderRepository;
             _userRepository = userRepository;
@@ -86,7 +87,7 @@ namespace Business.Services
             orderEntity.Room = roomEntity;
             userEntity.Orders.Add(orderEntity);
             await _orderRepository.CreateAsync(orderEntity);
-             _roomRepository.Update(roomEntity);
+            await _roomRepository.UpdateAsync(roomEntity);
         }
 
         public async Task UpdateOrder(int orderId, OrderModel newOrder)
@@ -122,9 +123,9 @@ namespace Business.Services
             currentOrder.NumberOfDays = currentOrder.EndDate.Subtract(currentOrder.StartDate).Days;
             currentOrder.Services = orderEntity.Services;
             currentOrder.FullPrice = GetFullPrice(currentOrder,roomEntity);
-            _orderRepository.Update(currentOrder);
+            await _orderRepository.UpdateAsync(currentOrder);
             currentOrder.Services = services;
-            _orderRepository.Update(currentOrder);
+            await  _orderRepository.UpdateAsync(currentOrder);
         }
 
         public async Task DeleteOrder(int orderId)

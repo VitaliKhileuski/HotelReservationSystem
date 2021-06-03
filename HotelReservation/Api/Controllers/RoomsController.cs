@@ -29,13 +29,6 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetRooms()
-        {
-            var rooms = _mapper.Map<ICollection<RoomResponseModel>>(await _roomsService.GetAllRooms());
-            return Ok(rooms);
-        }
-
-        [HttpGet]
         [Route("{hotelId:int}")]
         public async Task<IActionResult> GetRooms(int hotelId)
         {

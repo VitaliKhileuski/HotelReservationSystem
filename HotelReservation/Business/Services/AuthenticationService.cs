@@ -16,26 +16,25 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using HotelReservation.Data.Interfaces;
 
 namespace Business.Services
 {
     public class AuthenticationService : IAuthenticationService
     {
         private readonly Context _db;
-        private readonly IConfiguration _cfg;
-        private readonly HashPassword _hash;
+        private readonly IPasswordHasher _hash;
         private readonly ITokenService _tokenService;
-        private readonly UserRepository _repository;
+        private readonly IBaseRepository<UserEntity> _repository;
         private readonly Mapper _mapper;
         private readonly ILogger<AuthenticationService> _logger;
 
-        public AuthenticationService(ILogger<AuthenticationService> logger, Context context, IConfiguration configuration, HashPassword hashPassword, ITokenService tokenService, MapConfiguration cfg)
+        public AuthenticationService(ILogger<AuthenticationService> logger, Context context, IPasswordHasher hashPassword, ITokenService tokenService, MapConfiguration cfg, IBaseRepository<UserEntity> repository)
         {
             _db = context;
-            _cfg = configuration;
             _hash = hashPassword;
             _tokenService = tokenService;
-            _repository = new UserRepository(_db);
+            _repository = repository;
             _mapper = new Mapper(cfg.UserConfiguration);
             _logger = logger;
         }
@@ -49,9 +48,9 @@ namespace Business.Services
             }
 
             string token;
-            if (_hash.CheckHash(user.Password, userFromDb.Password))
+            if (CheckHash(user.Password, userFromDb.Password))
             {
-                token = _tokenService.BuildToken(_cfg["Secrets:secretKey"], user.Email, userFromDb.Role.Name,userFromDb.Name,userFromDb.Id);
+                token = _tokenService.BuildToken(user.Email, userFromDb.Role.Name,userFromDb.Name,userFromDb.Id);
             }
             else
             {
@@ -95,7 +94,7 @@ namespace Business.Services
             userEntity.RefreshToken = refreshToken;
             await _repository.CreateAsync(userEntity);
             var userEntityFromDb = _db.Users.FirstOrDefault(x => x.Email == userEntity.Email);
-            var token = _tokenService.BuildToken(_cfg["Secrets:secretKey"], user.Email, "User",user.Name,userEntityFromDb.Id);
+            var token = _tokenService.BuildToken(user.Email, "User",user.Name,userEntityFromDb.Id);
             return new List<string> { token, refreshToken.Token };
         }
 
@@ -132,24 +131,13 @@ namespace Business.Services
 
             await _db.RefreshTokens.AddAsync(newRefreshToken);
             await _db.SaveChangesAsync();
-            var newJwtToken = _tokenService.BuildToken(_cfg["Secrets:secretKey"], dbUser.Email, dbUser.Role.Name,dbUser.Name, dbUser.Id);
+            var newJwtToken = _tokenService.BuildToken(dbUser.Email, dbUser.Role.Name,dbUser.Name, dbUser.Id);
             return new List<string> { newJwtToken, newRefreshToken.Token };
         }
-        public void JWTTokenVerification(string token)
+        private bool CheckHash(string password, string hash)
         {
-
-            var tokenParts = token.Split('.');
-            var key = Encoding.ASCII.GetBytes(_cfg["Secrets:secretKey"]);
-            var PartsInBytes = Encoding.ASCII.GetBytes(tokenParts[0]+'.'+tokenParts[1]);
-            var hash = new HMACSHA256(key);
-            var thirdPartInbytes = hash.ComputeHash(PartsInBytes);
-            var thirdPart = Convert.ToBase64String(thirdPartInbytes);
-            var tokenPartsBytes =  Encoding.ASCII.GetBytes(tokenParts[2]);
-            if (tokenParts[2] != thirdPart)
-            {
-                _logger.LogError("problems with token verification");
-                throw new BadRequestException("problems with token verification");
-            }
+            var currentHash = _hash.GenerateHash(password, SHA256.Create());
+            return currentHash == hash;
         }
     }
 }

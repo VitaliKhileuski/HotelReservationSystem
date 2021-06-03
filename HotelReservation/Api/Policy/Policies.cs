@@ -48,10 +48,10 @@ namespace HotelReservation.Api.Policy
                 .Build();
         }
 
-        public static CorsPolicyBuilder ApiCorsPolicy()
+        public static CorsPolicyBuilder ApiCorsPolicy(CorsPolicyBuilder builder)
         {
-            return new CorsPolicyBuilder()
-                .WithOrigins("http://localhost:3000")
+            return builder
+                .WithOrigins(FrontLocalHost)
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();

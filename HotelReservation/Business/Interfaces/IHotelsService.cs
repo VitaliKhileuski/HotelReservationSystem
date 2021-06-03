@@ -9,11 +9,10 @@ namespace Business.Interfaces
     {
         Task AddHotel(HotelModel hotel);
         Task<HotelModel> GetById(int id);
-        List<HotelModel> GetAll();
-        void UpdateHotelAdmin(int hotelId, int userId);
+        Task UpdateHotelAdmin(int hotelId, int userId);
         Task UpdateHotel(int hotelId, HotelModel hotel,int userId);
         Task DeleteHotelById(int hotelId);
         Tuple<List<HotelModel>,int> GetFilteredHotels(DateTime checkInDate, DateTime checkOutDate, string country, string city, HotelPagination hotelPagination);
-        Tuple<List<HotelModel>, int> GetHotelsPage(HotelPagination hotelPagination);
+        Task<Tuple<IEnumerable<HotelModel>, int>> GetHotelsPage(HotelPagination hotelPagination);
     }
 }

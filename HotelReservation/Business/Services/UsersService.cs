@@ -9,6 +9,7 @@ using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data;
 using HotelReservation.Data.Entities;
+using HotelReservation.Data.Interfaces;
 using HotelReservation.Data.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -16,12 +17,12 @@ namespace Business.Services
 {
     public class UsersService : IUserService
     {
-        private readonly UserRepository _userRepository;
+        private readonly IUserRepository _userRepository;
         private readonly Mapper _mapper;
         private readonly ILogger<UsersService> _logger;
-        private readonly HashPassword _hash;
+        private readonly IPasswordHasher _hash;
         private readonly ITokenService _tokenService;
-        public UsersService(ILogger<UsersService> logger, UserRepository userRepository, MapConfiguration cfg, HashPassword hash, ITokenService tokenService)
+        public UsersService(ILogger<UsersService> logger, IUserRepository userRepository, MapConfiguration cfg, IPasswordHasher hash, ITokenService tokenService)
         {
             _mapper = new Mapper(cfg.UserConfiguration);
             _userRepository = userRepository;
@@ -93,9 +94,9 @@ namespace Business.Services
             await _userRepository.DeleteAsync(userId);
         }
 
-        public void Update(int userId,UserModel user)
+        public async Task Update(int userId,UserModel user)
         {
-            var userEntity = _userRepository.Get(userId);
+            var userEntity = await _userRepository.GetAsync(userId);
             if (userEntity == null)
             {
                 _logger.LogError($"user with {userId} id not exists");
@@ -106,7 +107,7 @@ namespace Business.Services
             userEntity.Name = newUser.Name;
             userEntity.Surname = newUser.Surname;
             userEntity.PhoneNumber = userEntity.PhoneNumber;
-            _userRepository.Update(userEntity);
+            await _userRepository.UpdateAsync(userEntity);
         }
     }
 }

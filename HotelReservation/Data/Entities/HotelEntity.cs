@@ -2,9 +2,8 @@
 
 namespace HotelReservation.Data.Entities
 {
-    public class HotelEntity
+    public class HotelEntity : Entity
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public virtual LocationEntity Location { get; set; }
         public virtual List<RoomEntity> Rooms { get; set; }

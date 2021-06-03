@@ -3,14 +3,15 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Security.Cryptography;
 using HotelReservation.Data.Configurations;
+using HotelReservation.Data.Interfaces;
 using DbContext = Microsoft.EntityFrameworkCore.DbContext;
 
 namespace HotelReservation.Data
 {
     public class Context : DbContext
     {
-        private readonly HashPassword _hashPass;
-        public Context(DbContextOptions<Context> options,HashPassword hash)
+        private readonly IPasswordHasher _hashPass;
+        public Context(DbContextOptions<Context> options,IPasswordHasher hash)
             : base(options)
         {
             _hashPass = hash;

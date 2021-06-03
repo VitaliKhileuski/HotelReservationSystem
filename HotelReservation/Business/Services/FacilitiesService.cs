@@ -7,6 +7,7 @@ using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data.Entities;
+using HotelReservation.Data.Interfaces;
 using HotelReservation.Data.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -14,13 +15,13 @@ namespace Business.Services
 {
     public class FacilitiesService : IFacilityService
     {
-        private readonly HotelRepository _hotelRepository;
-        private readonly UserRepository _userRepository;
-        private readonly ServiceRepository _serviceRepository;
+        private readonly IBaseRepository<HotelEntity> _hotelRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IBaseRepository<ServiceEntity> _serviceRepository;
         private readonly Mapper _mapper;
         private readonly ILogger<FacilitiesService> _logger;
 
-        public FacilitiesService(ILogger<FacilitiesService> logger,HotelRepository hotelRepository, UserRepository userRepository,ServiceRepository serviceRepository, MapConfiguration cfg)
+        public FacilitiesService(ILogger<FacilitiesService> logger, IBaseRepository<HotelEntity> hotelRepository, IUserRepository userRepository, IBaseRepository<ServiceEntity> serviceRepository, MapConfiguration cfg)
         {
             _hotelRepository = hotelRepository;
             _userRepository = userRepository;
@@ -78,7 +79,7 @@ namespace Business.Services
                 var serviceEntity = _mapper.Map<ServiceModel, ServiceEntity>(serviceModel);
                 hotelEntity.Services.Add(serviceEntity);
                 serviceEntity.Hotel = hotelEntity; 
-                _hotelRepository.Update(hotelEntity);
+               await _hotelRepository.UpdateAsync(hotelEntity);
             }
             else
             {
