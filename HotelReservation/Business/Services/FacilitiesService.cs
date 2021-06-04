@@ -6,6 +6,7 @@ using Business.Exceptions;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
+using HotelReservation.Data.Constants;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
 using HotelReservation.Data.Repositories;
@@ -35,12 +36,6 @@ namespace Business.Services
         public ICollection<ServiceModel> GetAllServices()
         {
             var services = _mapper.Map<ICollection<ServiceModel>>(_serviceRepository.GetAll());
-            if (services.Count == 0)
-            {
-                _logger.LogError("no data about services");
-                throw new NotFoundException("no data about services");
-            }
-
             return services;
         }
 
@@ -62,7 +57,7 @@ namespace Business.Services
             var userEntity = await _userRepository.GetAsync(userId);
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
 
-            if (hotelEntity.Admin.Id == userId || userEntity.Role.Name=="Admin")
+            if (hotelEntity.Admin.Id == userId || userEntity.Role.Name==Roles.Admin)
             {
                 if (hotelEntity == null)
                 {
@@ -93,7 +88,7 @@ namespace Business.Services
             var serviceEntity = await _serviceRepository.GetAsync(serviceId);
             var userEntity = await _userRepository.GetAsync(userId);
             var hotelEntity = serviceEntity.Hotel;
-            if (hotelEntity.Admin.Id == userId || userEntity.Role.Name == "Admin")
+            if (hotelEntity.Admin.Id == userId || userEntity.Role.Name == Roles.Admin)
             {
                await _serviceRepository.DeleteAsync(serviceId);
             }

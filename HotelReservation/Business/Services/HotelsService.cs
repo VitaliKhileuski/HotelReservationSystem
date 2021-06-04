@@ -7,6 +7,7 @@ using Business.Exceptions;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
+using HotelReservation.Data.Constants;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
 using HotelReservation.Data.Repositories;
@@ -109,7 +110,7 @@ namespace Business.Services
                 throw new NotFoundException($"hotel with {hotelId} id not exists");
             }
 
-            if (hotelEntity.Admin.Id == userId || userEntity.Role.Name == "Admin")
+            if (hotelEntity.Admin.Id == userId || userEntity.Role.Name == Roles.Admin)
             {
                 var newHotelEntity = _hotelMapper.Map<HotelModel, HotelEntity>(hotel);
 

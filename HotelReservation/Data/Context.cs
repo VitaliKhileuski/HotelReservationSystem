@@ -37,37 +37,8 @@ namespace HotelReservation.Data
                 .ApplyConfiguration(new OrderEntityConfiguration())
                 .ApplyConfiguration(new RoomEntityConfiguration())
                 .ApplyConfiguration(new RefreshTokenConfiguration())
-                .ApplyConfiguration(new ServiceEntityConfiguration());
-
-            modelBuilder.Entity<RoleEntity>().HasData(new RoleEntity()
-            {
-                Id = 1,
-                Name = "Admin",
-                Users = null
-            });
-            modelBuilder.Entity<RoleEntity>().HasData(new RoleEntity()
-            {
-                Id = 2,
-                Name = "User",
-                Users = null
-            });
-            modelBuilder.Entity<RoleEntity>().HasData(new RoleEntity()
-            {
-                Id = 3,
-                Name = "HotelAdmin",
-                Users = null
-            });
-            modelBuilder.Entity<UserEntity>().HasData(new UserEntity()
-            {
-                Id = 1,
-                RoleId = 1,
-                Name = "Admin",
-                Email = "admin@gmail.com",
-                Password = _hashPass.GenerateHash("admin111", SHA256.Create()),
-                Surname = "Admin",
-                PhoneNumber = "+375297809088"
-            });
-
+                .ApplyConfiguration(new ServiceEntityConfiguration())
+                .ApplyConfiguration(new RoleEntityConfiguration());
         }
 
     }

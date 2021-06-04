@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelReservation.Data.Repositories
 {
-    public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity>  where TEntity : Entity
+    public  class BaseRepository<TEntity> : IBaseRepository<TEntity>  where TEntity : Entity
     {
         private readonly Context _db;
 

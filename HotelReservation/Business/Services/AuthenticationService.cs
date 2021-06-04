@@ -16,7 +16,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using HotelReservation.Data.Constants;
 using HotelReservation.Data.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace Business.Services
 {
@@ -25,16 +27,19 @@ namespace Business.Services
         private readonly Context _db;
         private readonly IPasswordHasher _hash;
         private readonly ITokenService _tokenService;
-        private readonly IBaseRepository<UserEntity> _repository;
+        private readonly IUserRepository _repository;
+        private readonly IRoleRepository _roleRepository;
         private readonly Mapper _mapper;
         private readonly ILogger<AuthenticationService> _logger;
 
-        public AuthenticationService(ILogger<AuthenticationService> logger, Context context, IPasswordHasher hashPassword, ITokenService tokenService, MapConfiguration cfg, IBaseRepository<UserEntity> repository)
+        public AuthenticationService(ILogger<AuthenticationService> logger, Context context, IPasswordHasher hashPassword, ITokenService tokenService,
+            MapConfiguration cfg, IUserRepository repository, IRoleRepository roleRepository)
         {
             _db = context;
             _hash = hashPassword;
             _tokenService = tokenService;
             _repository = repository;
+            _roleRepository = roleRepository;
             _mapper = new Mapper(cfg.UserConfiguration);
             _logger = logger;
         }
@@ -85,7 +90,8 @@ namespace Business.Services
             }
             user.Password = _hash.GenerateHash(user.Password, SHA256.Create());
             var userEntity = _mapper.Map<RegisterUserModel, UserEntity>(user);
-            userEntity.RoleId = 2;
+            var role = await  _roleRepository.GetAsyncByName(Roles.User);
+            userEntity.RoleId = role.Id;
             
             var refreshToken = new RefreshTokenEntity
             {
@@ -94,7 +100,7 @@ namespace Business.Services
             userEntity.RefreshToken = refreshToken;
             await _repository.CreateAsync(userEntity);
             var userEntityFromDb = _db.Users.FirstOrDefault(x => x.Email == userEntity.Email);
-            var token = _tokenService.BuildToken(user.Email, "User",user.Name,userEntityFromDb.Id);
+            var token = _tokenService.BuildToken(user.Email,Roles.User,user.Name,userEntityFromDb.Id);
             return new List<string> { token, refreshToken.Token };
         }
 

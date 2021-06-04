@@ -42,14 +42,16 @@ namespace HotelReservation.Api
                 opt.UseSqlServer(Configuration.GetConnectionString("HotelContextConnection"),
                     x => x.MigrationsAssembly("Api"));
             });
+            services.AddScoped<InitialData>();
             services.Configure<AuthOptions>(Configuration.GetSection(AuthOptions.Authentication));
             services.AddScoped<IPasswordHasher,PasswordHasher>();
-            services.AddScoped<IBaseRepository<RoomEntity>, BaseRepository<RoomEntity>>();
-            services.AddScoped<IBaseRepository<HotelEntity>, BaseRepository<HotelEntity>>();
-            services.AddScoped<IBaseRepository<OrderEntity>, BaseRepository<OrderEntity>>();
-            services.AddScoped<IBaseRepository<LocationEntity>, BaseRepository<LocationEntity>>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<IBaseRepository<RoomEntity>, RoomRepository>();
+            services.AddScoped<IBaseRepository<HotelEntity>, HotelRepository>();
+            services.AddScoped<IBaseRepository<OrderEntity>, OrderRepository>();
+            services.AddScoped<IBaseRepository<LocationEntity>, LocationRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IBaseRepository<ServiceEntity>, BaseRepository<ServiceEntity>>();
+            services.AddScoped<IBaseRepository<ServiceEntity>, ServiceRepository>();
 
             services.AddScoped<MapConfiguration>();
             services.AddScoped<CustomMapperConfiguration>();
@@ -111,6 +113,7 @@ namespace HotelReservation.Api
             {
                 endpoints.MapControllers();
             });
+
             Migrate(app);
         }
 
@@ -121,6 +124,8 @@ namespace HotelReservation.Api
                 .CreateScope();
             using var context = serviceScope.ServiceProvider.GetService<Context>();
             context?.Database.Migrate();
+            var contextInitializer = serviceScope.ServiceProvider.GetService<InitialData>();
+            contextInitializer?.InitializeContext();
         }
     }
 }
