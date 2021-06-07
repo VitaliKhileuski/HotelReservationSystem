@@ -21,19 +21,21 @@ namespace Business.Services
         private readonly IUserRepository _userRepository;
         private readonly Mapper _locationMapper;
         private readonly Mapper _hotelMapper;
+        private readonly IRoleRepository _roleRepository;
         private readonly ILogger<HotelsService> _logger;
 
-        public HotelsService(ILogger<HotelsService>  logger, IBaseRepository<HotelEntity> hotelRepository, IUserRepository userRepository, MapConfiguration cfg)
+        public HotelsService(ILogger<HotelsService>  logger, IBaseRepository<HotelEntity> hotelRepository,IRoleRepository roleRepository, IUserRepository userRepository, MapConfiguration cfg)
         {
             _hotelRepository = hotelRepository;
             _userRepository = userRepository;
             _locationMapper = new Mapper(cfg.LocationConfiguration);
             _hotelMapper = new Mapper(cfg.HotelConfiguration);
             _logger = logger;
-            
+            _roleRepository = roleRepository;
+
         }
 
-        public async Task AddHotel(HotelModel hotel)
+        public async Task AddHotel(HotelModel hotel,int hotelAdminId)
         {
             if (hotel == null)
             {
@@ -41,9 +43,21 @@ namespace Business.Services
                 throw new BadRequestException("incorrect input data");
             }
             var hotelEntity = _hotelMapper.Map<HotelModel, HotelEntity>(hotel);
+            var userEntity = await _userRepository.GetAsync(hotelAdminId);
+            if (userEntity == null)
+            {
+                _logger.LogError($"user with {hotelAdminId} id not exists");
+                throw new NotFoundException($"user with {hotelAdminId} id not exists");
+            }
+            
+            hotelEntity.Admin = userEntity;
             var locationEntity = _locationMapper.Map<LocationModel, LocationEntity>(hotel.Location);
+            var roleEntity = await _roleRepository.GetAsyncByName(Roles.HotelAdmin);
+            userEntity.Role = roleEntity;
             hotelEntity.Location = locationEntity;
             locationEntity.Hotel = hotelEntity;
+
+            await _userRepository.UpdateAsync(userEntity);
             await _hotelRepository.CreateAsync(hotelEntity);
         }
 
@@ -81,7 +95,8 @@ namespace Business.Services
                 throw new NotFoundException($"user with {userId} id not exists");
             }
             hotelEntity.Admin = userEntity;
-            userEntity.RoleId = 3;
+            var roleEntity = await _roleRepository.GetAsyncByName(Roles.HotelAdmin);
+            userEntity.RoleId = roleEntity.Id;
            await _hotelRepository.UpdateAsync(hotelEntity);
            await _userRepository.UpdateAsync(userEntity);
         }
@@ -178,8 +193,8 @@ namespace Business.Services
                             {
                                 if (room.Orders != null)
                                 {
-                                    if (room.Orders.Any(order => !(((checkInDate > order.StartDate && checkInDate < order.EndDate) || (checkOutDate > order.StartDate && checkOutDate < order.EndDate))
-                                                                   || (order.StartDate > checkInDate && order.StartDate < checkOutDate) || (order.EndDate > checkInDate && order.EndDate < checkOutDate))))
+                                    if (room.Orders.Any(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate || checkOutDate > order.StartDate && checkOutDate < order.EndDate
+                                                                   || order.StartDate > checkInDate && order.StartDate < checkOutDate || order.EndDate > checkInDate && order.EndDate < checkOutDate)))
                                     {
                                         filteredHotels.Add(hotel);
                                         flag = true;

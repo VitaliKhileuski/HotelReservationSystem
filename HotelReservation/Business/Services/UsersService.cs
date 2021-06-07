@@ -33,12 +33,7 @@ namespace Business.Services
 
         public ICollection<UserModel>  GetAll()
         {
-            var users = _userRepository.GetAll();
-            if (!users.Any())
-            {
-                _logger.LogError("no data about users");
-                throw new NotFoundException("no data about users");
-            }
+            var users = _userRepository.GetUsers();
             return  _mapper.Map<ICollection<UserModel>>(users);
         }
 

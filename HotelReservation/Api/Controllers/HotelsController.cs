@@ -39,13 +39,13 @@ namespace HotelReservation.Api.Controllers
         [HttpGet]
         [Route("pages")]
         public async Task<IActionResult> GetPage([FromQuery] HotelPagination filter)
-        { 
+        {
             var validFilter = new HotelPagination(filter.PageNumber, filter.PageSize);
-            var  HotelsWithCount =await _hotelsService.GetHotelsPage(validFilter);
+            var HotelsWithCount = await _hotelsService.GetHotelsPage(validFilter);
             var hotels = _mapper.Map<List<HotelResponseModel>>(HotelsWithCount.Item1);
             var maxNumberOfHotels = HotelsWithCount.Item2;
 
-            return Ok(Tuple.Create(hotels,maxNumberOfHotels));
+            return Ok(Tuple.Create(hotels, maxNumberOfHotels));
         }
 
         [HttpGet]
@@ -53,15 +53,17 @@ namespace HotelReservation.Api.Controllers
             string city, [FromQuery] HotelPagination filter)
         {
             var validFilter = new HotelPagination(filter.PageNumber, filter.PageSize);
-            return Ok(_hotelsService.GetFilteredHotels(checkInDate, checkOutDate, country, city,validFilter));
+            return Ok(_hotelsService.GetFilteredHotels(checkInDate, checkOutDate, country, city, validFilter));
         }
 
 
         [HttpPost]
-        [Authorize(Policy = Policies.AllAdminsPermission)]
-        public async Task<IActionResult> AddHotel([FromBody] HotelModel hotel)
+        [Authorize(Policy = Policies.AdminPermission)]
+        [Route("{hotelAdminId}")]
+
+        public async Task<IActionResult> AddHotel([FromBody] HotelModel hotel, int hotelAdminId)
         {
-            await  _hotelsService.AddHotel(hotel);
+            await  _hotelsService.AddHotel(hotel,hotelAdminId);
             return Ok("added successfully");
         }
 
@@ -75,7 +77,7 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpPut]
-        [Authorize(Policy = "HotelAdminPermission")]
+        [Authorize(Policy = Policies.AllAdminsPermission)]
         [Route("{id:int}/editHotel")]
         public async Task<IActionResult> EditHotel(int id,[FromBody] HotelRequestModel hotel)
         {
@@ -88,8 +90,8 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Policy = "AdminPermission")]
-        [Route("{hotelId:int}/deleteHotel")]
+        [Authorize(Policy = Policies.AdminPermission)]
+        [Route("{hotelId:int}")]
         public async Task<IActionResult> DeleteHotelById(int hotelId)
         {
             await _hotelsService.DeleteHotelById(hotelId);

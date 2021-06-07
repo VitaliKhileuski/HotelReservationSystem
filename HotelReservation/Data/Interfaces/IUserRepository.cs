@@ -9,5 +9,6 @@ namespace HotelReservation.Data.Interfaces
     public interface IUserRepository : IBaseRepository<UserEntity>
     {
         Task<UserEntity> GetAsyncByEmail(string email);
+        public IEnumerable<UserEntity> GetUsers();
     }
 }

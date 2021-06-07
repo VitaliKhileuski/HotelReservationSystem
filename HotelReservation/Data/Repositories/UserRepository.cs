@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HotelReservation.Data.Constants;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,10 @@ namespace HotelReservation.Data.Repositories
         public async Task<UserEntity> GetAsyncByEmail(string email)
         {
             return await _db.Users.FirstOrDefaultAsync(x => x.Email == email);
+        }
+        public  IEnumerable<UserEntity> GetUsers()
+        {
+            return _db.Users.Where(x => x.Role.Name == Roles.User);
         }
 
     }

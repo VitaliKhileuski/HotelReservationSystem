@@ -7,7 +7,7 @@ namespace Business.Interfaces
 {
     public interface IHotelsService
     {
-        Task AddHotel(HotelModel hotel);
+        Task AddHotel(HotelModel hotel,int HotelAdminId);
         Task<HotelModel> GetById(int id);
         Task UpdateHotelAdmin(int hotelId, int userId);
         Task UpdateHotel(int hotelId, HotelModel hotel,int userId);
