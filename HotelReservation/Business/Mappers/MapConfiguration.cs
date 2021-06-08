@@ -32,10 +32,10 @@ namespace Business.Mappers
             });
             HotelConfiguration = new MapperConfiguration( x =>
             {
-                
-                x.CreateMap<HotelModel, HotelEntity>()
-                    .ForMember(x => x.Location, opt => opt.Ignore());
+
+                x.CreateMap<HotelModel, HotelEntity>();
                 x.CreateMap<HotelEntity, HotelModel>();
+                x.CreateMap<LocationModel, LocationEntity>();
                 x.CreateMap<LocationEntity, LocationModel>()
                     .ForMember(x => x.Hotel, opt => opt.Ignore());
                 x.CreateMap<RoomEntity, RoomModel>()

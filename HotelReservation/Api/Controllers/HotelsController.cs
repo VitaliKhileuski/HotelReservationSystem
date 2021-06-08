@@ -68,17 +68,17 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpPut]
-        [Authorize(Policy = "AdminPermission")]
-        [Route("{hotelId:int}/setHotelAdmin")]
-        public IActionResult UpdateHotelAdmin(int hotelId, [FromBody] int userId)
+        [Route("{hotelId:int}/{userId:int}/setHotelAdmin")]
+        public async Task<IActionResult> UpdateHotelAdmin(int hotelId,int userId)
         {
-            _hotelsService.UpdateHotelAdmin(hotelId, userId);
+            await _hotelsService.UpdateHotelAdmin(hotelId, userId);
+
             return Ok("admin setted successfully");
         }
 
         [HttpPut]
-        [Authorize(Policy = Policies.AllAdminsPermission)]
-        [Route("{id:int}/editHotel")]
+        [Authorize(Policy = Policies.AdminPermission)]
+        [Route("{id:int}")]
         public async Task<IActionResult> EditHotel(int id,[FromBody] HotelRequestModel hotel)
         {
             var idClaim = int.Parse(User.Claims.FirstOrDefault(x =>

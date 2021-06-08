@@ -21,6 +21,7 @@ namespace HotelReservation.Api.Mappers
             {
                 x.CreateMap<HotelModel, HotelResponseModel>();
                 x.CreateMap<HotelRequestModel, HotelModel>();
+                x.CreateMap<LocationRequestModel, LocationModel>();
                 x.CreateMap<LocationModel, LocationResponseModel>();
                 x.CreateMap<RoomModel, RoomResponseModel>();
                 x.CreateMap<ServiceModel, ServiceResponseModel>();

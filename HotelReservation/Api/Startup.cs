@@ -88,7 +88,7 @@ namespace HotelReservation.Api
             {
                 options.AddPolicy(Policies.AdminPermission, builder => builder.Combine(Policies.AdminPermissionPolicy()));
                 options.AddPolicy(Policies.HotelAdminPermission, builder => builder.Combine(Policies.HotelAdminPermissionPolicy()));
-                options.AddPolicy(Policies.AllAdminsPermission, builder => builder.Combine(Policies.HotelAdminPermissionPolicy()));
+                options.AddPolicy(Policies.AllAdminsPermission, builder => builder.Combine(Policies.AllAdminsPermissionPolicy()));
                 options.AddPolicy(Policies.UserPermission, builder => builder.Combine(Policies.UserPermissionPolicy()));
             });
             services.AddCors(options =>

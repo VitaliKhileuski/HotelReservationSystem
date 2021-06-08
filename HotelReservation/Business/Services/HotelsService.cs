@@ -21,13 +21,16 @@ namespace Business.Services
         private readonly IUserRepository _userRepository;
         private readonly Mapper _locationMapper;
         private readonly Mapper _hotelMapper;
+        private readonly IBaseRepository<LocationEntity> _locationRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly ILogger<HotelsService> _logger;
 
-        public HotelsService(ILogger<HotelsService>  logger, IBaseRepository<HotelEntity> hotelRepository,IRoleRepository roleRepository, IUserRepository userRepository, MapConfiguration cfg)
+        public HotelsService(ILogger<HotelsService>  logger, IBaseRepository<HotelEntity> hotelRepository,IRoleRepository roleRepository,
+            IUserRepository userRepository,IBaseRepository<LocationEntity> locationRepository, MapConfiguration cfg)
         {
             _hotelRepository = hotelRepository;
             _userRepository = userRepository;
+            _locationRepository = locationRepository;
             _locationMapper = new Mapper(cfg.LocationConfiguration);
             _hotelMapper = new Mapper(cfg.HotelConfiguration);
             _logger = logger;
@@ -127,19 +130,14 @@ namespace Business.Services
 
             if (hotelEntity.Admin.Id == userId || userEntity.Role.Name == Roles.Admin)
             {
-                var newHotelEntity = _hotelMapper.Map<HotelModel, HotelEntity>(hotel);
 
-                if (newHotelEntity.Location != null)
-                {
-                    hotelEntity.Location = newHotelEntity.Location;
-                }
+                hotelEntity.Name = hotel.Name;
+                hotelEntity.Location.Country = hotel.Location.Country;
+                hotelEntity.Location.City = hotel.Location.City;
+                hotelEntity.Location.Street = hotel.Location.Street;
+                hotelEntity.Location.BuildingNumber = hotel.Location.BuildingNumber;
 
-                if (newHotelEntity.Name != null)
-                {
-                    hotelEntity.Name = newHotelEntity.Name;
-                }
-
-                await _hotelRepository.UpdateAsync(hotelEntity);
+                    await _hotelRepository.UpdateAsync(hotelEntity);
             }
             else
             {
