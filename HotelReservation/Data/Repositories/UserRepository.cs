@@ -24,7 +24,7 @@ namespace HotelReservation.Data.Repositories
         }
         public  IEnumerable<UserEntity> GetUsers()
         {
-            return _db.Users.Where(x => x.Role.Name == Roles.User);
+            return _db.Users.Where(x => x.Role.Name != Roles.Admin);
         }
 
     }

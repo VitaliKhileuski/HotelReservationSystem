@@ -149,7 +149,7 @@ namespace Business.Services
         }
         public async Task DeleteHotelById(int hotelId)
         {
-            var hotelEntity = _hotelRepository.GetAsync(hotelId);
+            var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
             {
                 _logger.LogError($"hotel with {hotelId} id not exists");
