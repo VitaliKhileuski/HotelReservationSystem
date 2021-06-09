@@ -11,6 +11,7 @@ using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
 using Microsoft.AspNetCore.Authorization;
+using HotelReservation.Api.Policy;
 
 namespace HotelReservation.Api.Controllers
 {
@@ -46,7 +47,7 @@ namespace HotelReservation.Api.Controllers
 
         [HttpPost]
         [Route("{hotelId:int}/addService")]
-        [Authorize(Policy = "HotelAdminPermission")]
+        [Authorize(Policy = Policies.AdminPermission)]
         public async Task<IActionResult> AddServiceToHotel(int hotelId, [FromBody] ServiceRequestModel service)
         {
             var serviceModel = _mapper.Map<ServiceRequestModel, ServiceModel>(service);

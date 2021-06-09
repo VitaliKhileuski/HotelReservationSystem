@@ -11,7 +11,7 @@ using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
 using Microsoft.AspNetCore.Authorization;
-
+using HotelReservation.Api.Policy;
 
 namespace HotelReservation.Api.Controllers
 {
@@ -38,8 +38,8 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = "HotelAdminPermission")]
-        [Route("{hotelId:int}/addRoom")]
+        [Authorize(Policy = Policies.AdminPermission)]
+        [Route("{hotelId:int}")]
         public async Task<IActionResult> CreateRoom(int hotelId,RoomRequestModel room)
         {
             int idClaim = GetIdFromClaims();

@@ -10,9 +10,6 @@ namespace HotelReservation.Api.Migrations
                 name: "FK_Locations_Hotels_HotelId",
                 table: "Locations");
 
-            migrationBuilder.DropColumn(
-                name: "IsEmpty",
-                table: "Rooms");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Locations_Hotels_HotelId",
