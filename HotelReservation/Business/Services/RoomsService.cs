@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -15,13 +16,13 @@ namespace Business.Services
 {
     public class RoomsService : IRoomService
     {
-        private readonly IBaseRepository<RoomEntity>  _roomRepository;
+        private readonly IRoomRepository  _roomRepository;
         private readonly IBaseRepository<HotelEntity> _hotelRepository;
         private readonly IUserRepository _userRepository;
         private readonly Mapper _roomMapper;
         private readonly ILogger<RoomsService> _logger;
 
-        public RoomsService(ILogger<RoomsService> logger, IBaseRepository<RoomEntity> roomRepository, IBaseRepository<HotelEntity> hotelRepository,
+        public RoomsService(ILogger<RoomsService> logger, IRoomRepository roomRepository, IBaseRepository<HotelEntity> hotelRepository,
             IUserRepository userRepository,MapConfiguration cfg)
         {
             _userRepository = userRepository;
@@ -99,6 +100,21 @@ namespace Business.Services
                 _logger.LogError("you don't have permission to edit this hotel");
                 throw new BadRequestException("you don't have permission to edit this hotel");
             }
+        }
+        public async Task<Tuple<IEnumerable<RoomModel>, int>> GetRoomsPage(int hotelId,HotelPagination hotelPagination)
+        {
+            var hotelEntity = await _hotelRepository.GetAsync(hotelId);
+            if (hotelEntity == null)
+            {
+                _logger.LogError($"hotel with {hotelId} id not exists");
+                throw new NotFoundException($"hotel with {hotelId} id not exists");
+            }
+            var hotels = _roomMapper.Map<IEnumerable<RoomModel>>(_roomRepository.GetRoomsPageFromHotel(hotelPagination.PageNumber,
+                hotelPagination.PageSize,hotelId));
+            var numberOfRooms = await _roomRepository.GetRoomsCount(hotelId);
+
+
+            return Tuple.Create(hotels, numberOfRooms);
         }
 
         public async Task DeleteRoom(int roomId, int userId)

@@ -37,6 +37,18 @@ namespace HotelReservation.Api.Controllers
             return Ok(roomResponseModels);
         }
 
+        [HttpGet]
+        [Route("{hotelId:int}/pages")]
+        public async Task<IActionResult> GetPage(int hotelId,[FromQuery] HotelPagination filter)
+        {
+            var validFilter = new HotelPagination(filter.PageNumber, filter.PageSize);
+            var roomsWithCount = await _roomsService.GetRoomsPage(hotelId,validFilter);
+            var rooms = _mapper.Map<List<RoomResponseModel>>(roomsWithCount.Item1);
+            var maxNumberOfHotels = roomsWithCount.Item2;
+
+            return Ok(Tuple.Create(rooms, maxNumberOfHotels));
+        }
+
         [HttpPost]
         [Authorize(Policy = Policies.AdminPermission)]
         [Route("{hotelId:int}")]
@@ -56,7 +68,7 @@ namespace HotelReservation.Api.Controllers
 
         [HttpDelete]
         [Route("{roomId:int}")]
-        [Authorize(Policy = "HotelAdminPermission")]
+        [Authorize(Policy = Policies.AdminPermission)]
         public async Task<IActionResult> DeleteRoom(int roomId)
         {
             int userId = GetIdFromClaims();
@@ -65,8 +77,8 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpPut]
-        [Route("/{roomId:int}")]
-        [Authorize(Policy = "HotelAdminPermission")]
+        [Route("{roomId:int}")]
+        [Authorize(Policy = Policies.AdminPermission)]
         public async Task<IActionResult> UpdateRoom(int roomId,[FromBody] RoomRequestModel room)
         {
             var roomModel = _mapper.Map<RoomRequestModel, RoomModel>(room);

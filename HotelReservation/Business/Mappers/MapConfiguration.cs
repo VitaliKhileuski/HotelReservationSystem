@@ -92,12 +92,11 @@ namespace Business.Mappers
             });
             ServiceConfiguration = new MapperConfiguration(x =>
             {
-                x.CreateMap<ServiceEntity, ServiceModel>().ReverseMap();
-                x.CreateMap<HotelEntity, HotelModel>()
-                    .ForMember(x => x.Services, opt => opt.Ignore())
-                    .ForMember(X => X.Location, opt => opt.Ignore())
+                x.CreateMap<ServiceEntity, ServiceModel>()
+                    .ForMember(x => x.Hotel, opt => opt.Ignore())
                     .ForMember(x => x.Rooms, opt => opt.Ignore());
-                x.CreateMap<RoomEntity, RoomModel>();
+                x.CreateMap<ServiceModel, ServiceEntity>();
+
 
             });
         }

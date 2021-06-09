@@ -50,7 +50,8 @@ namespace HotelReservation.Api.Mappers
             });
             RoomConfiguration = new MapperConfiguration(x =>
             {
-                x.CreateMap<RoomModel, RoomResponseModel>();
+                x.CreateMap<RoomModel, RoomResponseModel>()
+                    .ForMember(x => x.Hotel, opt => opt.Ignore());
                 x.CreateMap<RoomRequestModel, RoomModel>();
                 x.CreateMap<HotelModel,HotelResponseModel>()
                     .ForMember(x => x.Services, opt => opt.Ignore())

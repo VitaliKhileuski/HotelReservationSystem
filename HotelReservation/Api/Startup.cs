@@ -46,12 +46,12 @@ namespace HotelReservation.Api
             services.Configure<AuthOptions>(Configuration.GetSection(AuthOptions.Authentication));
             services.AddScoped<IPasswordHasher,PasswordHasher>();
             services.AddScoped<IRoleRepository, RoleRepository>();
-            services.AddScoped<IBaseRepository<RoomEntity>, RoomRepository>();
+            services.AddScoped<IRoomRepository, RoomRepository>();
             services.AddScoped<IBaseRepository<HotelEntity>, HotelRepository>();
             services.AddScoped<IBaseRepository<OrderEntity>, OrderRepository>();
             services.AddScoped<IBaseRepository<LocationEntity>, LocationRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IBaseRepository<ServiceEntity>, ServiceRepository>();
+            services.AddScoped<IServiceRepository, ServiceRepository>();
 
             services.AddScoped<MapConfiguration>();
             services.AddScoped<CustomMapperConfiguration>();
