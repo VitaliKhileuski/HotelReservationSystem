@@ -85,7 +85,7 @@ namespace Business.Services
                 throw new NotFoundException($"user with {userId} id not exists");
             }
 
-            if (serviceEntity.Hotel.Admin.Id == userId || userEntity.Role.Name == Roles.Admin)
+            if (serviceEntity.Hotel.Admins.FirstOrDefault(x => x.Id == userId) != null || userEntity.Role.Name == Roles.Admin)
             {
                 serviceEntity.Name = serviceModel.Name;
                 serviceEntity.Payment = serviceModel.Payment;
@@ -103,7 +103,7 @@ namespace Business.Services
             var userEntity = await _userRepository.GetAsync(userId);
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
 
-            if (hotelEntity.Admin.Id == userId || userEntity.Role.Name==Roles.Admin)
+            if (hotelEntity.Admins.FirstOrDefault(x => x.Id==userId) != null || userEntity.Role.Name==Roles.Admin)
             {
                 if (hotelEntity == null)
                 {
@@ -134,7 +134,7 @@ namespace Business.Services
             var serviceEntity = await _serviceRepository.GetAsync(serviceId);
             var userEntity = await _userRepository.GetAsync(userId);
             var hotelEntity = serviceEntity.Hotel;
-            if (hotelEntity.Admin.Id == userId || userEntity.Role.Name == Roles.Admin)
+            if (hotelEntity.Admins.FirstOrDefault(x => x.Id == userId) != null || userEntity.Role.Name == Roles.Admin)
             {
                await _serviceRepository.DeleteAsync(serviceId);
             }

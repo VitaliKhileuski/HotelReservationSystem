@@ -21,6 +21,7 @@ namespace Business.Services
         private readonly IUserRepository _userRepository;
         private readonly Mapper _locationMapper;
         private readonly Mapper _hotelMapper;
+        private readonly Mapper _userMapper;
         private readonly IBaseRepository<LocationEntity> _locationRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly ILogger<HotelsService> _logger;
@@ -33,34 +34,31 @@ namespace Business.Services
             _locationRepository = locationRepository;
             _locationMapper = new Mapper(cfg.LocationConfiguration);
             _hotelMapper = new Mapper(cfg.HotelConfiguration);
+            _userMapper = new Mapper(cfg.UserConfiguration);
             _logger = logger;
             _roleRepository = roleRepository;
 
         }
 
-        public async Task AddHotel(HotelModel hotel,int hotelAdminId)
+        public async Task AddHotel(HotelModel hotel)
         {
             if (hotel == null)
             {
                 _logger.LogError("incorrect input data");
                 throw new BadRequestException("incorrect input data");
             }
+
             var hotelEntity = _hotelMapper.Map<HotelModel, HotelEntity>(hotel);
-            var userEntity = await _userRepository.GetAsync(hotelAdminId);
-            if (userEntity == null)
+
+            if (hotelEntity.Admins == null)
             {
-                _logger.LogError($"user with {hotelAdminId} id not exists");
-                throw new NotFoundException($"user with {hotelAdminId} id not exists");
+                List<UserEntity> admins = new List<UserEntity>();
             }
             
-            hotelEntity.Admin = userEntity;
             var locationEntity = _locationMapper.Map<LocationModel, LocationEntity>(hotel.Location);
             var roleEntity = await _roleRepository.GetAsyncByName(Roles.HotelAdmin);
-            userEntity.Role = roleEntity;
             hotelEntity.Location = locationEntity;
             locationEntity.Hotel = hotelEntity;
-
-            await _userRepository.UpdateAsync(userEntity);
             await _hotelRepository.CreateAsync(hotelEntity);
         }
 
@@ -97,7 +95,21 @@ namespace Business.Services
                 _logger.LogError($"user with {userId} id not exists");
                 throw new NotFoundException($"user with {userId} id not exists");
             }
-            hotelEntity.Admin = userEntity;
+
+            if (hotelEntity.Admins == null)
+            {
+                List<UserEntity> admins = new List<UserEntity>
+                {
+                    userEntity
+                };
+                hotelEntity.Admins = admins;
+
+            }
+            else
+            {
+                hotelEntity.Admins.Add(userEntity);
+            }
+            
             var roleEntity = await _roleRepository.GetAsyncByName(Roles.HotelAdmin);
             userEntity.RoleId = roleEntity.Id;
            await _hotelRepository.UpdateAsync(hotelEntity);
@@ -128,7 +140,7 @@ namespace Business.Services
                 throw new NotFoundException($"hotel with {hotelId} id not exists");
             }
 
-            if (hotelEntity.Admin.Id == userId || userEntity.Role.Name == Roles.Admin)
+            if (hotelEntity.Admins.FirstOrDefault(x => x.Id == userId) != null || userEntity.Role.Name == Roles.Admin)
             {
 
                 hotelEntity.Name = hotel.Name;
@@ -163,6 +175,18 @@ namespace Business.Services
 
 
             return Tuple.Create(hotels,numberOfPages);
+        }
+
+        public async Task<ICollection<UserModel>> GetHotelAdmins(int hotelId)
+        {
+            var hotelEntity = await _hotelRepository.GetAsync(hotelId);
+            if (hotelEntity == null)
+            {
+                _logger.LogError($"hotel with {hotelId} id not exists");
+                throw new NotFoundException($"hotel with {hotelId} id not exists");
+            }
+
+            return _userMapper.Map<ICollection<UserModel>>(hotelEntity.Admins);
         }
 
     public Tuple<List<HotelModel>,int> GetFilteredHotels(DateTime checkInDate,DateTime checkOutDate,string country,string city, HotelPagination hotelPagination)

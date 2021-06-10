@@ -37,8 +37,7 @@ namespace HotelReservation.Data.Configurations
                 .WithOne(x => x.User)
                 .OnDelete(DeleteBehavior.Restrict);
             builder.HasMany(x => x.OwnedHotels)
-                .WithOne(x => x.Admin)
-                .OnDelete(DeleteBehavior.Restrict);
+                .WithMany(x => x.Admins);
         }
     }
 }

@@ -7,12 +7,13 @@ namespace Business.Interfaces
 {
     public interface IHotelsService
     {
-        Task AddHotel(HotelModel hotel,int HotelAdminId);
+        Task AddHotel(HotelModel hotel);
         Task<HotelModel> GetById(int id);
         Task UpdateHotelAdmin(int hotelId, int userId);
         Task UpdateHotel(int hotelId, HotelModel hotel,int userId);
         Task DeleteHotelById(int hotelId);
         Tuple<List<HotelModel>,int> GetFilteredHotels(DateTime checkInDate, DateTime checkOutDate, string country, string city, HotelPagination hotelPagination);
         Task<Tuple<IEnumerable<HotelModel>, int>> GetHotelsPage(HotelPagination hotelPagination);
+        Task<ICollection<UserModel>> GetHotelAdmins(int hotelId);
     }
 }

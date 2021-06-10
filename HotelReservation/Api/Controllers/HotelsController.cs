@@ -19,20 +19,22 @@ namespace HotelReservation.Api.Controllers
     [Route("api/[controller]")]
     public class HotelsController : Controller
     {
-        private readonly Mapper _mapper;
+        private readonly Mapper _hotelMapper;
+        private readonly Mapper _userMapper;
         private readonly IHotelsService _hotelsService;
 
         public HotelsController(IHotelsService hotelService, CustomMapperConfiguration cfg)
         {
-            _mapper = new Mapper(cfg.HotelConfiguration);
+            _hotelMapper = new Mapper(cfg.HotelConfiguration);
             _hotelsService = hotelService;
+            _userMapper = new Mapper(cfg.UsersConfiguration);
         }
 
         [HttpGet]
         [Route("{id:int}")]
         public async Task<HotelResponseModel> GetByiD(int id)
         {
-            var responseHotel = _mapper.Map<HotelModel, HotelResponseModel>(await _hotelsService.GetById(id));
+            var responseHotel = _hotelMapper.Map<HotelModel, HotelResponseModel>(await _hotelsService.GetById(id));
             return responseHotel;
         }
 
@@ -42,7 +44,7 @@ namespace HotelReservation.Api.Controllers
         {
             var validFilter = new HotelPagination(filter.PageNumber, filter.PageSize);
             var HotelsWithCount = await _hotelsService.GetHotelsPage(validFilter);
-            var hotels = _mapper.Map<List<HotelResponseModel>>(HotelsWithCount.Item1);
+            var hotels = _hotelMapper.Map<List<HotelResponseModel>>(HotelsWithCount.Item1);
             var maxNumberOfHotels = HotelsWithCount.Item2;
 
             return Ok(Tuple.Create(hotels, maxNumberOfHotels));
@@ -56,14 +58,21 @@ namespace HotelReservation.Api.Controllers
             return Ok(_hotelsService.GetFilteredHotels(checkInDate, checkOutDate, country, city, validFilter));
         }
 
+        [HttpGet]
+        [Authorize(Policy = Policies.AdminPermission)]
+        [Route("{hotelId:int}/getHotelAdmins")]
+        public async Task<IActionResult> GetHotelAdmins(int hotelId)
+        {
+            var hotelAdmins = await _hotelsService.GetHotelAdmins(hotelId);
+            return Ok(_userMapper.Map<ICollection<UserResponseViewModel>>(hotelAdmins));
+        }
+
 
         [HttpPost]
         [Authorize(Policy = Policies.AdminPermission)]
-        [Route("{hotelAdminId}")]
-
-        public async Task<IActionResult> AddHotel([FromBody] HotelModel hotel, int hotelAdminId)
+        public async Task<IActionResult> AddHotel([FromBody] HotelModel hotel)
         {
-            await  _hotelsService.AddHotel(hotel,hotelAdminId);
+            await  _hotelsService.AddHotel(hotel);
             return Ok("added successfully");
         }
 
@@ -84,7 +93,7 @@ namespace HotelReservation.Api.Controllers
             var idClaim = int.Parse(User.Claims.FirstOrDefault(x =>
                 x.Type.ToString().Equals("id", StringComparison.InvariantCultureIgnoreCase))
                 ?.Value ?? string.Empty);
-            var hotelModel = _mapper.Map<HotelRequestModel, HotelModel>(hotel);
+            var hotelModel = _hotelMapper.Map<HotelRequestModel, HotelModel>(hotel);
             await _hotelsService.UpdateHotel(id, hotelModel,idClaim);
             return Ok("Updated Successfully");
         }
