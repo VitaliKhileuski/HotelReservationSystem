@@ -27,14 +27,15 @@ namespace HotelReservation.Api.Controllers
         }
         [HttpGet]
         [Authorize(Policy = Policies.AdminPermission)]
-        public IEnumerable<UserResponseViewModel> Get()
+        [Route("{hotelId:int}")]
+        public IEnumerable<UserResponseViewModel> Get(int hotelId)
         {
-            var responseUsers = _mapper.Map<List<UserResponseViewModel>>(_usersService.GetAll());
+            var responseUsers = _mapper.Map<List<UserResponseViewModel>>(_usersService.GetAll(hotelId));
            return responseUsers;
         }
 
         [HttpGet]
-        [Authorize(Policy = "AdminPermission")]
+        [Authorize(Policy = Policies.AdminPermission)]
         [Route("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -43,7 +44,7 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = "AdminPermission")]
+        [Authorize(Policy = Policies.AdminPermission)]
         public async Task<IActionResult> AddUser([FromBody] UserRequestModel user)
         {
             var userModel = _mapper.Map<UserRequestModel,UserModel>(user);

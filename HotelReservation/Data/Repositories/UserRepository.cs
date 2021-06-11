@@ -22,9 +22,9 @@ namespace HotelReservation.Data.Repositories
         {
             return await _db.Users.FirstOrDefaultAsync(x => x.Email == email);
         }
-        public  IEnumerable<UserEntity> GetUsers()
+        public  IEnumerable<UserEntity> GetUsers(HotelEntity hotel)
         {
-            return _db.Users.Where(x => x.Role.Name != Roles.Admin);
+            return _db.Users.Where(x => x.Role.Name != Roles.Admin).Where(x => !x.OwnedHotels.Contains(hotel));
         }
 
     }

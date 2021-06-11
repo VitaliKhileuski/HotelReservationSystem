@@ -6,10 +6,10 @@ namespace Business.Interfaces
 {
     public interface IUserService
     {
-        public ICollection<UserModel> GetAll();
-        public Task<UserModel> GetById(int userId);
-        public Task DeleteById(int userId);
-        public Task Update(int id, UserModel user); 
+        Task<ICollection<UserModel>> GetAll(int hotelId);
+        Task<UserModel> GetById(int userId);
+        Task DeleteById(int userId);
+        Task Update(int id, UserModel user); 
         Task AddUser(UserModel user);
     }
 }
