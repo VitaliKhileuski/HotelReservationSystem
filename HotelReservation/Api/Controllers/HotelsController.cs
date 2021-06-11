@@ -23,6 +23,7 @@ namespace HotelReservation.Api.Controllers
         private readonly Mapper _userMapper;
         private readonly IHotelsService _hotelsService;
 
+
         public HotelsController(IHotelsService hotelService, CustomMapperConfiguration cfg)
         {
             _hotelMapper = new Mapper(cfg.HotelConfiguration);
@@ -83,6 +84,14 @@ namespace HotelReservation.Api.Controllers
             await _hotelsService.UpdateHotelAdmin(hotelId, userId);
 
             return Ok("admin setted successfully");
+        }
+        [HttpPut]
+        [Route("{hotelId:int}/{userId:int}/deleteHotelAdmin")]
+        public async Task<IActionResult> DeleteHotelAdmin(int hotelId, int userId)
+        {
+            await _hotelsService.DeleteHotelAdmin(hotelId, userId);
+
+            return Ok("admin deleted successfully");
         }
 
         [HttpPut]

@@ -49,14 +49,12 @@ namespace Business.Services
             }
 
             var hotelEntity = _hotelMapper.Map<HotelModel, HotelEntity>(hotel);
-
-            if (hotelEntity.Admins == null)
+            if (!IsLocationEmpty(hotelEntity))
             {
-                List<UserEntity> admins = new List<UserEntity>();
+                _logger.LogError("the hotel at this location already placed");
+                throw new BadRequestException("the hotel at this location already placed");
             }
-            
             var locationEntity = _locationMapper.Map<LocationModel, LocationEntity>(hotel.Location);
-            var roleEntity = await _roleRepository.GetAsyncByName(Roles.HotelAdmin);
             hotelEntity.Location = locationEntity;
             locationEntity.Hotel = hotelEntity;
             await _hotelRepository.CreateAsync(hotelEntity);
@@ -122,6 +120,13 @@ namespace Business.Services
             {
                 _logger.LogError("incorrect input data");
                 throw new BadRequestException("incorrect input data");
+            }
+
+            var hotelUpdateEntity = _hotelMapper.Map<HotelModel, HotelEntity>(hotel);
+            if (!IsLocationEmpty(hotelUpdateEntity))
+            {
+                _logger.LogError("the hotel at this location already placed");
+                throw new BadRequestException("the hotel at this location already placed");
             }
 
             var userEntity = await _userRepository.GetAsync(userId);
@@ -249,6 +254,36 @@ namespace Business.Services
                 .ToList();
 
             return Tuple.Create(pagedData, pages);
+        }
+
+        public async Task DeleteHotelAdmin(int hotelId, int userId)
+        {
+            var hotelEntity = await _hotelRepository.GetAsync(hotelId);
+
+            if (hotelEntity == null)
+            {
+                _logger.LogError($"hotel with {hotelId} id not exists");
+                throw new NotFoundException($"hotel with {hotelId} id not exists");
+            }
+
+            var userEntity = await _userRepository.GetAsync(userId);
+            if (userEntity == null)
+            {
+                _logger.LogError($"user with {userId} id not exists");
+                throw new NotFoundException($"user with {userId} id not exists");
+            }
+
+            hotelEntity.Admins.Remove(userEntity);
+            await _hotelRepository.UpdateAsync(hotelEntity);
+        }
+
+        public bool IsLocationEmpty(HotelEntity hotel)
+        {
+          var hotelEntity = _hotelRepository.GetAll().FirstOrDefault(x => x.Location.Country == hotel.Location.Country &&
+                                                          x.Location.City == hotel.Location.City &&
+                                                          x.Location.Street == hotel.Location.Street &&
+                                                          x.Location.BuildingNumber == hotel.Location.BuildingNumber);
+          return hotelEntity == null;
         }
     }
 }

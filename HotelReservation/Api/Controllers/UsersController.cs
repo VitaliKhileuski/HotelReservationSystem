@@ -27,15 +27,14 @@ namespace HotelReservation.Api.Controllers
         }
         [HttpGet]
         [Authorize(Policy = Policies.AdminPermission)]
-        [Route("{hotelId:int}")]
-        public IEnumerable<UserResponseViewModel> Get(int hotelId)
+        [Route("{hotelId:int}/getPotentialHotelAdmins")]
+        public async Task<IActionResult> Get(int hotelId)
         {
-            var responseUsers = _mapper.Map<List<UserResponseViewModel>>(_usersService.GetAll(hotelId));
-           return responseUsers;
+            var responseUsers = _mapper.Map<List<UserResponseViewModel>>(await _usersService.GetAll(hotelId));
+           return Ok(responseUsers);
         }
 
         [HttpGet]
-        [Authorize(Policy = Policies.AdminPermission)]
         [Route("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {

@@ -77,7 +77,11 @@ namespace Business.Services
                 _logger.LogError($"service with {serviceId} id not exists");
                 throw new NotFoundException($"service with {serviceId} id not exists");
             }
-
+            var service = serviceEntity.Hotel.Services.FirstOrDefault(x => x.Name == serviceModel.Name);
+            if (service != null)
+            {
+                throw new BadRequestException("Service with that name already exists");
+            }
             var userEntity = await _userRepository.GetAsync(userId);
             if (userEntity == null)
             {

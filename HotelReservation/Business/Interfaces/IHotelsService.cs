@@ -15,5 +15,6 @@ namespace Business.Interfaces
         Tuple<List<HotelModel>,int> GetFilteredHotels(DateTime checkInDate, DateTime checkOutDate, string country, string city, HotelPagination hotelPagination);
         Task<Tuple<IEnumerable<HotelModel>, int>> GetHotelsPage(HotelPagination hotelPagination);
         Task<ICollection<UserModel>> GetHotelAdmins(int hotelId);
+        Task DeleteHotelAdmin(int hotelId, int userId);
     }
 }
