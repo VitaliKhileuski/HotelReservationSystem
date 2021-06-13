@@ -60,7 +60,7 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = Policies.AdminPermission)]
+        [Authorize(Policy = Policies.AllAdminsPermission)]
         [Route("{hotelId:int}/getHotelAdmins")]
         public async Task<IActionResult> GetHotelAdmins(int hotelId)
         {

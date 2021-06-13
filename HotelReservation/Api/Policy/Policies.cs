@@ -44,7 +44,7 @@ namespace HotelReservation.Api.Policy
         public static AuthorizationPolicy AllAdminsPermissionPolicy()
         {
             return new AuthorizationPolicyBuilder().RequireAuthenticatedUser()
-                .RequireRole(AllAdminsPermission)
+                .RequireRole(AdminPermission,HotelAdminPermission)
                 .Build();
         }
 

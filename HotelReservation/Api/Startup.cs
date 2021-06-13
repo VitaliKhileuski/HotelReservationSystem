@@ -105,9 +105,10 @@ namespace HotelReservation.Api
             app.UseSerilogRequestLogging();
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseCors(builder => Policies.ApiCorsPolicy(builder));
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors(builder => Policies.ApiCorsPolicy(builder));
+            
             app.UseMiddleware<CustomExceptionMiddleware>();
             app.UseEndpoints(endpoints =>
             {
