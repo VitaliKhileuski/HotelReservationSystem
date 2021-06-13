@@ -15,10 +15,6 @@ namespace HotelReservation.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(40);
             builder
-                .Property(x => x.Region)
-                .IsRequired()
-                .HasMaxLength(50);
-            builder
                 .Property(x => x.City)
                 .HasMaxLength(100);
             builder

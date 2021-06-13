@@ -8,7 +8,6 @@ namespace HotelReservation.Api.Models.ResponseModels
         public string RoomNumber { get; set; }
         public int BedsNumber { get; set; }
         public double PaymentPerDay { get; set; }
-        public bool IsEmpty { get; set; }
 
     }
 }

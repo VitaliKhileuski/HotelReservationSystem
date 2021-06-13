@@ -24,7 +24,7 @@ namespace Business.Mappers
                 x.CreateMap<RoleEntity, RoleModel>();
                 x.CreateMap<OrderEntity, OrderModel>();
                 x.CreateMap<RoomEntity, RoomModel>()
-                    .ForMember(x => x.Order, opt => opt.Ignore());
+                    .ForMember(x => x.Orders, opt => opt.Ignore());
                 x.CreateMap<ServiceEntity, ServiceModel>()
                     .ForMember(x => x.Rooms, opt => opt.Ignore());
                 x.CreateMap<HotelEntity, HotelModel>();
@@ -32,17 +32,22 @@ namespace Business.Mappers
             });
             HotelConfiguration = new MapperConfiguration( x =>
             {
-                
-                x.CreateMap<HotelModel, HotelEntity>()
-                    .ForMember(x => x.Location, opt => opt.Ignore());
+
+                x.CreateMap<HotelModel, HotelEntity>();
                 x.CreateMap<HotelEntity, HotelModel>();
+                x.CreateMap<LocationModel, LocationEntity>();
                 x.CreateMap<LocationEntity, LocationModel>()
                     .ForMember(x => x.Hotel, opt => opt.Ignore());
                 x.CreateMap<RoomEntity, RoomModel>()
                     .ForMember(x => x.Hotel, opt => opt.Ignore())
-                    .ForMember(x => x.Order,opt => opt.Ignore())
+                    .ForMember(x => x.Orders,opt => opt.Ignore())
                     .ForMember(x => x.User, opt => opt.Ignore());
                 x.CreateMap<ServiceEntity, ServiceModel>();
+                x.CreateMap<UserEntity, UserModel>()
+                    .ForMember(x => x.OwnedHotels, opt => opt.Ignore())
+                    .ForMember(x => x.Orders, opt => opt.Ignore())
+                    .ForMember(x => x.Rooms, opt => opt.Ignore())
+                    .ForMember(x => x.Role, opt => opt.Ignore());
             });
             LocationConfiguration = new MapperConfiguration(x =>
             {
@@ -87,12 +92,11 @@ namespace Business.Mappers
             });
             ServiceConfiguration = new MapperConfiguration(x =>
             {
-                x.CreateMap<ServiceEntity, ServiceModel>().ReverseMap();
-                x.CreateMap<HotelEntity, HotelModel>()
-                    .ForMember(x => x.Services, opt => opt.Ignore())
-                    .ForMember(X => X.Location, opt => opt.Ignore())
+                x.CreateMap<ServiceEntity, ServiceModel>()
+                    .ForMember(x => x.Hotel, opt => opt.Ignore())
                     .ForMember(x => x.Rooms, opt => opt.Ignore());
-                x.CreateMap<RoomEntity, RoomModel>();
+                x.CreateMap<ServiceModel, ServiceEntity>();
+
 
             });
         }

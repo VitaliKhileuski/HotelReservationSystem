@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Business.Models;
 
@@ -8,9 +9,12 @@ namespace Business.Interfaces
     {
         Task AddHotel(HotelModel hotel);
         Task<HotelModel> GetById(int id);
-        List<HotelModel> GetAll();
-        void UpdateHotelAdmin(int hotelId, int userId);
+        Task UpdateHotelAdmin(int hotelId, int userId);
         Task UpdateHotel(int hotelId, HotelModel hotel,int userId);
         Task DeleteHotelById(int hotelId);
+        Tuple<List<HotelModel>,int> GetFilteredHotels(DateTime checkInDate, DateTime checkOutDate, string country, string city, HotelPagination hotelPagination);
+        Task<Tuple<IEnumerable<HotelModel>, int>> GetHotelsPage(HotelPagination hotelPagination);
+        Task<ICollection<UserModel>> GetHotelAdmins(int hotelId);
+        Task DeleteHotelAdmin(int hotelId, int userId);
     }
 }

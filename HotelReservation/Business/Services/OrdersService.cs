@@ -8,6 +8,7 @@ using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data.Entities;
+using HotelReservation.Data.Interfaces;
 using HotelReservation.Data.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -15,13 +16,13 @@ namespace Business.Services
 {
     public class OrdersService : IOrderService
     {
-        private readonly OrderRepository _orderRepository;
-        private readonly UserRepository _userRepository;
-        private readonly RoomRepository _roomRepository;
+        private readonly IBaseRepository<OrderEntity> _orderRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IRoomRepository _roomRepository;
         private readonly Mapper _mapper;
         private readonly ILogger<OrdersService> _logger;
-        public OrdersService(ILogger<OrdersService> logger, OrderRepository orderRepository, UserRepository userRepository,
-            RoomRepository roomRepository, MapConfiguration cfg)
+        public OrdersService(ILogger<OrdersService> logger, IBaseRepository<OrderEntity> orderRepository, IUserRepository userRepository,
+            IRoomRepository roomRepository, MapConfiguration cfg)
         {
             _orderRepository = orderRepository;
             _userRepository = userRepository;
@@ -63,11 +64,6 @@ namespace Business.Services
                 _logger.LogError($"room with {roomId} id not exists");
                 throw new NotFoundException($"room with {roomId} id not exists");
             }
-            if ((bool)!roomEntity.IsEmpty)
-            {
-                _logger.LogError("this room already reserved");
-                throw new BadRequestException("this room already reserved");
-            }
             var orderEntity = _mapper.Map<OrderModel, OrderEntity>(order);
             List<ServiceEntity> services = new List<ServiceEntity>();
             foreach (var service in roomEntity.Hotel.Services)
@@ -84,7 +80,6 @@ namespace Business.Services
             var userEntity = await _userRepository.GetAsync(userId);
             
             orderEntity.Customer = userEntity;
-            roomEntity.IsEmpty = false;
             roomEntity.User = userEntity;
             orderEntity.DateOrdered = DateTime.Now;
             orderEntity.NumberOfDays = orderEntity.EndDate.Subtract(orderEntity.StartDate).Days;
@@ -92,7 +87,7 @@ namespace Business.Services
             orderEntity.Room = roomEntity;
             userEntity.Orders.Add(orderEntity);
             await _orderRepository.CreateAsync(orderEntity);
-             _roomRepository.Update(roomEntity);
+            await _roomRepository.UpdateAsync(roomEntity);
         }
 
         public async Task UpdateOrder(int orderId, OrderModel newOrder)
@@ -128,9 +123,9 @@ namespace Business.Services
             currentOrder.NumberOfDays = currentOrder.EndDate.Subtract(currentOrder.StartDate).Days;
             currentOrder.Services = orderEntity.Services;
             currentOrder.FullPrice = GetFullPrice(currentOrder,roomEntity);
-            _orderRepository.Update(currentOrder);
+            await _orderRepository.UpdateAsync(currentOrder);
             currentOrder.Services = services;
-            _orderRepository.Update(currentOrder);
+            await  _orderRepository.UpdateAsync(currentOrder);
         }
 
         public async Task DeleteOrder(int orderId)

@@ -18,20 +18,19 @@ namespace HotelReservation.Data.Configurations
                 .HasOne(x => x.Location)
                 .WithOne(x => x.Hotel)
                 .HasForeignKey<LocationEntity>(x => x.HotelId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(x => x.Rooms)
                 .WithOne(x => x.Hotel)
                 .HasForeignKey(x => x.HotelId)
-                .OnDelete(DeleteBehavior.Restrict);
-            builder
-                .Property(x => x.HotelAdminId)
-                .IsRequired()
-                .HasDefaultValue(1);
+                .OnDelete(DeleteBehavior.Cascade);
             builder
                 .HasMany(x => x.Services)
                 .WithOne(x => x.Hotel)
                 .HasForeignKey(x => x.HotelId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
+            builder
+                .HasMany(x => x.Admins)
+                .WithMany(x => x.OwnedHotels);
         }
     }
 }

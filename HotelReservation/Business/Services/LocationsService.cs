@@ -8,15 +8,16 @@ using Business.Exceptions;
 using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data.Entities;
+using HotelReservation.Data.Interfaces;
 using HotelReservation.Data.Repositories;
 
 namespace Business.Services
 {
     public class LocationsService
     {
-        public LocationRepository _locationRepository;
-        public IMapper _mapper;
-        public LocationsService(LocationRepository locationRepository, MapConfiguration cfg)
+        private readonly IBaseRepository<LocationEntity> _locationRepository;
+        private readonly IMapper _mapper;
+        public LocationsService(IBaseRepository<LocationEntity> locationRepository, MapConfiguration cfg)
         {
             _locationRepository = locationRepository;
             _mapper = new Mapper(cfg.LocationConfiguration);
@@ -27,14 +28,15 @@ namespace Business.Services
             var countriesEntities = _locationRepository.GetAll().ToList();
             if (countriesEntities.Count == 0)
             {
-                throw new NotFoundException("no data about countries");
+                return new List<string>();
             }
+
             foreach (var country in countriesEntities)
             {
                 countries.Add(country.Country);
             }
-            List<string> uniqueCounries = countries.Distinct().OrderBy(x => x).ToList();
-            return uniqueCounries;
+            List<string> uniqueCountries = countries.Distinct().OrderBy(x => x).ToList();
+            return uniqueCountries;
         }
         public List<string> GetCities(string country)
         {

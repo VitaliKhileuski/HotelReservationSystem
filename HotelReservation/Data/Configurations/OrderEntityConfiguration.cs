@@ -25,7 +25,7 @@ namespace HotelReservation.Data.Configurations
                 .IsRequired();
             builder
                 .HasOne(x => x.Room)
-                .WithOne(x => x.Order);
+                .WithMany(x => x.Order);
             builder
                 .HasOne(x => x.Customer)
                 .WithMany(x => x.Orders);

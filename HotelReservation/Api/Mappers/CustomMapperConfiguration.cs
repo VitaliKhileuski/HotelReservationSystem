@@ -21,9 +21,11 @@ namespace HotelReservation.Api.Mappers
             {
                 x.CreateMap<HotelModel, HotelResponseModel>();
                 x.CreateMap<HotelRequestModel, HotelModel>();
+                x.CreateMap<LocationRequestModel, LocationModel>();
                 x.CreateMap<LocationModel, LocationResponseModel>();
                 x.CreateMap<RoomModel, RoomResponseModel>();
                 x.CreateMap<ServiceModel, ServiceResponseModel>();
+                x.CreateMap<UserModel, UserResponseViewModel>();
             });
             RoleConfiguration = new MapperConfiguration(x =>
             {
@@ -48,7 +50,8 @@ namespace HotelReservation.Api.Mappers
             });
             RoomConfiguration = new MapperConfiguration(x =>
             {
-                x.CreateMap<RoomModel, RoomResponseModel>();
+                x.CreateMap<RoomModel, RoomResponseModel>()
+                    .ForMember(x => x.Hotel, opt => opt.Ignore());
                 x.CreateMap<RoomRequestModel, RoomModel>();
                 x.CreateMap<HotelModel,HotelResponseModel>()
                     .ForMember(x => x.Services, opt => opt.Ignore())

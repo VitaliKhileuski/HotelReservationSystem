@@ -11,7 +11,7 @@ using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
 using Microsoft.AspNetCore.Authorization;
-
+using HotelReservation.Api.Policy;
 
 namespace HotelReservation.Api.Controllers
 {
@@ -29,13 +29,6 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetRooms()
-        {
-            var rooms = _mapper.Map<ICollection<RoomResponseModel>>(await _roomsService.GetAllRooms());
-            return Ok(rooms);
-        }
-
-        [HttpGet]
         [Route("{hotelId:int}")]
         public async Task<IActionResult> GetRooms(int hotelId)
         {
@@ -44,9 +37,21 @@ namespace HotelReservation.Api.Controllers
             return Ok(roomResponseModels);
         }
 
+        [HttpGet]
+        [Route("{hotelId:int}/pages")]
+        public async Task<IActionResult> GetPage(int hotelId,[FromQuery] HotelPagination filter)
+        {
+            var validFilter = new HotelPagination(filter.PageNumber, filter.PageSize);
+            var roomsWithCount = await _roomsService.GetRoomsPage(hotelId,validFilter);
+            var rooms = _mapper.Map<List<RoomResponseModel>>(roomsWithCount.Item1);
+            var maxNumberOfHotels = roomsWithCount.Item2;
+
+            return Ok(Tuple.Create(rooms, maxNumberOfHotels));
+        }
+
         [HttpPost]
-        [Authorize(Policy = "HotelAdminPermission")]
-        [Route("{hotelId:int}/addRoom")]
+        [Authorize(Policy = Policies.AdminPermission)]
+        [Route("{hotelId:int}")]
         public async Task<IActionResult> CreateRoom(int hotelId,RoomRequestModel room)
         {
             int idClaim = GetIdFromClaims();
@@ -63,7 +68,7 @@ namespace HotelReservation.Api.Controllers
 
         [HttpDelete]
         [Route("{roomId:int}")]
-        [Authorize(Policy = "HotelAdminPermission")]
+        [Authorize(Policy = Policies.AdminPermission)]
         public async Task<IActionResult> DeleteRoom(int roomId)
         {
             int userId = GetIdFromClaims();
@@ -72,8 +77,8 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpPut]
-        [Route("/{roomId:int}")]
-        [Authorize(Policy = "HotelAdminPermission")]
+        [Route("{roomId:int}")]
+        [Authorize(Policy = Policies.AdminPermission)]
         public async Task<IActionResult> UpdateRoom(int roomId,[FromBody] RoomRequestModel room)
         {
             var roomModel = _mapper.Map<RoomRequestModel, RoomModel>(room);

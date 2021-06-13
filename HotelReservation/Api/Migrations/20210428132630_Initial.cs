@@ -92,10 +92,7 @@ namespace HotelReservation.Api.Migrations
                     HotelId = table.Column<int>(type: "int", nullable: false),
                     RoomNumber = table.Column<int>(type: "int", maxLength: 10, nullable: false),
                     BedsNumber = table.Column<int>(type: "int", nullable: false),
-                    PaymentPerDay = table.Column<double>(type: "float", maxLength: 9, nullable: false),
-                    WiFi = table.Column<bool>(type: "bit", nullable: false),
-                    MiniBar = table.Column<bool>(type: "bit", nullable: false),
-                    IsEmpty = table.Column<bool>(type: "bit", nullable: false)
+                    PaymentPerDay = table.Column<double>(type: "float", maxLength: 9, nullable: false)
                 },
                 constraints: table =>
                 {

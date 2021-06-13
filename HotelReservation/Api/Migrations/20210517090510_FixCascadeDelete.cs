@@ -26,16 +26,6 @@ namespace HotelReservation.Api.Migrations
                 oldClrType: typeof(decimal),
                 oldType: "decimal(18,2)");
 
-            migrationBuilder.AlterColumn<bool>(
-                name: "IsEmpty",
-                table: "Rooms",
-                type: "bit",
-                nullable: true,
-                defaultValue: true,
-                oldClrType: typeof(bool),
-                oldType: "bit",
-                oldDefaultValue: true);
-
             migrationBuilder.AlterColumn<decimal>(
                 name: "FullPrice",
                 table: "Orders",

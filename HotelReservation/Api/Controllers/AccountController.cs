@@ -7,6 +7,7 @@ using Business.Interfaces;
 using Business.Models;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelReservation.Api.Controllers
 {
@@ -45,6 +46,12 @@ namespace HotelReservation.Api.Controllers
             var tokenModel = _tokenMapper.Map<RefreshTokenRequestModel, TokenModel>(refreshToken);
             var result = await _authService.RefreshTokenVerification(tokenModel);
             return Ok(result);
+        }
+        [HttpGet("tokenVerification")]
+        [Authorize]
+        public IActionResult TokenVerification()
+        {
+            return Ok();
         }
     }
 }

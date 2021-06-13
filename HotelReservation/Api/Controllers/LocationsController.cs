@@ -12,7 +12,7 @@ namespace HotelReservation.Api.Controllers
     [Route("api/[controller]")]
     public class LocationsController : Controller
     {
-        public LocationsService _locationsService;
+        private readonly LocationsService _locationsService;
         public LocationsController(LocationsService locationsService)
         {
             _locationsService = locationsService;

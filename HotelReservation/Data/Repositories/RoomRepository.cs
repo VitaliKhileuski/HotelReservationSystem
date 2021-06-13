@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
@@ -8,76 +9,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelReservation.Data.Repositories
 {
-   public class RoomRepository : IRepository<RoomEntity>, IRepositoryAsync<RoomEntity>
+    public class RoomRepository : BaseRepository<RoomEntity>, IRoomRepository
     {
         private readonly Context _db;
 
-        public RoomRepository(Context context)
+        public RoomRepository(Context context) : base(context)
         {
             _db = context;
         }
-        public void Create(RoomEntity room)
+        public IEnumerable<RoomEntity> GetRoomsPageFromHotel(int pageNumber, int pageSize,int hotelId)
         {
-            _db.Rooms.Add(room);
-            _db.SaveChanges();
+            return _db.Rooms.Skip((pageNumber - 1) * pageSize).Take(pageSize).Where(x => x.HotelId==hotelId);
         }
-
-        public async Task CreateAsync(RoomEntity room)
+        public async Task<int> GetRoomsCount(int hotelId)
         {
-            await _db.Rooms.AddAsync(room);
-            await _db.SaveChangesAsync();
-        }
-
-        public void Delete(int id)
-        {
-            RoomEntity room = _db.Rooms.Find(id);
-            if (room != null)
-            {
-                _db.Rooms.Remove(room);
-            }
-            _db.SaveChanges();
-        }
-
-        public async Task DeleteAsync(int id)
-        {
-            var room = await _db.Rooms.FindAsync(id);
-
-            if (room != null)
-            {
-                _db.Rooms.Remove(room);
-            }
-
-            await _db.SaveChangesAsync();
-        }
-
-        public IEnumerable<RoomEntity> Find(Func<RoomEntity, bool> predicate)
-        {
-            return _db.Rooms.Where(predicate).ToList();
-        }
-        public RoomEntity Get(int id)
-        {
-            return _db.Rooms.Find(id);
-        }
-
-        public IEnumerable<RoomEntity> GetAll()
-        {
-            return _db.Rooms;
-        }
-
-        public async Task<IEnumerable<RoomEntity>> GetAllAsync()
-        {
-            return await Task.Run(GetAll);
-        }
-
-        public async Task<RoomEntity> GetAsync(int id)
-        {
-            return await _db.Rooms.FirstOrDefaultAsync(x => x.Id == id);
-        }
-
-        public void Update(RoomEntity room)
-        {
-            _db.Entry(room).State = EntityState.Modified;
-            _db.SaveChanges();
+            return await _db.Rooms.Where(x => x.HotelId==hotelId).CountAsync();
         }
     }
 }

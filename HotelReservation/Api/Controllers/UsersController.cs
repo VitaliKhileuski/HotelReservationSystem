@@ -8,6 +8,7 @@ using Business.Models;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
+using HotelReservation.Api.Policy;
 using Microsoft.AspNetCore.Authorization;
 
 namespace HotelReservation.Api.Controllers
@@ -25,15 +26,15 @@ namespace HotelReservation.Api.Controllers
             _usersService = usersService;
         }
         [HttpGet]
-        [Authorize(Policy = "AdminPermission")]
-        public IEnumerable<UserResponseViewModel> Get()
+        [Authorize(Policy = Policies.AdminPermission)]
+        [Route("{hotelId:int}/getPotentialHotelAdmins")]
+        public async Task<IActionResult> Get(int hotelId)
         {
-            var responseUsers = _mapper.Map<List<UserResponseViewModel>>(_usersService.GetAll());
-           return responseUsers;
+            var responseUsers = _mapper.Map<List<UserResponseViewModel>>(await _usersService.GetAll(hotelId));
+           return Ok(responseUsers);
         }
 
         [HttpGet]
-        [Authorize(Policy = "AdminPermission")]
         [Route("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -42,7 +43,7 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = "AdminPermission")]
+        [Authorize(Policy = Policies.AdminPermission)]
         public async Task<IActionResult> AddUser([FromBody] UserRequestModel user)
         {
             var userModel = _mapper.Map<UserRequestModel,UserModel>(user);
