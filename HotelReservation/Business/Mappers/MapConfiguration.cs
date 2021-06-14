@@ -14,6 +14,7 @@ namespace Business.Mappers
         public MapperConfiguration RoleConfiguration;
         public MapperConfiguration TokenConfiguration;
         public MapperConfiguration ServiceConfiguration;
+        public MapperConfiguration ImageConfiguration;
 
         public MapConfiguration()
         {
@@ -98,6 +99,10 @@ namespace Business.Mappers
                 x.CreateMap<ServiceModel, ServiceEntity>();
 
 
+            });
+            ImageConfiguration = new MapperConfiguration(x =>
+            {
+                x.CreateMap<ImageEntity, ImageModel>().ReverseMap();
             });
         }
     }

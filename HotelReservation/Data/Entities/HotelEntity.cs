@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net.Mime;
 
 namespace HotelReservation.Data.Entities
 {
@@ -9,6 +10,8 @@ namespace HotelReservation.Data.Entities
         public virtual List<RoomEntity> Rooms { get; set; }
         public virtual List<ServiceEntity> Services { get; set; }
         public virtual ICollection<UserEntity> Admins { get; set; }
+        public int? ImageId { get; set; }
+        public virtual ImageEntity Image { get; set; }
 
         public override bool Equals(object obj)
         {

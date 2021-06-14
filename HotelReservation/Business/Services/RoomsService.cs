@@ -91,6 +91,7 @@ namespace Business.Services
             var hotelEntity = roomEntity.Hotel; 
             if (hotelEntity.Admins.FirstOrDefault(x => x.Id == userId) != null || userEntity.Role.Name=="Admin")
             {
+                roomEntity.RoomNumber = room.RoomNumber;
                 roomEntity.BedsNumber = room.BedsNumber;
                 roomEntity.PaymentPerDay = room.PaymentPerDay;
                 await _roomRepository.UpdateAsync(roomEntity);

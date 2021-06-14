@@ -52,6 +52,7 @@ namespace HotelReservation.Api
             services.AddScoped<IBaseRepository<LocationEntity>, LocationRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IServiceRepository, ServiceRepository>();
+            services.AddScoped<IBaseRepository<ImageEntity>, ImageRepository>();
 
             services.AddScoped<MapConfiguration>();
             services.AddScoped<CustomMapperConfiguration>();
@@ -62,6 +63,7 @@ namespace HotelReservation.Api
             services.AddScoped<IOrderService,OrdersService>();
             services.AddScoped<IHotelsService, HotelsService>();
             services.AddTransient<IUserService,UsersService>();
+            services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IFacilityService,FacilitiesService>();
             services.AddScoped<LocationsService>();
             services.AddControllers();
