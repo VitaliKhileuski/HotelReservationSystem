@@ -17,7 +17,7 @@ namespace Business.Services
 {
     public class HotelsService : IHotelsService
     {
-        private readonly  IBaseRepository<HotelEntity> _hotelRepository;
+        private readonly  IHotelRepository _hotelRepository;
         private readonly IUserRepository _userRepository;
         private readonly Mapper _locationMapper;
         private readonly Mapper _hotelMapper;
@@ -26,7 +26,7 @@ namespace Business.Services
         private readonly IRoleRepository _roleRepository;
         private readonly ILogger<HotelsService> _logger;
 
-        public HotelsService(ILogger<HotelsService>  logger, IBaseRepository<HotelEntity> hotelRepository,IRoleRepository roleRepository,
+        public HotelsService(ILogger<HotelsService>  logger, IHotelRepository hotelRepository,IRoleRepository roleRepository,
             IUserRepository userRepository,IBaseRepository<LocationEntity> locationRepository, MapConfiguration cfg)
         {
             _hotelRepository = hotelRepository;
@@ -173,7 +173,7 @@ namespace Business.Services
             await _hotelRepository.DeleteAsync(hotelId);
         }
 
-        public async Task<Tuple<IEnumerable<HotelModel>,int>> GetHotelsPage(HotelPagination hotelPagination)
+        public async Task<Tuple<IEnumerable<HotelModel>,int>> GetHotelsPage(Pagination hotelPagination)
         {
             var hotels = _hotelMapper.Map<IEnumerable<HotelModel>>(_hotelRepository.Find(hotelPagination.PageNumber,hotelPagination.PageSize));
             var numberOfPages = await  _hotelRepository.GetCountAsync();
@@ -181,6 +181,20 @@ namespace Business.Services
 
             return Tuple.Create(hotels,numberOfPages);
         }
+        public async Task<Tuple<IEnumerable<HotelModel>, int>> GetHotelAdminPages(Pagination hotelPagination,int hotelAdminId)
+        {
+            var hotelAdmin = await _userRepository.GetAsync(hotelAdminId);
+            if (hotelAdmin == null)
+            {
+                _logger.LogError($"user with {hotelAdminId} id not exists");
+                throw new  NotFoundException($"user with {hotelAdminId} id not exists");
+            }
+
+            var hotels = _hotelMapper.Map<IEnumerable<HotelModel>>(_hotelRepository.GetHotelAdminsHotels(hotelPagination.PageNumber, hotelPagination.PageSize,hotelAdmin));
+            var numberOfPages = await _hotelRepository.GetHotelAdminsHotelsCount(hotelAdmin);
+            return Tuple.Create(hotels, numberOfPages);
+        }
+
 
         public async Task<ICollection<UserModel>> GetHotelAdmins(int hotelId)
         {
@@ -194,7 +208,7 @@ namespace Business.Services
             return _userMapper.Map<ICollection<UserModel>>(hotelEntity.Admins);
         }
 
-    public Tuple<List<HotelModel>,int> GetFilteredHotels(DateTime checkInDate,DateTime checkOutDate,string country,string city, HotelPagination hotelPagination)
+    public Tuple<List<HotelModel>,int> GetFilteredHotels(DateTime checkInDate,DateTime checkOutDate,string country,string city, Pagination hotelPagination)
         {
             int pages=0;
             var filteredHotels = new List<HotelModel>();

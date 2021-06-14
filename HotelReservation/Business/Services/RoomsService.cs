@@ -17,12 +17,12 @@ namespace Business.Services
     public class RoomsService : IRoomService
     {
         private readonly IRoomRepository  _roomRepository;
-        private readonly IBaseRepository<HotelEntity> _hotelRepository;
+        private readonly IHotelRepository _hotelRepository;
         private readonly IUserRepository _userRepository;
         private readonly Mapper _roomMapper;
         private readonly ILogger<RoomsService> _logger;
 
-        public RoomsService(ILogger<RoomsService> logger, IRoomRepository roomRepository, IBaseRepository<HotelEntity> hotelRepository,
+        public RoomsService(ILogger<RoomsService> logger, IRoomRepository roomRepository, IHotelRepository hotelRepository,
             IUserRepository userRepository,MapConfiguration cfg)
         {
             _userRepository = userRepository;
@@ -101,7 +101,7 @@ namespace Business.Services
                 throw new BadRequestException("you don't have permission to edit this hotel");
             }
         }
-        public async Task<Tuple<IEnumerable<RoomModel>, int>> GetRoomsPage(int hotelId,HotelPagination hotelPagination)
+        public async Task<Tuple<IEnumerable<RoomModel>, int>> GetRoomsPage(int hotelId,Pagination hotelPagination)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)

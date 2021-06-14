@@ -47,7 +47,7 @@ namespace HotelReservation.Api
             services.AddScoped<IPasswordHasher,PasswordHasher>();
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IRoomRepository, RoomRepository>();
-            services.AddScoped<IBaseRepository<HotelEntity>, HotelRepository>();
+            services.AddScoped<IHotelRepository, HotelRepository>();
             services.AddScoped<IBaseRepository<OrderEntity>, OrderRepository>();
             services.AddScoped<IBaseRepository<LocationEntity>, LocationRepository>();
             services.AddScoped<IUserRepository, UserRepository>();

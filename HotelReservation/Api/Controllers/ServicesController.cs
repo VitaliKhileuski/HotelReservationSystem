@@ -37,9 +37,9 @@ namespace HotelReservation.Api.Controllers
         }
         [HttpGet]
         [Route("{hotelId:int}/pages")]
-        public async Task<IActionResult> GetPage(int hotelId, [FromQuery] HotelPagination filter)
+        public async Task<IActionResult> GetPage(int hotelId, [FromQuery] Pagination filter)
         {
-            var validFilter = new HotelPagination(filter.PageNumber, filter.PageSize);
+            var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
             var servicesWithCount = await _facilitiesService.GetServicesPage(hotelId, validFilter);
             var services = _mapper.Map<List<ServiceResponseModel>>(servicesWithCount.Item1);
             var maxNumberOfServices = servicesWithCount.Item2;
@@ -57,7 +57,7 @@ namespace HotelReservation.Api.Controllers
         }
         [HttpPut]
         [Route("{serviceId:int}")]
-        [Authorize(Policy = Policies.AdminPermission)]
+        [Authorize(Policy = Policies.AllAdminsPermission)]
         public async Task<IActionResult> UpdateService(int serviceId, [FromBody] ServiceRequestModel service)
         {
             var serviceModel = _mapper.Map<ServiceRequestModel, ServiceModel>(service);
@@ -68,7 +68,7 @@ namespace HotelReservation.Api.Controllers
 
         [HttpPost]
         [Route("{hotelId:int}")]
-        [Authorize(Policy = Policies.AdminPermission)]
+        [Authorize(Policy = Policies.AllAdminsPermission)]
         public async Task<IActionResult> AddServiceToHotel(int hotelId, [FromBody] ServiceRequestModel service)
         {
             var serviceModel = _mapper.Map<ServiceRequestModel, ServiceModel>(service);
@@ -79,7 +79,7 @@ namespace HotelReservation.Api.Controllers
 
         [HttpDelete]
         [Route("{serviceId:int}")]
-        [Authorize(Policy = Policies.AdminPermission)]
+        [Authorize(Policy = Policies.AllAdminsPermission)]
         public async Task<IActionResult> DeleteServiceFromHotel(int serviceId)
         {
             var userId = GetIdFromClaims();

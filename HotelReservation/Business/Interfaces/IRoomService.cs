@@ -11,7 +11,7 @@ namespace Business.Interfaces
         Task<ICollection<RoomModel>> GetRoomsFromHotel(int hotelId);
         Task UpdateRoom(int roomId, int userId, RoomModel room);
         Task DeleteRoom(int roomId, int userId);
-        Task<Tuple<IEnumerable<RoomModel>, int>> GetRoomsPage(int hotelId, HotelPagination hotelPagination);
+        Task<Tuple<IEnumerable<RoomModel>, int>> GetRoomsPage(int hotelId, Pagination hotelPagination);
 
     }
 }

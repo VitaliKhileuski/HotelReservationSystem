@@ -40,11 +40,24 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = Policies.AdminPermission)]
         [Route("pages")]
-        public async Task<IActionResult> GetPage([FromQuery] HotelPagination filter)
+        public async Task<IActionResult> GetPage([FromQuery] Pagination filter)
         {
-            var validFilter = new HotelPagination(filter.PageNumber, filter.PageSize);
+            var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
             var HotelsWithCount = await _hotelsService.GetHotelsPage(validFilter);
+            var hotels = _hotelMapper.Map<List<HotelResponseModel>>(HotelsWithCount.Item1);
+            var maxNumberOfHotels = HotelsWithCount.Item2;
+
+            return Ok(Tuple.Create(hotels, maxNumberOfHotels));
+        }
+        [HttpGet]
+        [Authorize(Policy = Policies.HotelAdminPermission)]
+        [Route("hotelAdmin/{hotelAdminId:int}/pages")]
+        public async Task<IActionResult> GetHotelAdminsPage([FromQuery] Pagination filter,int  hotelAdminId)
+        {
+            var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
+            var  HotelsWithCount = await _hotelsService.GetHotelAdminPages(validFilter,hotelAdminId);
             var hotels = _hotelMapper.Map<List<HotelResponseModel>>(HotelsWithCount.Item1);
             var maxNumberOfHotels = HotelsWithCount.Item2;
 
@@ -53,9 +66,9 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         public IActionResult GetFilteredGHotels(DateTime checkInDate, DateTime checkOutDate, string country,
-            string city, [FromQuery] HotelPagination filter)
+            string city, [FromQuery] Pagination filter)
         {
-            var validFilter = new HotelPagination(filter.PageNumber, filter.PageSize);
+            var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
             return Ok(_hotelsService.GetFilteredHotels(checkInDate, checkOutDate, country, city, validFilter));
         }
 

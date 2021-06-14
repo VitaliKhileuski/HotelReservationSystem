@@ -12,9 +12,10 @@ namespace Business.Interfaces
         Task UpdateHotelAdmin(int hotelId, int userId);
         Task UpdateHotel(int hotelId, HotelModel hotel,int userId);
         Task DeleteHotelById(int hotelId);
-        Tuple<List<HotelModel>,int> GetFilteredHotels(DateTime checkInDate, DateTime checkOutDate, string country, string city, HotelPagination hotelPagination);
-        Task<Tuple<IEnumerable<HotelModel>, int>> GetHotelsPage(HotelPagination hotelPagination);
+        Tuple<List<HotelModel>,int> GetFilteredHotels(DateTime checkInDate, DateTime checkOutDate, string country, string city, Pagination hotelPagination);
+        Task<Tuple<IEnumerable<HotelModel>, int>> GetHotelsPage(Pagination hotelPagination);
         Task<ICollection<UserModel>> GetHotelAdmins(int hotelId);
         Task DeleteHotelAdmin(int hotelId, int userId);
+        Task<Tuple<IEnumerable<HotelModel>, int>> GetHotelAdminPages(Pagination hotelPagination, int hotelAdminId);
     }
 }
