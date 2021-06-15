@@ -42,11 +42,14 @@ namespace HotelReservation.Api.Controllers
         public async Task<IActionResult> GetPage(int hotelId,[FromQuery] Pagination filter)
         {
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
-            var roomsWithCount = await _roomsService.GetRoomsPage(hotelId,validFilter);
-            var rooms = _mapper.Map<List<RoomResponseModel>>(roomsWithCount.Item1);
-            var maxNumberOfHotels = roomsWithCount.Item2;
+            var pageInfo = await _roomsService.GetRoomsPage(hotelId,validFilter);
+            var rooms = _mapper.Map<List<RoomResponseModel>>(pageInfo.Items);
+            var responsePageInfo = new PageInfo<RoomResponseModel>
+            {
+                Items = rooms, NumberOfItems = pageInfo.NumberOfItems, NumberOfPages = pageInfo.NumberOfPages
+            };
 
-            return Ok(Tuple.Create(rooms, maxNumberOfHotels));
+            return Ok(pageInfo);
         }
 
         [HttpPost]

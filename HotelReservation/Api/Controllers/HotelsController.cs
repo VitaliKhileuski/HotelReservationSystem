@@ -32,6 +32,7 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = Policies.AllAdminsPermission)]
         [Route("{id:int}")]
         public async Task<HotelResponseModel> GetByiD(int id)
         {

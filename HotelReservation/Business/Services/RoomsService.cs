@@ -10,6 +10,7 @@ using Business.Models;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
 using HotelReservation.Data.Repositories;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
 namespace Business.Services
@@ -102,7 +103,7 @@ namespace Business.Services
                 throw new BadRequestException("you don't have permission to edit this hotel");
             }
         }
-        public async Task<Tuple<IEnumerable<RoomModel>, int>> GetRoomsPage(int hotelId,Pagination hotelPagination)
+        public async Task<PageInfo<RoomModel>> GetRoomsPage(int hotelId,Pagination hotelPagination)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -110,12 +111,22 @@ namespace Business.Services
                 _logger.LogError($"hotel with {hotelId} id not exists");
                 throw new NotFoundException($"hotel with {hotelId} id not exists");
             }
-            var hotels = _roomMapper.Map<IEnumerable<RoomModel>>(_roomRepository.GetRoomsPageFromHotel(hotelPagination.PageNumber,
+            var rooms = _roomMapper.Map<IEnumerable<RoomModel>>(_roomRepository.GetRoomsPageFromHotel(hotelPagination.PageNumber,
                 hotelPagination.PageSize,hotelId));
             var numberOfRooms = await _roomRepository.GetRoomsCount(hotelId);
 
+            int  numberOfPages = numberOfRooms / hotelPagination.PageSize;
+            if (numberOfRooms % hotelPagination.PageSize != 0)
+            {
+                numberOfPages++;
+            }
+            var roomPageInfo = new PageInfo<RoomModel>
+            {
+                Items = rooms, NumberOfItems = numberOfRooms, NumberOfPages = numberOfPages
+            };
 
-            return Tuple.Create(hotels, numberOfRooms);
+
+            return roomPageInfo;
         }
 
         public async Task DeleteRoom(int roomId, int userId)

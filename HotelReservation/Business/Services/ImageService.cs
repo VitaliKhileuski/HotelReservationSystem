@@ -72,6 +72,10 @@ namespace Business.Services
 
             if (hotelEntity.Admins.FirstOrDefault(x => x.Id == userId) != null || userEntity.Role.Name == "Admin")
             {
+                if (hotelEntity.Image == null)
+                {
+                    return null;
+                }
                 var image = hotelEntity.Image.ImageData;
                 return ImageConverter(image);
             }

@@ -121,9 +121,16 @@ namespace Business.Services
                 _logger.LogError("incorrect input data");
                 throw new BadRequestException("incorrect input data");
             }
+            var hotelEntity = await _hotelRepository.GetAsync(hotelId);
+
+            if (hotelEntity == null)
+            {
+                _logger.LogError($"hotel with {hotelId} id not exists");
+                throw new NotFoundException($"hotel with {hotelId} id not exists");
+            }
 
             var hotelUpdateEntity = _hotelMapper.Map<HotelModel, HotelEntity>(hotel);
-            if (!IsLocationEmpty(hotelUpdateEntity))
+            if (!IsLocationEmpty(hotelUpdateEntity, hotelEntity.Location))
             {
                 _logger.LogError("the hotel at this location already placed");
                 throw new BadRequestException("the hotel at this location already placed");
@@ -137,13 +144,7 @@ namespace Business.Services
                 throw new NotFoundException($"user with {userId} id not exists");
             }
 
-            var hotelEntity = await _hotelRepository.GetAsync(hotelId);
-
-            if (hotelEntity == null)
-            {
-                _logger.LogError($"hotel with {hotelId} id not exists");
-                throw new NotFoundException($"hotel with {hotelId} id not exists");
-            }
+            
 
             if (hotelEntity.Admins.FirstOrDefault(x => x.Id == userId) != null || userEntity.Role.Name == Roles.Admin)
             {
@@ -291,12 +292,20 @@ namespace Business.Services
             await _hotelRepository.UpdateAsync(hotelEntity);
         }
 
-        public bool IsLocationEmpty(HotelEntity hotel)
+        public bool IsLocationEmpty(HotelEntity hotel, LocationEntity oldLocation = null)
         {
-          var hotelEntity = _hotelRepository.GetAll().FirstOrDefault(x => x.Location.Country == hotel.Location.Country &&
-                                                          x.Location.City == hotel.Location.City &&
-                                                          x.Location.Street == hotel.Location.Street &&
-                                                          x.Location.BuildingNumber == hotel.Location.BuildingNumber);
+            
+            if (oldLocation!=null && oldLocation.Country == hotel.Location.Country
+                && oldLocation.City == hotel.Location.City
+                && oldLocation.Street == hotel.Location.Street
+                && oldLocation.BuildingNumber == hotel.Location.BuildingNumber)
+            {
+                return true;
+            }
+          var hotelEntity = _hotelRepository.GetAll().FirstOrDefault(x => x.Id != hotel.Id  &&
+                                                                          x.Location.Country == hotel.Location.Country &&
+                                                                          x.Location.City == hotel.Location.City &&
+                                                                          x.Location.Street == hotel.Location.Street && x.Location.BuildingNumber == hotel.Location.BuildingNumber);
           return hotelEntity == null;
         }
     }
