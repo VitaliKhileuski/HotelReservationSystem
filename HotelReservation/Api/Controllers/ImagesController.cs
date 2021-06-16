@@ -36,7 +36,7 @@ namespace HotelReservation.Api.Controllers
 
         [HttpPost]
         [Authorize(Policy = Policies.AllAdminsPermission)]
-        [Route("{roomId:int}/setHotelImage")]
+        [Route("{roomId:int}/setRoomImages")]
         public async Task<IActionResult> SetRoomImages(int roomId, [FromBody] List<ImageRequestModel> images)
         {
             List<string> imagesData = new List<string>();
@@ -50,12 +50,10 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = Policies.AllAdminsPermission)]
         [Route("{hotelId:int}/{userId:int}/getHotelImage")]
         public async Task<IActionResult> GetHotelImage(int hotelId, int userId)
         {
-            var idClaim = GetIdFromClaims();
-           var imageData =  await _imageService.GetHotelImage(hotelId, idClaim);
+            var imageData =  await _imageService.GetHotelImage(hotelId);
             var image = new ImageResponseModel
             {
                 Image = imageData
@@ -63,12 +61,10 @@ namespace HotelReservation.Api.Controllers
             return Ok(image);
         }
         [HttpGet]
-        [Authorize(Policy = Policies.AllAdminsPermission)]
         [Route("{roomId:int}/getRoomImages")]
         public async Task<IActionResult> GetRoomImages(int roomId)
         {
-            var idClaim = GetIdFromClaims();
-            var imagesData = await _imageService.GetRoomImages(roomId, idClaim);
+            var imagesData = await _imageService.GetRoomImages(roomId);
             List<ImageResponseModel> imageResponseModels = new List<ImageResponseModel>();
             foreach(var image in imagesData)
             {

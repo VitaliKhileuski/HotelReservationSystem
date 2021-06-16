@@ -62,7 +62,7 @@ namespace HotelReservation.Api
             services.AddScoped<IRoomService,RoomsService>();
             services.AddScoped<IOrderService,OrdersService>();
             services.AddScoped<IHotelsService, HotelsService>();
-            services.AddTransient<IUserService,UsersService>();
+            services.AddScoped<IUserService,UsersService>();
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IFacilityService,FacilitiesService>();
             services.AddScoped<LocationsService>();
@@ -106,8 +106,8 @@ namespace HotelReservation.Api
             }
             app.UseSerilogRequestLogging();
             app.UseHttpsRedirection();
-            app.UseRouting();
             app.UseCors(builder => Policies.ApiCorsPolicy(builder));
+            app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
             

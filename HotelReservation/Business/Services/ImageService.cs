@@ -62,7 +62,7 @@ namespace Business.Services
             }
         }
 
-        public async Task<string> GetHotelImage(int hotelId, int userId)
+        public async Task<string> GetHotelImage(int hotelId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -70,29 +70,17 @@ namespace Business.Services
                 _logger.LogError($"hotel with {hotelId} id not exists");
                 throw new NotFoundException($"hotel with {hotelId} id not exists");
             }
-
-            var userEntity = await _userRepository.GetAsync(userId);
-            if (userEntity == null)
+            
+            if (hotelEntity.Image == null)
             {
-                _logger.LogError($"user with {userId} id not exists");
-                throw new NotFoundException($"user with {userId} id not exists");
+                return null;
             }
 
-            if (hotelEntity.Admins.FirstOrDefault(x => x.Id == userId) != null || userEntity.Role.Name == "Admin")
-            {
-                if (hotelEntity.Image == null)
-                {
-                    return null;
-                }
-                var image = hotelEntity.Image.ImageData;
-                return ImageConverter(image);
-            }
-
-            _logger.LogError("you don't have permission to get image from this hotel");
-            throw new BadRequestException("you don't have permission to get image from this hotel");
+            var image = hotelEntity.Image.ImageData;
+            return ImageConverter(image);
         }
 
-        public async Task<List<string>> GetRoomImages(int roomId,int userId)
+        public async Task<List<string>> GetRoomImages(int roomId)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
             if (roomEntity == null)
@@ -100,38 +88,19 @@ namespace Business.Services
                 _logger.LogError($"room with {roomId} id not exists");
                 throw new NotFoundException($"room with {roomId} id not exists");
             }
-            var userEntity = await _userRepository.GetAsync(userId);
-            if (userEntity == null)
-            {
-                _logger.LogError($"user with {userId} id not exists");
-                throw new NotFoundException($"user with {userId} id not exists");
-            }
 
-            if (roomEntity.Hotel.Admins.FirstOrDefault(x => x.Id == userId) != null || userEntity.Role.Name == "Admin")
-            {
                 if (roomEntity.Images == null)
                 {
                     return null;
                 }
-                List<string> imagesbase64 = new List<string>();
+                List<string> imagesBase64 = new List<string>();
 
-                var image1 = await _imageRepository.GetAsync(1);
-                var image2 = await _imageRepository.GetAsync(2);
-                imagesbase64.Add(ImageConverter(image1.ImageData));
-                imagesbase64.Add(ImageConverter(image2.ImageData));
-
-
-                //foreach(var image in roomEntity.Images)
-                //{
-                //    imagesbase64.Add(ImageConverter(image.ImageData));
-                //}
-                return imagesbase64;
-            }
-
-
-            _logger.LogError("you don't have permission to get image from this hotel");
-            throw new BadRequestException("you don't have permission to get image from this hotel");
-
+                foreach (var image in roomEntity.Images)
+                {
+                    imagesBase64.Add(ImageConverter(image.ImageData));
+                }
+                return imagesBase64;
+            
         }
 
         public async Task SetImagesToRoom(List<string> imagesData, int roomId, int userId)

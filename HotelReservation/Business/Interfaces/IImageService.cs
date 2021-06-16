@@ -7,8 +7,8 @@ namespace Business.Interfaces
     public interface IImageService
     { 
         Task AddImageToHotel(string image, int hotelId, int userId);
-        Task<string> GetHotelImage(int hotelId, int userId);
-        Task<List<string>> GetRoomImages(int roomId,int userId);
+        Task<string> GetHotelImage(int hotelId);
+        Task<List<string>> GetRoomImages(int roomId);
         Task SetImagesToRoom(List<string> imagesData,int roomId,int userId);
     }
 }
