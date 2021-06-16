@@ -34,6 +34,21 @@ namespace HotelReservation.Api.Controllers
             return Ok("Updated Successfully");
         }
 
+        [HttpPost]
+        [Authorize(Policy = Policies.AllAdminsPermission)]
+        [Route("{roomId:int}/setHotelImage")]
+        public async Task<IActionResult> SetRoomImages(int roomId, [FromBody] List<ImageRequestModel> images)
+        {
+            List<string> imagesData = new List<string>();
+            foreach(var image in images)
+            {
+                imagesData.Add(image.Image);
+            }
+            var idClaim = GetIdFromClaims();
+            await _imageService.SetImagesToRoom(imagesData, roomId, idClaim);
+            return Ok("Updated Successfully");
+        }
+
         [HttpGet]
         [Authorize(Policy = Policies.AllAdminsPermission)]
         [Route("{hotelId:int}/{userId:int}/getHotelImage")]
@@ -46,6 +61,23 @@ namespace HotelReservation.Api.Controllers
                 Image = imageData
             };
             return Ok(image);
+        }
+        [HttpGet]
+        [Authorize(Policy = Policies.AllAdminsPermission)]
+        [Route("{roomId:int}/getRoomImages")]
+        public async Task<IActionResult> GetRoomImages(int roomId)
+        {
+            var idClaim = GetIdFromClaims();
+            var imagesData = await _imageService.GetRoomImages(roomId, idClaim);
+            List<ImageResponseModel> imageResponseModels = new List<ImageResponseModel>();
+            foreach(var image in imagesData)
+            {
+                imageResponseModels.Add(new ImageResponseModel()
+                {
+                    Image = image
+                });
+            }
+            return Ok(imageResponseModels);
         }
 
         private int GetIdFromClaims()
