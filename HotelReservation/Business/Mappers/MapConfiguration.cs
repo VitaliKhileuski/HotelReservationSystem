@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using Business.Models;
 using HotelReservation.Data.Entities;
 
@@ -14,6 +15,7 @@ namespace Business.Mappers
         public MapperConfiguration RoleConfiguration;
         public MapperConfiguration TokenConfiguration;
         public MapperConfiguration ServiceConfiguration;
+        public MapperConfiguration ImageConfiguration;
 
         public MapConfiguration()
         {
@@ -99,6 +101,26 @@ namespace Business.Mappers
 
 
             });
+            ImageConfiguration = new MapperConfiguration(x =>
+            {
+                x.CreateMap<ImageEntity, ImageModel>()
+                    .ForMember(imageModel => imageModel.ImageBase64, opt => opt.MapFrom( image => ImageConverter(image.ImageData)));
+                x.CreateMap<ImageModel, ImageEntity>()
+                    .ForMember(image => image.ImageData, opt => opt.MapFrom(image => ImageConverter(image.ImageBase64)));
+            });
+           
+        }
+        private byte[] ImageConverter(string image)
+        {
+            var imageData = Convert.FromBase64String(image);
+
+            return imageData;
+        }
+
+        private string ImageConverter(byte[] image)
+        {
+            var base64Image = Convert.ToBase64String(image);
+            return base64Image;
         }
     }
 }

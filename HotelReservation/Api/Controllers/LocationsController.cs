@@ -22,14 +22,14 @@ namespace HotelReservation.Api.Controllers
         [Route("countries")]
         public IActionResult GetUniqueCountries()
         {
-            List<string> countries = _locationsService.GetCountries();
+            var countries = _locationsService.GetCountries();
             return Ok(countries);
         }
         [HttpGet]
         [Route("cities/{country}")]
         public IActionResult GetUniqueCities(string country)
         {
-            List<string> cities = _locationsService.GetCities(country);
+            var cities = _locationsService.GetCities(country);
             return Ok(cities);
         }
     }

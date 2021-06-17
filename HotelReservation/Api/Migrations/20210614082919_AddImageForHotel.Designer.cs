@@ -4,14 +4,16 @@ using HotelReservation.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HotelReservation.Api.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20210614082919_AddImageForHotel")]
+    partial class AddImageForHotel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,18 +68,10 @@ namespace HotelReservation.Api.Migrations
                     b.Property<byte[]>("ImageData")
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<int?>("RoomEntityId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Type")
+                    b.Property<string>("ImageTitle")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RoomEntityId");
 
                     b.ToTable("Images");
                 });
@@ -333,13 +327,6 @@ namespace HotelReservation.Api.Migrations
                     b.Navigation("Image");
                 });
 
-            modelBuilder.Entity("HotelReservation.Data.Entities.ImageEntity", b =>
-                {
-                    b.HasOne("HotelReservation.Data.Entities.RoomEntity", null)
-                        .WithMany("Images")
-                        .HasForeignKey("RoomEntityId");
-                });
-
             modelBuilder.Entity("HotelReservation.Data.Entities.LocationEntity", b =>
                 {
                     b.HasOne("HotelReservation.Data.Entities.HotelEntity", "Hotel")
@@ -453,8 +440,6 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("HotelReservation.Data.Entities.RoomEntity", b =>
                 {
-                    b.Navigation("Images");
-
                     b.Navigation("Order");
                 });
 

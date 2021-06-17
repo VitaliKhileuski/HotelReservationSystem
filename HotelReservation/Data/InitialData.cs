@@ -63,7 +63,6 @@ namespace HotelReservation.Data
                         Surname =  AppAdmin.Surname,
                         RoleId = role.Id,
                         PhoneNumber = AppAdmin.PhoneNumber
-                            
                     }
                 );
             }

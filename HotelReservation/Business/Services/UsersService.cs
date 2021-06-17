@@ -18,13 +18,13 @@ namespace Business.Services
     public class UsersService : IUserService
     {
         private readonly IUserRepository _userRepository;
-        private readonly IBaseRepository<HotelEntity> _hotelRepository;
+        private readonly IHotelRepository _hotelRepository;
         private readonly Mapper _mapper;
         private readonly ILogger<UsersService> _logger;
         private readonly IPasswordHasher _hash;
         private readonly ITokenService _tokenService;
         public UsersService(ILogger<UsersService> logger, IUserRepository userRepository,
-            IBaseRepository<HotelEntity> hotelRepository, MapConfiguration cfg, IPasswordHasher hash, ITokenService tokenService)
+            IHotelRepository hotelRepository, MapConfiguration cfg, IPasswordHasher hash, ITokenService tokenService)
         {
             _mapper = new Mapper(cfg.UserConfiguration);
             _userRepository = userRepository;

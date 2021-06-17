@@ -17,7 +17,7 @@ namespace Business.Services
 {
     public class HotelsService : IHotelsService
     {
-        private readonly  IBaseRepository<HotelEntity> _hotelRepository;
+        private readonly  IHotelRepository _hotelRepository;
         private readonly IUserRepository _userRepository;
         private readonly Mapper _locationMapper;
         private readonly Mapper _hotelMapper;
@@ -26,7 +26,7 @@ namespace Business.Services
         private readonly IRoleRepository _roleRepository;
         private readonly ILogger<HotelsService> _logger;
 
-        public HotelsService(ILogger<HotelsService>  logger, IBaseRepository<HotelEntity> hotelRepository,IRoleRepository roleRepository,
+        public HotelsService(ILogger<HotelsService>  logger, IHotelRepository hotelRepository,IRoleRepository roleRepository,
             IUserRepository userRepository,IBaseRepository<LocationEntity> locationRepository, MapConfiguration cfg)
         {
             _hotelRepository = hotelRepository;
@@ -121,9 +121,16 @@ namespace Business.Services
                 _logger.LogError("incorrect input data");
                 throw new BadRequestException("incorrect input data");
             }
+            var hotelEntity = await _hotelRepository.GetAsync(hotelId);
+
+            if (hotelEntity == null)
+            {
+                _logger.LogError($"hotel with {hotelId} id not exists");
+                throw new NotFoundException($"hotel with {hotelId} id not exists");
+            }
 
             var hotelUpdateEntity = _hotelMapper.Map<HotelModel, HotelEntity>(hotel);
-            if (!IsLocationEmpty(hotelUpdateEntity))
+            if (!IsLocationEmpty(hotelUpdateEntity, hotelEntity.Location))
             {
                 _logger.LogError("the hotel at this location already placed");
                 throw new BadRequestException("the hotel at this location already placed");
@@ -137,13 +144,7 @@ namespace Business.Services
                 throw new NotFoundException($"user with {userId} id not exists");
             }
 
-            var hotelEntity = await _hotelRepository.GetAsync(hotelId);
-
-            if (hotelEntity == null)
-            {
-                _logger.LogError($"hotel with {hotelId} id not exists");
-                throw new NotFoundException($"hotel with {hotelId} id not exists");
-            }
+            
 
             if (hotelEntity.Admins.FirstOrDefault(x => x.Id == userId) != null || userEntity.Role.Name == Roles.Admin)
             {
@@ -173,7 +174,7 @@ namespace Business.Services
             await _hotelRepository.DeleteAsync(hotelId);
         }
 
-        public async Task<Tuple<IEnumerable<HotelModel>,int>> GetHotelsPage(HotelPagination hotelPagination)
+        public async Task<Tuple<IEnumerable<HotelModel>,int>> GetHotelsPage(Pagination hotelPagination)
         {
             var hotels = _hotelMapper.Map<IEnumerable<HotelModel>>(_hotelRepository.Find(hotelPagination.PageNumber,hotelPagination.PageSize));
             var numberOfPages = await  _hotelRepository.GetCountAsync();
@@ -181,6 +182,20 @@ namespace Business.Services
 
             return Tuple.Create(hotels,numberOfPages);
         }
+        public async Task<Tuple<IEnumerable<HotelModel>, int>> GetHotelAdminPages(Pagination hotelPagination,int hotelAdminId)
+        {
+            var hotelAdmin = await _userRepository.GetAsync(hotelAdminId);
+            if (hotelAdmin == null)
+            {
+                _logger.LogError($"user with {hotelAdminId} id not exists");
+                throw new  NotFoundException($"user with {hotelAdminId} id not exists");
+            }
+
+            var hotels = _hotelMapper.Map<IEnumerable<HotelModel>>(_hotelRepository.GetHotelAdminsHotels(hotelPagination.PageNumber, hotelPagination.PageSize,hotelAdmin));
+            var numberOfPages = await _hotelRepository.GetHotelAdminsHotelsCount(hotelAdmin);
+            return Tuple.Create(hotels, numberOfPages);
+        }
+
 
         public async Task<ICollection<UserModel>> GetHotelAdmins(int hotelId)
         {
@@ -194,7 +209,7 @@ namespace Business.Services
             return _userMapper.Map<ICollection<UserModel>>(hotelEntity.Admins);
         }
 
-    public Tuple<List<HotelModel>,int> GetFilteredHotels(DateTime checkInDate,DateTime checkOutDate,string country,string city, HotelPagination hotelPagination)
+    public Tuple<List<HotelModel>,int> GetFilteredHotels(DateTime checkInDate,DateTime checkOutDate,string country,string city, Pagination hotelPagination)
         {
             int pages=0;
             var filteredHotels = new List<HotelModel>();
@@ -277,12 +292,20 @@ namespace Business.Services
             await _hotelRepository.UpdateAsync(hotelEntity);
         }
 
-        public bool IsLocationEmpty(HotelEntity hotel)
+        public bool IsLocationEmpty(HotelEntity hotel, LocationEntity oldLocation = null)
         {
-          var hotelEntity = _hotelRepository.GetAll().FirstOrDefault(x => x.Location.Country == hotel.Location.Country &&
-                                                          x.Location.City == hotel.Location.City &&
-                                                          x.Location.Street == hotel.Location.Street &&
-                                                          x.Location.BuildingNumber == hotel.Location.BuildingNumber);
+            
+            if (oldLocation!=null && oldLocation.Country == hotel.Location.Country
+                && oldLocation.City == hotel.Location.City
+                && oldLocation.Street == hotel.Location.Street
+                && oldLocation.BuildingNumber == hotel.Location.BuildingNumber)
+            {
+                return true;
+            }
+          var hotelEntity = _hotelRepository.GetAll().FirstOrDefault(x => x.Id != hotel.Id  &&
+                                                                          x.Location.Country == hotel.Location.Country &&
+                                                                          x.Location.City == hotel.Location.City &&
+                                                                          x.Location.Street == hotel.Location.Street && x.Location.BuildingNumber == hotel.Location.BuildingNumber);
           return hotelEntity == null;
         }
     }

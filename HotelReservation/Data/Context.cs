@@ -25,6 +25,7 @@ namespace HotelReservation.Data
         public DbSet<RoomEntity> Rooms { get; set; }
         public DbSet<RefreshTokenEntity> RefreshTokens { get; set; }
         public DbSet<ServiceEntity> Services { get; set; }
+        public DbSet<ImageEntity> Images { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

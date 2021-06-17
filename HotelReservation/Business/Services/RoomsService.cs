@@ -10,6 +10,7 @@ using Business.Models;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
 using HotelReservation.Data.Repositories;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
 namespace Business.Services
@@ -17,12 +18,12 @@ namespace Business.Services
     public class RoomsService : IRoomService
     {
         private readonly IRoomRepository  _roomRepository;
-        private readonly IBaseRepository<HotelEntity> _hotelRepository;
+        private readonly IHotelRepository _hotelRepository;
         private readonly IUserRepository _userRepository;
         private readonly Mapper _roomMapper;
         private readonly ILogger<RoomsService> _logger;
 
-        public RoomsService(ILogger<RoomsService> logger, IRoomRepository roomRepository, IBaseRepository<HotelEntity> hotelRepository,
+        public RoomsService(ILogger<RoomsService> logger, IRoomRepository roomRepository, IHotelRepository hotelRepository,
             IUserRepository userRepository,MapConfiguration cfg)
         {
             _userRepository = userRepository;
@@ -91,6 +92,7 @@ namespace Business.Services
             var hotelEntity = roomEntity.Hotel; 
             if (hotelEntity.Admins.FirstOrDefault(x => x.Id == userId) != null || userEntity.Role.Name=="Admin")
             {
+                roomEntity.RoomNumber = room.RoomNumber;
                 roomEntity.BedsNumber = room.BedsNumber;
                 roomEntity.PaymentPerDay = room.PaymentPerDay;
                 await _roomRepository.UpdateAsync(roomEntity);
@@ -101,7 +103,7 @@ namespace Business.Services
                 throw new BadRequestException("you don't have permission to edit this hotel");
             }
         }
-        public async Task<Tuple<IEnumerable<RoomModel>, int>> GetRoomsPage(int hotelId,HotelPagination hotelPagination)
+        public async Task<PageInfo<RoomModel>> GetRoomsPage(int hotelId,Pagination hotelPagination)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -109,12 +111,22 @@ namespace Business.Services
                 _logger.LogError($"hotel with {hotelId} id not exists");
                 throw new NotFoundException($"hotel with {hotelId} id not exists");
             }
-            var hotels = _roomMapper.Map<IEnumerable<RoomModel>>(_roomRepository.GetRoomsPageFromHotel(hotelPagination.PageNumber,
+            var rooms = _roomMapper.Map<IEnumerable<RoomModel>>(_roomRepository.GetRoomsPageFromHotel(hotelPagination.PageNumber,
                 hotelPagination.PageSize,hotelId));
             var numberOfRooms = await _roomRepository.GetRoomsCount(hotelId);
 
+            int  numberOfPages = numberOfRooms / hotelPagination.PageSize;
+            if (numberOfRooms % hotelPagination.PageSize != 0)
+            {
+                numberOfPages++;
+            }
+            var roomPageInfo = new PageInfo<RoomModel>
+            {
+                Items = rooms, NumberOfItems = numberOfRooms, NumberOfPages = numberOfPages
+            };
 
-            return Tuple.Create(hotels, numberOfRooms);
+
+            return roomPageInfo;
         }
 
         public async Task DeleteRoom(int roomId, int userId)

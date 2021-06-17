@@ -7,6 +7,7 @@ using AutoMapper;
 using Business.Exceptions;
 using Business.Interfaces;
 using Business.Models;
+using HotelReservation.Api.Helpers;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
@@ -37,9 +38,9 @@ namespace HotelReservation.Api.Controllers
         }
         [HttpGet]
         [Route("{hotelId:int}/pages")]
-        public async Task<IActionResult> GetPage(int hotelId, [FromQuery] HotelPagination filter)
+        public async Task<IActionResult> GetPage(int hotelId, [FromQuery] Pagination filter)
         {
-            var validFilter = new HotelPagination(filter.PageNumber, filter.PageSize);
+            var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
             var servicesWithCount = await _facilitiesService.GetServicesPage(hotelId, validFilter);
             var services = _mapper.Map<List<ServiceResponseModel>>(servicesWithCount.Item1);
             var maxNumberOfServices = servicesWithCount.Item2;
@@ -57,42 +58,34 @@ namespace HotelReservation.Api.Controllers
         }
         [HttpPut]
         [Route("{serviceId:int}")]
-        [Authorize(Policy = Policies.AdminPermission)]
+        [Authorize(Policy = Policies.AllAdminsPermission)]
         public async Task<IActionResult> UpdateService(int serviceId, [FromBody] ServiceRequestModel service)
         {
             var serviceModel = _mapper.Map<ServiceRequestModel, ServiceModel>(service);
-            int userId = GetIdFromClaims();
+            var userId = TokenData.GetIdFromClaims(User.Claims);
             await _facilitiesService.UpdateService(serviceId, userId, serviceModel);
             return Ok("Updated Successfully");
         }
 
         [HttpPost]
         [Route("{hotelId:int}")]
-        [Authorize(Policy = Policies.AdminPermission)]
+        [Authorize(Policy = Policies.AllAdminsPermission)]
         public async Task<IActionResult> AddServiceToHotel(int hotelId, [FromBody] ServiceRequestModel service)
         {
             var serviceModel = _mapper.Map<ServiceRequestModel, ServiceModel>(service);
-            var userId = GetIdFromClaims();
+            var userId = TokenData.GetIdFromClaims(User.Claims);
             await _facilitiesService.AddServiceToHotel(hotelId, userId, serviceModel);
             return Ok("added successfully");
         }
 
         [HttpDelete]
         [Route("{serviceId:int}")]
-        [Authorize(Policy = Policies.AdminPermission)]
+        [Authorize(Policy = Policies.AllAdminsPermission)]
         public async Task<IActionResult> DeleteServiceFromHotel(int serviceId)
         {
-            var userId = GetIdFromClaims();
+            var userId = TokenData.GetIdFromClaims(User.Claims);
             await _facilitiesService.DeleteOrderFromHotel(serviceId, userId);
-            return Ok("deleted");
-        }
-
-        private int GetIdFromClaims()
-        {
-            int idClaim = int.Parse(User.Claims.FirstOrDefault(x =>
-                    x.Type.ToString().Equals("id", StringComparison.InvariantCultureIgnoreCase))
-                ?.Value ?? string.Empty);
-            return idClaim;
+            return Ok();
         }
     }
 }

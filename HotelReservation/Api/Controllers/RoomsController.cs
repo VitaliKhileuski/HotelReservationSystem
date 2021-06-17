@@ -7,6 +7,7 @@ using AutoMapper;
 using Business.Exceptions;
 using Business.Interfaces;
 using Business.Models;
+using HotelReservation.Api.Helpers;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
@@ -39,60 +40,55 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Route("{hotelId:int}/pages")]
-        public async Task<IActionResult> GetPage(int hotelId,[FromQuery] HotelPagination filter)
+        public async Task<IActionResult> GetPage(int hotelId,[FromQuery] Pagination filter)
         {
-            var validFilter = new HotelPagination(filter.PageNumber, filter.PageSize);
-            var roomsWithCount = await _roomsService.GetRoomsPage(hotelId,validFilter);
-            var rooms = _mapper.Map<List<RoomResponseModel>>(roomsWithCount.Item1);
-            var maxNumberOfHotels = roomsWithCount.Item2;
+            var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
+            var pageInfo = await _roomsService.GetRoomsPage(hotelId,validFilter);
+            var rooms = _mapper.Map<List<RoomResponseModel>>(pageInfo.Items);
+            var responsePageInfo = new PageInfo<RoomResponseModel>
+            {
+                Items = rooms, NumberOfItems = pageInfo.NumberOfItems, NumberOfPages = pageInfo.NumberOfPages
+            };
 
-            return Ok(Tuple.Create(rooms, maxNumberOfHotels));
+            return Ok(responsePageInfo);
         }
 
         [HttpPost]
-        [Authorize(Policy = Policies.AdminPermission)]
+        [Authorize(Policy = Policies.AllAdminsPermission)]
         [Route("{hotelId:int}")]
         public async Task<IActionResult> CreateRoom(int hotelId,RoomRequestModel room)
         {
-            int idClaim = GetIdFromClaims();
-            if(room == null)
+            var userId = TokenData.GetIdFromClaims(User.Claims);
+            if (room == null)
             {
                 return BadRequest("incorrect input data");
             }
 
             var roomModel = _mapper.Map<RoomRequestModel, RoomModel>(room);
-            await _roomsService.AddRoom(hotelId, roomModel, idClaim);
+            await _roomsService.AddRoom(hotelId, roomModel, userId);
             return Ok("Added successfully");
             
         }
 
         [HttpDelete]
         [Route("{roomId:int}")]
-        [Authorize(Policy = Policies.AdminPermission)]
+        [Authorize(Policy = Policies.AllAdminsPermission)]
         public async Task<IActionResult> DeleteRoom(int roomId)
         {
-            int userId = GetIdFromClaims();
+            var userId = TokenData.GetIdFromClaims(User.Claims);
             await _roomsService.DeleteRoom(roomId, userId);
             return Ok("Deleted Successfully");
         }
 
         [HttpPut]
         [Route("{roomId:int}")]
-        [Authorize(Policy = Policies.AdminPermission)]
+        [Authorize(Policy = Policies.AllAdminsPermission)]
         public async Task<IActionResult> UpdateRoom(int roomId,[FromBody] RoomRequestModel room)
         {
             var roomModel = _mapper.Map<RoomRequestModel, RoomModel>(room);
-            int userId = GetIdFromClaims();
+            var userId = TokenData.GetIdFromClaims(User.Claims);
             await _roomsService.UpdateRoom(roomId, userId, roomModel);
             return Ok("Updated Successfully");
-        }
-
-        private int GetIdFromClaims()
-        {
-            int idClaim = int.Parse(User.Claims.FirstOrDefault(x =>
-                    x.Type.ToString().Equals("id", StringComparison.InvariantCultureIgnoreCase))
-                ?.Value ?? string.Empty);
-            return idClaim;
         }
     }
 }

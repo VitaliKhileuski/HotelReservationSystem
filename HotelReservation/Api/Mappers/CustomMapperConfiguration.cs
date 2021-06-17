@@ -14,6 +14,7 @@ namespace HotelReservation.Api.Mappers
         public MapperConfiguration OrderConfiguration;
         public MapperConfiguration TokenConfiguration;
         public MapperConfiguration ServiceConfiguration;
+        public MapperConfiguration ImageConfiguration;
 
         public CustomMapperConfiguration()
         {
@@ -80,6 +81,11 @@ namespace HotelReservation.Api.Mappers
             {
                 x.CreateMap<ServiceRequestModel, ServiceModel>();
                 x.CreateMap<ServiceModel, ServiceResponseModel>();
+            });
+            ImageConfiguration = new MapperConfiguration(x =>
+            {
+                x.CreateMap<ImageRequestModel, ImageModel>();
+                x.CreateMap<ImageModel, ImageResponseModel>();
             });
         }
     }

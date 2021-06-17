@@ -31,6 +31,8 @@ namespace HotelReservation.Data.Configurations
             builder
                 .HasMany(x => x.Admins)
                 .WithMany(x => x.OwnedHotels);
+            builder
+                .HasOne(x => x.Image);
         }
     }
 }

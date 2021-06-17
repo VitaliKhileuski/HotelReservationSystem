@@ -17,13 +17,13 @@ namespace Business.Services
 {
     public class FacilitiesService : IFacilityService
     {
-        private readonly IBaseRepository<HotelEntity> _hotelRepository;
+        private readonly IHotelRepository _hotelRepository;
         private readonly IUserRepository _userRepository;
         private readonly IServiceRepository _serviceRepository;
         private readonly Mapper _mapper;
         private readonly ILogger<FacilitiesService> _logger;
 
-        public FacilitiesService(ILogger<FacilitiesService> logger, IBaseRepository<HotelEntity> hotelRepository, IUserRepository userRepository,
+        public FacilitiesService(ILogger<FacilitiesService> logger, IHotelRepository hotelRepository, IUserRepository userRepository,
             IServiceRepository serviceRepository, MapConfiguration cfg)
         {
             _hotelRepository = hotelRepository;
@@ -53,7 +53,7 @@ namespace Business.Services
             return _mapper.Map<ServiceEntity, ServiceModel>(service);
 
         }
-        public async Task<Tuple<IEnumerable<ServiceModel>, int>> GetServicesPage(int hotelId, HotelPagination hotelPagination)
+        public async Task<Tuple<IEnumerable<ServiceModel>, int>> GetServicesPage(int hotelId, Pagination hotelPagination)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -77,10 +77,13 @@ namespace Business.Services
                 _logger.LogError($"service with {serviceId} id not exists");
                 throw new NotFoundException($"service with {serviceId} id not exists");
             }
-            var service = serviceEntity.Hotel.Services.FirstOrDefault(x => x.Name == serviceModel.Name);
-            if (service != null)
+            if (serviceEntity.Name != serviceModel.Name)
             {
-                throw new BadRequestException("Service with that name already exists");
+                var service = serviceEntity.Hotel.Services.FirstOrDefault(x => x.Name == serviceModel.Name);
+                if (service != null)
+                {
+                    throw new BadRequestException("Service with that name already exists");
+                }
             }
             var userEntity = await _userRepository.GetAsync(userId);
             if (userEntity == null)

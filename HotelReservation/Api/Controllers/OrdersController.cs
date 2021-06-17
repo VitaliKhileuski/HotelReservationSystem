@@ -10,6 +10,7 @@ using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
 using Microsoft.AspNetCore.Authorization;
+using HotelReservation.Api.Helpers;
 
 namespace HotelReservation.Api.Controllers
 {
@@ -50,7 +51,7 @@ namespace HotelReservation.Api.Controllers
         [Route("{roomId:int}/order")]
         public async Task<IActionResult> CreateOrder(int roomId, [FromBody] OrderRequestModel order)
         {
-            var userId = GetIdFromClaims();
+            var userId = TokenData.GetIdFromClaims(User.Claims);
             var orderModel = _mapper.Map<OrderRequestModel, OrderModel>(order);
             orderModel.Services = new List<ServiceModel>();
             foreach(var id in order.ServicesId)
@@ -84,14 +85,6 @@ namespace HotelReservation.Api.Controllers
         {
             await _orderService.DeleteOrder(orderId);
             return Ok("Deleted Successfully");
-        }
-
-        private int GetIdFromClaims()
-        {
-            int idClaim = int.Parse(User.Claims.FirstOrDefault(x =>
-                    x.Type.ToString().Equals("id", StringComparison.InvariantCultureIgnoreCase))
-                ?.Value ?? string.Empty);
-            return idClaim;
         }
     }
 }
