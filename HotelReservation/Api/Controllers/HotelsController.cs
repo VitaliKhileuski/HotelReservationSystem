@@ -6,6 +6,7 @@ using AutoMapper;
 using Business.Exceptions;
 using Business.Interfaces;
 using Business.Models;
+using HotelReservation.Api.Helpers;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
@@ -46,9 +47,9 @@ namespace HotelReservation.Api.Controllers
         public async Task<IActionResult> GetPage([FromQuery] Pagination filter)
         {
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
-            var HotelsWithCount = await _hotelsService.GetHotelsPage(validFilter);
-            var hotels = _hotelMapper.Map<List<HotelResponseModel>>(HotelsWithCount.Item1);
-            var maxNumberOfHotels = HotelsWithCount.Item2;
+            var hotelsWithCount = await _hotelsService.GetHotelsPage(validFilter);
+            var hotels = _hotelMapper.Map<List<HotelResponseModel>>(hotelsWithCount.Item1);
+            var maxNumberOfHotels = hotelsWithCount.Item2;
 
             return Ok(Tuple.Create(hotels, maxNumberOfHotels));
         }
@@ -58,9 +59,9 @@ namespace HotelReservation.Api.Controllers
         public async Task<IActionResult> GetHotelAdminsPage([FromQuery] Pagination filter,int  hotelAdminId)
         {
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
-            var  HotelsWithCount = await _hotelsService.GetHotelAdminPages(validFilter,hotelAdminId);
-            var hotels = _hotelMapper.Map<List<HotelResponseModel>>(HotelsWithCount.Item1);
-            var maxNumberOfHotels = HotelsWithCount.Item2;
+            var  hotelsWithCount = await _hotelsService.GetHotelAdminPages(validFilter,hotelAdminId);
+            var hotels = _hotelMapper.Map<List<HotelResponseModel>>(hotelsWithCount.Item1);
+            var maxNumberOfHotels = hotelsWithCount.Item2;
 
             return Ok(Tuple.Create(hotels, maxNumberOfHotels));
         }
@@ -97,7 +98,7 @@ namespace HotelReservation.Api.Controllers
         {
             await _hotelsService.UpdateHotelAdmin(hotelId, userId);
 
-            return Ok("admin setted successfully");
+            return Ok();
         }
         [HttpPut]
         [Route("{hotelId:int}/{userId:int}/deleteHotelAdmin")]
@@ -113,11 +114,9 @@ namespace HotelReservation.Api.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> EditHotel(int id,[FromBody] HotelRequestModel hotel)
         {
-            var idClaim = int.Parse(User.Claims.FirstOrDefault(x =>
-                x.Type.ToString().Equals("id", StringComparison.InvariantCultureIgnoreCase))
-                ?.Value ?? string.Empty);
+            var userId = TokenData.GetIdFromClaims(User.Claims);
             var hotelModel = _hotelMapper.Map<HotelRequestModel, HotelModel>(hotel);
-            await _hotelsService.UpdateHotel(id, hotelModel,idClaim);
+            await _hotelsService.UpdateHotel(id, hotelModel,userId);
             return Ok("Updated Successfully");
         }
 

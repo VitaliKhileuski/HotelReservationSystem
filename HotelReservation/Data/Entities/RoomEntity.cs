@@ -9,7 +9,7 @@ namespace HotelReservation.Data.Entities
         public int? UserId { get; set; }
         public virtual UserEntity User { get; set; }
         public virtual ICollection<OrderEntity> Order { get; set; }
-        public virtual ICollection<ImageEntity> Images { get; set; }
+        public virtual List<ImageEntity> Images { get; set; }
         public int HotelId { get; set; }
         public virtual HotelEntity Hotel { get; set; }
         public string RoomNumber { get; set; }

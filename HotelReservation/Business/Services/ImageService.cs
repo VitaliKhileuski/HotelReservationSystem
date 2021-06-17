@@ -35,7 +35,7 @@ namespace Business.Services
             _logger = logger;
         }
 
-        public async Task AddImageToHotel(string image,int hotelId,int userId)
+        public async Task AddImageToHotel(ImageModel image,int hotelId,int userId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -48,10 +48,8 @@ namespace Business.Services
              
             if (hotelEntity.Admins.FirstOrDefault(x => x.Id == userId) != null || userEntity.Role.Name == "Admin")
             {
-                var imageEntity = new ImageEntity
-                {
-                    ImageData = ImageConverter(image)
-                };
+              var imageEntity = _imageMapper.Map<ImageModel, ImageEntity>(image);
+                await _imageRepository.DeleteAsync(hotelEntity.Image.Id);
                 hotelEntity.Image = imageEntity;
                 await _hotelRepository.UpdateAsync(hotelEntity);
             }
@@ -62,7 +60,7 @@ namespace Business.Services
             }
         }
 
-        public async Task<string> GetHotelImage(int hotelId)
+        public async Task<ImageModel> GetHotelImage(int hotelId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -76,11 +74,11 @@ namespace Business.Services
                 return null;
             }
 
-            var image = hotelEntity.Image.ImageData;
-            return ImageConverter(image);
+            var imageModel = _imageMapper.Map<ImageEntity, ImageModel>(hotelEntity.Image); 
+            return imageModel;
         }
 
-        public async Task<List<string>> GetRoomImages(int roomId)
+        public async Task<List<ImageModel>> GetRoomImages(int roomId)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
             if (roomEntity == null)
@@ -89,21 +87,18 @@ namespace Business.Services
                 throw new NotFoundException($"room with {roomId} id not exists");
             }
 
-                if (roomEntity.Images == null)
-                {
-                    return null;
-                }
-                List<string> imagesBase64 = new List<string>();
+            if (roomEntity.Images == null)
+            {
+                return new List<ImageModel>();
+            }
 
-                foreach (var image in roomEntity.Images)
-                {
-                    imagesBase64.Add(ImageConverter(image.ImageData));
-                }
-                return imagesBase64;
+            var roomImages = _imageMapper.Map<List<ImageModel>>(roomEntity.Images);
+               
+            return roomImages;
             
         }
 
-        public async Task SetImagesToRoom(List<string> imagesData, int roomId, int userId)
+        public async Task SetImagesToRoom(List<ImageModel> imagesData, int roomId, int userId)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
             if (roomEntity == null)
@@ -126,13 +121,15 @@ namespace Business.Services
                 }
                 else
                 {
-                    foreach (var image in imagesData)
+                    var images = _imageMapper.Map<List<ImageEntity>>(imagesData);
+
+                    var imageIds = roomEntity.Images.Select(image => image.Id).ToList();
+
+                    foreach (var id in imageIds)
                     {
-                        roomEntity.Images.Add(new ImageEntity()
-                        {
-                            ImageData = ImageConverter(image)
-                        });
+                        await _imageRepository.DeleteAsync(id);
                     }
+                    roomEntity.Images = images;
                 }
 
                 await _roomRepository.UpdateAsync(roomEntity); 
@@ -142,19 +139,6 @@ namespace Business.Services
                 _logger.LogError("you don't have permission to set images to this room");
                 throw new BadRequestException("you don't have permission to set images to this room");
             }
-        }
-
-        private  byte[] ImageConverter(string image)
-        {
-            var imageData = Convert.FromBase64String(image);
-
-            return imageData;
-        }
-
-        private string ImageConverter(byte[] image)
-        {
-            var base64Image = Convert.ToBase64String(image);
-            return base64Image;
         }
     }
 }

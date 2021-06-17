@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mime;
 using System.Threading.Tasks;
+using AutoMapper;
 using Business.Interfaces;
 using Business.Models;
+using HotelReservation.Api.Helpers;
+using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
 using HotelReservation.Api.Policy;
@@ -18,20 +20,23 @@ namespace HotelReservation.Api.Controllers
     public class ImagesController : Controller
     {
         private readonly IImageService _imageService;
+        private readonly Mapper _imageMapper;
 
-        public ImagesController(IImageService imageService)
+        public ImagesController(IImageService imageService, CustomMapperConfiguration cfg)
         {
             _imageService = imageService;
+            _imageMapper = new Mapper(cfg.ImageConfiguration);
         }
 
         [HttpPost]
         [Authorize(Policy = Policies.AllAdminsPermission)]
-        [Route("{hotelId:int}/{userId:int}/setHotelImage")]
-        public async Task<IActionResult> EditHotelImage(int hotelId, int userId, [FromBody] ImageRequestModel image)
+        [Route("{hotelId:int}/setHotelImage")]
+        public async Task<IActionResult> EditHotelImage(int hotelId,[FromBody] ImageRequestModel image)
         {
-            var idClaim = GetIdFromClaims();
-            await _imageService.AddImageToHotel(image.Image, hotelId, userId);
-            return Ok("Updated Successfully");
+            var userId = TokenData.GetIdFromClaims(User.Claims);
+            var imageModel = _imageMapper.Map<ImageRequestModel, ImageModel>(image);
+            await _imageService.AddImageToHotel(imageModel, hotelId, userId);
+            return Ok();
         }
 
         [HttpPost]
@@ -39,49 +44,29 @@ namespace HotelReservation.Api.Controllers
         [Route("{roomId:int}/setRoomImages")]
         public async Task<IActionResult> SetRoomImages(int roomId, [FromBody] List<ImageRequestModel> images)
         {
-            List<string> imagesData = new List<string>();
-            foreach(var image in images)
-            {
-                imagesData.Add(image.Image);
-            }
-            var idClaim = GetIdFromClaims();
-            await _imageService.SetImagesToRoom(imagesData, roomId, idClaim);
-            return Ok("Updated Successfully");
+            var imageModels = _imageMapper.Map<List<ImageModel>>(images);
+            var userId = TokenData.GetIdFromClaims(User.Claims);
+            await _imageService.SetImagesToRoom(imageModels, roomId, userId);
+            return Ok();
         }
 
         [HttpGet]
-        [Route("{hotelId:int}/{userId:int}/getHotelImage")]
-        public async Task<IActionResult> GetHotelImage(int hotelId, int userId)
+        [Route("{hotelId:int}/getHotelImage")]
+        public async Task<IActionResult> GetHotelImage(int hotelId)
         {
             var imageData =  await _imageService.GetHotelImage(hotelId);
-            var image = new ImageResponseModel
-            {
-                Image = imageData
-            };
-            return Ok(image);
+            var imageResponse = _imageMapper.Map<ImageModel, ImageResponseModel>(imageData);
+            return Ok(imageResponse);
         }
+
         [HttpGet]
         [Route("{roomId:int}/getRoomImages")]
         public async Task<IActionResult> GetRoomImages(int roomId)
         {
             var imagesData = await _imageService.GetRoomImages(roomId);
-            List<ImageResponseModel> imageResponseModels = new List<ImageResponseModel>();
-            foreach(var image in imagesData)
-            {
-                imageResponseModels.Add(new ImageResponseModel()
-                {
-                    Image = image
-                });
-            }
-            return Ok(imageResponseModels);
-        }
 
-        private int GetIdFromClaims()
-        {
-            int idClaim = int.Parse(User.Claims.FirstOrDefault(x =>
-                    x.Type.ToString().Equals("id", StringComparison.InvariantCultureIgnoreCase))
-                ?.Value ?? string.Empty);
-            return idClaim;
+            var responseImages = _imageMapper.Map<ICollection<ImageResponseModel>>(imagesData);
+            return Ok(responseImages);
         }
     }
 }

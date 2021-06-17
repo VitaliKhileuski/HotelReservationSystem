@@ -7,6 +7,7 @@ using AutoMapper;
 using Business.Exceptions;
 using Business.Interfaces;
 using Business.Models;
+using HotelReservation.Api.Helpers;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
@@ -61,7 +62,7 @@ namespace HotelReservation.Api.Controllers
         public async Task<IActionResult> UpdateService(int serviceId, [FromBody] ServiceRequestModel service)
         {
             var serviceModel = _mapper.Map<ServiceRequestModel, ServiceModel>(service);
-            int userId = GetIdFromClaims();
+            var userId = TokenData.GetIdFromClaims(User.Claims);
             await _facilitiesService.UpdateService(serviceId, userId, serviceModel);
             return Ok("Updated Successfully");
         }
@@ -72,7 +73,7 @@ namespace HotelReservation.Api.Controllers
         public async Task<IActionResult> AddServiceToHotel(int hotelId, [FromBody] ServiceRequestModel service)
         {
             var serviceModel = _mapper.Map<ServiceRequestModel, ServiceModel>(service);
-            var userId = GetIdFromClaims();
+            var userId = TokenData.GetIdFromClaims(User.Claims);
             await _facilitiesService.AddServiceToHotel(hotelId, userId, serviceModel);
             return Ok("added successfully");
         }
@@ -82,17 +83,9 @@ namespace HotelReservation.Api.Controllers
         [Authorize(Policy = Policies.AllAdminsPermission)]
         public async Task<IActionResult> DeleteServiceFromHotel(int serviceId)
         {
-            var userId = GetIdFromClaims();
+            var userId = TokenData.GetIdFromClaims(User.Claims);
             await _facilitiesService.DeleteOrderFromHotel(serviceId, userId);
-            return Ok("deleted");
-        }
-
-        private int GetIdFromClaims()
-        {
-            int idClaim = int.Parse(User.Claims.FirstOrDefault(x =>
-                    x.Type.ToString().Equals("id", StringComparison.InvariantCultureIgnoreCase))
-                ?.Value ?? string.Empty);
-            return idClaim;
+            return Ok();
         }
     }
 }

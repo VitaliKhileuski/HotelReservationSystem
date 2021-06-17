@@ -13,5 +13,10 @@ namespace HotelReservation.Data.Repositories
         {
             _db = context;
         }
+
+        public void DeleteAllImages()
+        {
+
+        }
     }
 }

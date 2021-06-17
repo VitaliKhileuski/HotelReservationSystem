@@ -7,6 +7,7 @@ using AutoMapper;
 using Business.Exceptions;
 using Business.Interfaces;
 using Business.Models;
+using HotelReservation.Api.Helpers;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
@@ -49,7 +50,7 @@ namespace HotelReservation.Api.Controllers
                 Items = rooms, NumberOfItems = pageInfo.NumberOfItems, NumberOfPages = pageInfo.NumberOfPages
             };
 
-            return Ok(pageInfo);
+            return Ok(responsePageInfo);
         }
 
         [HttpPost]
@@ -57,14 +58,14 @@ namespace HotelReservation.Api.Controllers
         [Route("{hotelId:int}")]
         public async Task<IActionResult> CreateRoom(int hotelId,RoomRequestModel room)
         {
-            int idClaim = GetIdFromClaims();
-            if(room == null)
+            var userId = TokenData.GetIdFromClaims(User.Claims);
+            if (room == null)
             {
                 return BadRequest("incorrect input data");
             }
 
             var roomModel = _mapper.Map<RoomRequestModel, RoomModel>(room);
-            await _roomsService.AddRoom(hotelId, roomModel, idClaim);
+            await _roomsService.AddRoom(hotelId, roomModel, userId);
             return Ok("Added successfully");
             
         }
@@ -74,7 +75,7 @@ namespace HotelReservation.Api.Controllers
         [Authorize(Policy = Policies.AllAdminsPermission)]
         public async Task<IActionResult> DeleteRoom(int roomId)
         {
-            int userId = GetIdFromClaims();
+            var userId = TokenData.GetIdFromClaims(User.Claims);
             await _roomsService.DeleteRoom(roomId, userId);
             return Ok("Deleted Successfully");
         }
@@ -85,17 +86,9 @@ namespace HotelReservation.Api.Controllers
         public async Task<IActionResult> UpdateRoom(int roomId,[FromBody] RoomRequestModel room)
         {
             var roomModel = _mapper.Map<RoomRequestModel, RoomModel>(room);
-            int userId = GetIdFromClaims();
+            var userId = TokenData.GetIdFromClaims(User.Claims);
             await _roomsService.UpdateRoom(roomId, userId, roomModel);
             return Ok("Updated Successfully");
-        }
-
-        private int GetIdFromClaims()
-        {
-            int idClaim = int.Parse(User.Claims.FirstOrDefault(x =>
-                    x.Type.ToString().Equals("id", StringComparison.InvariantCultureIgnoreCase))
-                ?.Value ?? string.Empty);
-            return idClaim;
         }
     }
 }

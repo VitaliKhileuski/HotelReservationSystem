@@ -6,6 +6,9 @@ namespace Business.Models
 {
     public class ImageModel
     {
-        public byte[] ImageData { get; set; }
+        public string ImageBase64 { get; set; }
+        public string Title { get; set; }
+        public string Type { get; set; }
+
     }
 }
