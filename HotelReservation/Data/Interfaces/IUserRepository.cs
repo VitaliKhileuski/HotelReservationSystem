@@ -6,9 +6,9 @@ using HotelReservation.Data.Entities;
 
 namespace HotelReservation.Data.Interfaces
 {
-    public interface IUserRepository : IBaseRepository<UserEntity>
+    interface IUserRepository : IBaseRepository<UserEntity>
     {
-        Task<UserEntity> GetAsyncByEmail(string email);
-        public IEnumerable<UserEntity> GetUsers(HotelEntity hotel);
+        public Task<UserEntity> GetAsyncByEmail(string email);
+         public IEnumerable<UserEntity> GetUsers(HotelEntity hotel);
     }
 }

@@ -16,12 +16,12 @@ namespace Business.Services
 {
     public class OrdersService : IOrderService
     {
-        private readonly IBaseRepository<OrderEntity> _orderRepository;
+        private readonly IOrderRepository _orderRepository;
         private readonly IUserRepository _userRepository;
         private readonly IRoomRepository _roomRepository;
         private readonly Mapper _mapper;
         private readonly ILogger<OrdersService> _logger;
-        public OrdersService(ILogger<OrdersService> logger, IBaseRepository<OrderEntity> orderRepository, IUserRepository userRepository,
+        public OrdersService(ILogger<OrdersService> logger, IOrderRepository orderRepository, IUserRepository userRepository,
             IRoomRepository roomRepository, MapConfiguration cfg)
         {
             _orderRepository = orderRepository;

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
+using Business.Helpers;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
@@ -17,14 +18,14 @@ namespace Business.Services
 {
     public class ImageService : IImageService
     {
-        private readonly IBaseRepository<ImageEntity> _imageRepository;
+        private readonly IImageRepository _imageRepository;
         private readonly IHotelRepository _hotelRepository;
         private readonly IUserRepository _userRepository;
         private readonly IRoomRepository _roomRepository;
         private readonly Mapper _imageMapper;
         private readonly ILogger<ImageEntity> _logger;
 
-        public ImageService(IBaseRepository<ImageEntity> imageRepository,IHotelRepository hotelRepository,IUserRepository userRepository,
+        public ImageService(IImageRepository imageRepository,IHotelRepository hotelRepository,IUserRepository userRepository,
             IRoomRepository roomRepository, ILogger<ImageEntity> logger,  MapConfiguration cfg)
         {
             _imageMapper = new Mapper(cfg.ImageConfiguration);
@@ -46,17 +47,15 @@ namespace Business.Services
 
             var userEntity = await _userRepository.GetAsync(userId);
              
-            if (hotelEntity.Admins.FirstOrDefault(x => x.Id == userId) != null || userEntity.Role.Name == "Admin")
+            if (PermissionVerifier.CheckPermission(hotelEntity,userEntity))
             {
               var imageEntity = _imageMapper.Map<ImageModel, ImageEntity>(image);
-                await _imageRepository.DeleteAsync(hotelEntity.Image.Id);
+                if (hotelEntity.Image != null)
+                {
+                    await _imageRepository.DeleteAsync(hotelEntity.Image.Id);
+                }
                 hotelEntity.Image = imageEntity;
                 await _hotelRepository.UpdateAsync(hotelEntity);
-            }
-            else
-            {
-                _logger.LogError("you don't have permission to edit this hotel");
-                throw new BadRequestException("you don't have permission to edit this hotel");
             }
         }
 
@@ -113,7 +112,7 @@ namespace Business.Services
                 throw new NotFoundException($"user with {userId} id not exists");
             }
 
-            if (roomEntity.Hotel.Admins.FirstOrDefault(x => x.Id == userId) != null || userEntity.Role.Name == "Admin")
+            if (PermissionVerifier.CheckPermission(roomEntity.Hotel, userEntity))
             {
                 if (roomEntity.Images == null)
                 {
@@ -133,11 +132,6 @@ namespace Business.Services
                 }
 
                 await _roomRepository.UpdateAsync(roomEntity); 
-            }
-            else
-            {
-                _logger.LogError("you don't have permission to set images to this room");
-                throw new BadRequestException("you don't have permission to set images to this room");
             }
         }
     }

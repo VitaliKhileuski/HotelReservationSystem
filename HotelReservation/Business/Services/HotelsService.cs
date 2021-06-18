@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
+using Business.Helpers;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
@@ -22,12 +23,12 @@ namespace Business.Services
         private readonly Mapper _locationMapper;
         private readonly Mapper _hotelMapper;
         private readonly Mapper _userMapper;
-        private readonly IBaseRepository<LocationEntity> _locationRepository;
+        private readonly ILocationRepository _locationRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly ILogger<HotelsService> _logger;
 
         public HotelsService(ILogger<HotelsService>  logger, IHotelRepository hotelRepository,IRoleRepository roleRepository,
-            IUserRepository userRepository,IBaseRepository<LocationEntity> locationRepository, MapConfiguration cfg)
+            IUserRepository userRepository,ILocationRepository locationRepository, MapConfiguration cfg)
         {
             _hotelRepository = hotelRepository;
             _userRepository = userRepository;
@@ -146,7 +147,7 @@ namespace Business.Services
 
             
 
-            if (hotelEntity.Admins.FirstOrDefault(x => x.Id == userId) != null || userEntity.Role.Name == Roles.Admin)
+            if (PermissionVerifier.CheckPermission(hotelEntity, userEntity))
             {
 
                 hotelEntity.Name = hotel.Name;
@@ -156,11 +157,6 @@ namespace Business.Services
                 hotelEntity.Location.BuildingNumber = hotel.Location.BuildingNumber;
 
                     await _hotelRepository.UpdateAsync(hotelEntity);
-            }
-            else
-            {
-                _logger.LogError("you don't have permission to edit this hotel");
-                throw new BadRequestException("you don't have permission to edit this hotel");
             }
         }
         public async Task DeleteHotelById(int hotelId)

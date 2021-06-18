@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HotelReservation.Data.Repositories
 {
-    public class OrderRepository : BaseRepository<OrderEntity>
+    public class OrderRepository : BaseRepository<OrderEntity> , IOrderRepository
     {
         private readonly Context _db;
 

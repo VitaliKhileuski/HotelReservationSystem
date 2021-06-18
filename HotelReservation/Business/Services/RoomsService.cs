@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
+using Business.Helpers;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
@@ -55,15 +56,10 @@ namespace Business.Services
                 throw new NotFoundException($"user with {userId} id not exists");
             }
             var roomEntity = _roomMapper.Map<RoomModel, RoomEntity>(room);
-            if (hotelEntity.Admins.FirstOrDefault(x => x.Id == userId) != null || userEntity.Role.Name == "Admin")
+            if (PermissionVerifier.CheckPermission(hotelEntity, userEntity))
             {
                 hotelEntity.Rooms.Add(roomEntity); 
                 await _hotelRepository.UpdateAsync(hotelEntity);
-            }
-            else
-            {
-                _logger.LogError("you don't have permission to edit this hotel");
-                throw new BadRequestException("you don't have permission to edit this hotel");
             }
         }
 
@@ -90,17 +86,12 @@ namespace Business.Services
             var roomEntity = await _roomRepository.GetAsync(roomId);
             var userEntity =await _userRepository.GetAsync(userId);
             var hotelEntity = roomEntity.Hotel; 
-            if (hotelEntity.Admins.FirstOrDefault(x => x.Id == userId) != null || userEntity.Role.Name=="Admin")
+            if (PermissionVerifier.CheckPermission(hotelEntity, userEntity))
             {
                 roomEntity.RoomNumber = room.RoomNumber;
                 roomEntity.BedsNumber = room.BedsNumber;
                 roomEntity.PaymentPerDay = room.PaymentPerDay;
                 await _roomRepository.UpdateAsync(roomEntity);
-            }
-            else
-            {
-                _logger.LogError("you don't have permission to edit this hotel");
-                throw new BadRequestException("you don't have permission to edit this hotel");
             }
         }
         public async Task<PageInfo<RoomModel>> GetRoomsPage(int hotelId,Pagination hotelPagination)
@@ -145,14 +136,9 @@ namespace Business.Services
                 throw new NotFoundException($"user with {userId} id not exists");
             }
             var hotelEntity = roomEntity.Hotel;
-            if (hotelEntity.Admins.FirstOrDefault(x => x.Id == userId) != null || userEntity.Role.Name=="Admin")
+            if (PermissionVerifier.CheckPermission(hotelEntity, userEntity))
             {
                 await _roomRepository.DeleteAsync(roomId);
-            }
-            else
-            {
-                _logger.LogError("you don't have permission to edit this hotel");
-                throw new BadRequestException("you don't have permission to edit this hotel");
             }
         }
     }

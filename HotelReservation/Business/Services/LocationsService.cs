@@ -15,9 +15,9 @@ namespace Business.Services
 {
     public class LocationsService
     {
-        private readonly IBaseRepository<LocationEntity> _locationRepository;
+        private readonly ILocationRepository _locationRepository;
         private readonly IMapper _mapper;
-        public LocationsService(IBaseRepository<LocationEntity> locationRepository, MapConfiguration cfg)
+        public LocationsService(ILocationRepository locationRepository, MapConfiguration cfg)
         {
             _locationRepository = locationRepository;
             _mapper = new Mapper(cfg.LocationConfiguration);
