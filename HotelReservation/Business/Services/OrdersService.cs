@@ -9,7 +9,6 @@ using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
-using HotelReservation.Data.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace Business.Services
@@ -43,17 +42,6 @@ namespace Business.Services
             var orderModel = _mapper.Map<OrderEntity, OrderModel>(order);
 
             return orderModel;
-        }
-
-        public ICollection<OrderModel> GetAll()
-        {
-            var orders = _mapper.Map<ICollection<OrderModel>>(_orderRepository.GetAll());
-            if (orders.Count == 0)
-            {
-                _logger.LogError("no data about orders");
-                throw new NotFoundException("no data about orders");
-            }
-            return orders;
         }
 
         public async Task CreateOrder(int roomId, int userId,OrderModel order)

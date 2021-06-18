@@ -1,25 +1,16 @@
-using System;
-using System.Text;
+using System.Reflection;
 using Business;
-using Business.Interfaces;
 using Business.Mappers;
-using Business.Services;
 using HotelReservation.Api.Extensions;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Policy;
 using HotelReservation.Data;
-using HotelReservation.Data.Entities;
-using HotelReservation.Data.Interfaces;
-using HotelReservation.Data.Repositories;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
 namespace HotelReservation.Api
@@ -42,21 +33,19 @@ namespace HotelReservation.Api
                 opt.UseSqlServer(Configuration.GetConnectionString("HotelContextConnection"),
                     x => x.MigrationsAssembly("Api"));
             });
+
             services.AddScoped<InitialData>();
             services.Configure<AuthOptions>(Configuration.GetSection(AuthOptions.Authentication));
-
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddRepositories();
             services.AddServices();
-
             services.AddScoped<MapConfiguration>();
             services.AddScoped<CustomMapperConfiguration>();
-
-           
             services.AddControllers();
             services.AddControllersWithViews()
                 .AddNewtonsoftJson(options =>
-    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-);
+                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                 );
             services.AddTokenAuthentication(Configuration.GetSection(AuthOptions.Authentication).Get<AuthOptions>());
             services.AddAuthorization(options =>
             {

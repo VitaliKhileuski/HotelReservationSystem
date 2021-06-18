@@ -11,7 +11,6 @@ using Business.Models;
 using HotelReservation.Data.Constants;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
-using HotelReservation.Data.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace Business.Services
@@ -213,11 +212,11 @@ namespace Business.Services
             var hotels = GetAll();
             if (country == "null")
             {
-                country = null;//fix
+                country = null;
             }
             if (city == "null")
             {
-                city = null;//fix
+                city = null;
             }
             foreach (var hotel in hotels)
             {
@@ -225,7 +224,7 @@ namespace Business.Services
                 {
                     if (string.IsNullOrEmpty(city) || hotel.Location.City == city)
                     {
-                        if (hotel.Rooms == null)//fix
+                        if (hotel.Rooms == null)
                         {
                             foreach (var room in hotel.Rooms)
                             {
@@ -298,11 +297,11 @@ namespace Business.Services
             {
                 return true;
             }
-          var hotelEntity = _hotelRepository.GetAll().FirstOrDefault(x => x.Id != hotel.Id  &&
-                                                                          x.Location.Country == hotel.Location.Country &&
-                                                                          x.Location.City == hotel.Location.City &&
-                                                                          x.Location.Street == hotel.Location.Street && x.Location.BuildingNumber == hotel.Location.BuildingNumber);
-          return hotelEntity == null;
+            var hotelEntity = _hotelRepository.GetAll().FirstOrDefault(x => x.Id != hotel.Id  &&
+                                                                            x.Location.Country == hotel.Location.Country &&
+                                                                            x.Location.City == hotel.Location.City &&
+                                                                            x.Location.Street == hotel.Location.Street && x.Location.BuildingNumber == hotel.Location.BuildingNumber);
+            return hotelEntity == null;
         }
     }
 }

@@ -37,15 +37,6 @@ namespace HotelReservation.Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet]
-        [Authorize]
-        public IActionResult GetAll()
-        {
-            var orders = _orderService.GetAll();
-            var result = _mapper.Map<List<OrderResponseModel>>(orders);
-            return Ok(result);
-        }
-
         [HttpPost]
         [Authorize]
         [Route("{roomId:int}/order")]
