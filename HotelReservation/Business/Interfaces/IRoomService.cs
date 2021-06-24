@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Business.Models;
-using HotelReservation.Data.Entities;
 
 namespace Business.Interfaces
 {
@@ -13,6 +11,5 @@ namespace Business.Interfaces
         Task UpdateRoom(int roomId, int userId, RoomModel room);
         Task DeleteRoom(int roomId, int userId);
         Task<PageInfo<RoomModel>> GetRoomsPage(int hotelId, Pagination hotelPagination);
-
     }
 }

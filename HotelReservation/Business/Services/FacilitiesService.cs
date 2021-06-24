@@ -4,13 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
+using Business.Helpers;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
-using HotelReservation.Data.Constants;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
-using HotelReservation.Data.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace Business.Services
@@ -92,16 +91,11 @@ namespace Business.Services
                 throw new NotFoundException($"user with {userId} id not exists");
             }
 
-            if (serviceEntity.Hotel.Admins.FirstOrDefault(x => x.Id == userId) != null || userEntity.Role.Name == Roles.Admin)
+            if (PermissionVerifier.CheckPermission(serviceEntity.Hotel, userEntity))
             {
                 serviceEntity.Name = serviceModel.Name;
                 serviceEntity.Payment = serviceModel.Payment;
                 await _serviceRepository.UpdateAsync(serviceEntity);
-            }
-            else
-            {
-                _logger.LogError("you don't have permission to delete this service");
-                throw new BadRequestException("you don't have permission to delete this service");
             }
         }
 
@@ -110,7 +104,7 @@ namespace Business.Services
             var userEntity = await _userRepository.GetAsync(userId);
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
 
-            if (hotelEntity.Admins.FirstOrDefault(x => x.Id==userId) != null || userEntity.Role.Name==Roles.Admin)
+            if (PermissionVerifier.CheckPermission(hotelEntity, userEntity))
             {
                 if (hotelEntity == null)
                 {
@@ -129,11 +123,6 @@ namespace Business.Services
                 serviceEntity.Hotel = hotelEntity; 
                await _hotelRepository.UpdateAsync(hotelEntity);
             }
-            else
-            {
-                _logger.LogError("you don't have permission to edit this hotel");
-                throw new BadRequestException("you don't have permission to edit this hotel");
-            }
         }
 
         public async Task DeleteOrderFromHotel(int serviceId, int userId)
@@ -141,14 +130,9 @@ namespace Business.Services
             var serviceEntity = await _serviceRepository.GetAsync(serviceId);
             var userEntity = await _userRepository.GetAsync(userId);
             var hotelEntity = serviceEntity.Hotel;
-            if (hotelEntity.Admins.FirstOrDefault(x => x.Id == userId) != null || userEntity.Role.Name == Roles.Admin)
+            if (PermissionVerifier.CheckPermission(hotelEntity, userEntity))
             {
                await _serviceRepository.DeleteAsync(serviceId);
-            }
-            else
-            {
-                _logger.LogError("you don't have permission to delete this service");
-                throw new BadRequestException("you don't have permission to delete this service");
             }
         }
     }

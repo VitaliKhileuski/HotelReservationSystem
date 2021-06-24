@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Interfaces;
@@ -34,15 +32,6 @@ namespace HotelReservation.Api.Controllers
         {
             var order = await _orderService.GetOrderById(orderId);
             var result = _mapper.Map<OrderModel, OrderResponseModel>(order);
-            return Ok(result);
-        }
-
-        [HttpGet]
-        [Authorize]
-        public IActionResult GetAll()
-        {
-            var orders = _orderService.GetAll();
-            var result = _mapper.Map<List<OrderResponseModel>>(orders);
             return Ok(result);
         }
 

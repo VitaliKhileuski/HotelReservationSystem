@@ -4,13 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
+using Business.Helpers;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data.Constants;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
-using HotelReservation.Data.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace Business.Services
@@ -22,12 +22,12 @@ namespace Business.Services
         private readonly Mapper _locationMapper;
         private readonly Mapper _hotelMapper;
         private readonly Mapper _userMapper;
-        private readonly IBaseRepository<LocationEntity> _locationRepository;
+        private readonly ILocationRepository _locationRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly ILogger<HotelsService> _logger;
 
         public HotelsService(ILogger<HotelsService>  logger, IHotelRepository hotelRepository,IRoleRepository roleRepository,
-            IUserRepository userRepository,IBaseRepository<LocationEntity> locationRepository, MapConfiguration cfg)
+            IUserRepository userRepository,ILocationRepository locationRepository, MapConfiguration cfg)
         {
             _hotelRepository = hotelRepository;
             _userRepository = userRepository;
@@ -146,7 +146,7 @@ namespace Business.Services
 
             
 
-            if (hotelEntity.Admins.FirstOrDefault(x => x.Id == userId) != null || userEntity.Role.Name == Roles.Admin)
+            if (PermissionVerifier.CheckPermission(hotelEntity, userEntity))
             {
 
                 hotelEntity.Name = hotel.Name;
@@ -156,11 +156,6 @@ namespace Business.Services
                 hotelEntity.Location.BuildingNumber = hotel.Location.BuildingNumber;
 
                     await _hotelRepository.UpdateAsync(hotelEntity);
-            }
-            else
-            {
-                _logger.LogError("you don't have permission to edit this hotel");
-                throw new BadRequestException("you don't have permission to edit this hotel");
             }
         }
         public async Task DeleteHotelById(int hotelId)
@@ -217,11 +212,11 @@ namespace Business.Services
             var hotels = GetAll();
             if (country == "null")
             {
-                country = null;//fix
+                country = null;
             }
             if (city == "null")
             {
-                city = null;//fix
+                city = null;
             }
             foreach (var hotel in hotels)
             {
@@ -229,7 +224,7 @@ namespace Business.Services
                 {
                     if (string.IsNullOrEmpty(city) || hotel.Location.City == city)
                     {
-                        if (hotel.Rooms == null)//fix
+                        if (hotel.Rooms == null)
                         {
                             foreach (var room in hotel.Rooms)
                             {
@@ -302,11 +297,11 @@ namespace Business.Services
             {
                 return true;
             }
-          var hotelEntity = _hotelRepository.GetAll().FirstOrDefault(x => x.Id != hotel.Id  &&
-                                                                          x.Location.Country == hotel.Location.Country &&
-                                                                          x.Location.City == hotel.Location.City &&
-                                                                          x.Location.Street == hotel.Location.Street && x.Location.BuildingNumber == hotel.Location.BuildingNumber);
-          return hotelEntity == null;
+            var hotelEntity = _hotelRepository.GetAll().FirstOrDefault(x => x.Id != hotel.Id  &&
+                                                                            x.Location.Country == hotel.Location.Country &&
+                                                                            x.Location.City == hotel.Location.City &&
+                                                                            x.Location.Street == hotel.Location.Street && x.Location.BuildingNumber == hotel.Location.BuildingNumber);
+            return hotelEntity == null;
         }
     }
 }

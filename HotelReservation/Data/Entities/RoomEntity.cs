@@ -1,11 +1,9 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace HotelReservation.Data.Entities
 {
    public  class RoomEntity : Entity
     {
-
         public int? UserId { get; set; }
         public virtual UserEntity User { get; set; }
         public virtual ICollection<OrderEntity> Order { get; set; }

@@ -9,19 +9,18 @@ using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
-using HotelReservation.Data.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace Business.Services
 {
     public class OrdersService : IOrderService
     {
-        private readonly IBaseRepository<OrderEntity> _orderRepository;
+        private readonly IOrderRepository _orderRepository;
         private readonly IUserRepository _userRepository;
         private readonly IRoomRepository _roomRepository;
         private readonly Mapper _mapper;
         private readonly ILogger<OrdersService> _logger;
-        public OrdersService(ILogger<OrdersService> logger, IBaseRepository<OrderEntity> orderRepository, IUserRepository userRepository,
+        public OrdersService(ILogger<OrdersService> logger, IOrderRepository orderRepository, IUserRepository userRepository,
             IRoomRepository roomRepository, MapConfiguration cfg)
         {
             _orderRepository = orderRepository;
@@ -43,17 +42,6 @@ namespace Business.Services
             var orderModel = _mapper.Map<OrderEntity, OrderModel>(order);
 
             return orderModel;
-        }
-
-        public ICollection<OrderModel> GetAll()
-        {
-            var orders = _mapper.Map<ICollection<OrderModel>>(_orderRepository.GetAll());
-            if (orders.Count == 0)
-            {
-                _logger.LogError("no data about orders");
-                throw new NotFoundException("no data about orders");
-            }
-            return orders;
         }
 
         public async Task CreateOrder(int roomId, int userId,OrderModel order)

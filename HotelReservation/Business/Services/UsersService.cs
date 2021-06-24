@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -7,10 +6,8 @@ using Business.Exceptions;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
-using HotelReservation.Data;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
-using HotelReservation.Data.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace Business.Services

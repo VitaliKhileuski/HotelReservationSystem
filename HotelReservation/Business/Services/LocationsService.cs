@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
 using Business.Mappers;
-using Business.Models;
-using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
-using HotelReservation.Data.Repositories;
 
 namespace Business.Services
 {
     public class LocationsService
     {
-        private readonly IBaseRepository<LocationEntity> _locationRepository;
+        private readonly ILocationRepository _locationRepository;
         private readonly IMapper _mapper;
-        public LocationsService(IBaseRepository<LocationEntity> locationRepository, MapConfiguration cfg)
+        public LocationsService(ILocationRepository locationRepository, MapConfiguration cfg)
         {
             _locationRepository = locationRepository;
             _mapper = new Mapper(cfg.LocationConfiguration);
@@ -40,7 +34,7 @@ namespace Business.Services
         }
         public List<string> GetCities(string country)
         {
-            List<string> cities = new List<string>();
+            var cities = new List<string>();
             var locationsEntities = _locationRepository.GetAll().ToList();
             if (locationsEntities.Count == 0)
             {

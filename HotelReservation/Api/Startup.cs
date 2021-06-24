@@ -1,24 +1,16 @@
-using System;
-using System.Text;
+using System.Reflection;
 using Business;
-using Business.Interfaces;
 using Business.Mappers;
-using Business.Services;
+using HotelReservation.Api.Extensions;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Policy;
 using HotelReservation.Data;
-using HotelReservation.Data.Entities;
-using HotelReservation.Data.Interfaces;
-using HotelReservation.Data.Repositories;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
 namespace HotelReservation.Api
@@ -28,12 +20,11 @@ namespace HotelReservation.Api
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            
+            ConfigureLogger();
         }
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<Context>(opt =>
@@ -42,50 +33,20 @@ namespace HotelReservation.Api
                 opt.UseSqlServer(Configuration.GetConnectionString("HotelContextConnection"),
                     x => x.MigrationsAssembly("Api"));
             });
+
             services.AddScoped<InitialData>();
             services.Configure<AuthOptions>(Configuration.GetSection(AuthOptions.Authentication));
-            services.AddScoped<IPasswordHasher,PasswordHasher>();
-            services.AddScoped<IRoleRepository, RoleRepository>();
-            services.AddScoped<IRoomRepository, RoomRepository>();
-            services.AddScoped<IHotelRepository, HotelRepository>();
-            services.AddScoped<IBaseRepository<OrderEntity>, OrderRepository>();
-            services.AddScoped<IBaseRepository<LocationEntity>, LocationRepository>();
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IServiceRepository, ServiceRepository>();
-            services.AddScoped<IBaseRepository<ImageEntity>, ImageRepository>();
-
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddRepositories();
+            services.AddServices();
             services.AddScoped<MapConfiguration>();
             services.AddScoped<CustomMapperConfiguration>();
-
-            services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IAuthenticationService, AuthenticationService>();
-            services.AddScoped<IRoomService,RoomsService>();
-            services.AddScoped<IOrderService,OrdersService>();
-            services.AddScoped<IHotelsService, HotelsService>();
-            services.AddScoped<IUserService,UsersService>();
-            services.AddScoped<IImageService, ImageService>();
-            services.AddScoped<IFacilityService,FacilitiesService>();
-            services.AddScoped<LocationsService>();
             services.AddControllers();
             services.AddControllersWithViews()
                 .AddNewtonsoftJson(options =>
-    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-);
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidIssuer = Configuration["AuthenticationOptions:issuer"],
-                    ValidateIssuer = bool.Parse(Configuration["AuthenticationOptions:ValidateIssuer"] ?? "false"),
-                    ValidAudience = Configuration["AuthenticationOptions:audience"],
-                    ValidateAudience = bool.Parse(Configuration["AuthenticationOptions:ValidateAudience"] ?? "false"),
-                    ValidateLifetime = bool.Parse(Configuration["AuthenticationOptions:ValidateLifetime"] ?? "false"),
-                    IssuerSigningKey =  new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["AuthenticationOptions:secretKey"])),
-                    ValidateIssuerSigningKey = bool.Parse(Configuration["AuthenticationOptions:ValidateIssuerSigningKey"] ?? "false"),
-                    ClockSkew = TimeSpan.Zero
-                };
-            });
+                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                 );
+            services.AddTokenAuthentication(Configuration.GetSection(AuthOptions.Authentication).Get<AuthOptions>());
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(Policies.AdminPermission, builder => builder.Combine(Policies.AdminPermissionPolicy()));
@@ -129,6 +90,15 @@ namespace HotelReservation.Api
             context?.Database.Migrate();
             var contextInitializer = serviceScope.ServiceProvider.GetService<InitialData>();
             contextInitializer?.InitializeContext();
+        }
+        public static void ConfigureLogger()
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
         }
     }
 }

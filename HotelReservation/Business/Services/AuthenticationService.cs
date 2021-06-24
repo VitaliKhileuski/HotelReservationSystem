@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -10,15 +9,11 @@ using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data;
 using HotelReservation.Data.Entities;
-using HotelReservation.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using HotelReservation.Data.Constants;
 using HotelReservation.Data.Interfaces;
-using Microsoft.AspNetCore.Identity;
 
 namespace Business.Services
 {
@@ -29,11 +24,11 @@ namespace Business.Services
         private readonly ITokenService _tokenService;
         private readonly IUserRepository _repository;
         private readonly IRoleRepository _roleRepository;
-        private readonly Mapper _mapper;
+        private readonly IMapper _mapper;
         private readonly ILogger<AuthenticationService> _logger;
 
         public AuthenticationService(ILogger<AuthenticationService> logger, Context context, IPasswordHasher hashPassword, ITokenService tokenService,
-            MapConfiguration cfg, IUserRepository repository, IRoleRepository roleRepository)
+            MapConfiguration cfg, IUserRepository repository, IRoleRepository roleRepository, IMapper mapper)
         {
             _db = context;
             _hash = hashPassword;
@@ -82,6 +77,7 @@ namespace Business.Services
 
         public async Task<List<string>> Registration(RegisterUserModel user)
         {
+            var token  = String.Empty;
             var dbUser = await GetUserFromDb(user.Email);
             if (dbUser != null)
             {
@@ -100,7 +96,10 @@ namespace Business.Services
             userEntity.RefreshToken = refreshToken;
             await _repository.CreateAsync(userEntity);
             var userEntityFromDb = _db.Users.FirstOrDefault(x => x.Email == userEntity.Email);
-            var token = _tokenService.BuildToken(user.Email,Roles.User,user.Name,userEntityFromDb.Id);
+            if (userEntityFromDb != null)
+            { 
+                token = _tokenService.BuildToken(user.Email, Roles.User, user.Name, userEntityFromDb.Id);
+            }
             return new List<string> { token, refreshToken.Token };
         }
 

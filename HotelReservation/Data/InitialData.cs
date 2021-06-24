@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 using HotelReservation.Data.Constants;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
-using Org.BouncyCastle.OpenSsl;
 
 namespace HotelReservation.Data
 {
@@ -67,7 +63,6 @@ namespace HotelReservation.Data
                 );
             }
             _db.SaveChanges();
-
         }
     }
 }

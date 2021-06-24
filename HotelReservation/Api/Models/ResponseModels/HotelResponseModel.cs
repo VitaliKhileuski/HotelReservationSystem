@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-
 namespace HotelReservation.Api.Models.ResponseModels
 {
     public class HotelResponseModel
@@ -10,7 +9,5 @@ namespace HotelReservation.Api.Models.ResponseModels
         public LocationResponseModel Location { get; set; }
         public ICollection<RoomResponseModel> Rooms { get; set; }
         public ICollection<ServiceResponseModel> Services { get; set; }
-
-
     }
 }

@@ -21,15 +21,17 @@ namespace HotelReservation.Data.Entities
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType())
+            {
                 return false;
-           UserEntity user = (UserEntity)obj;
+            }
+            var user = (UserEntity)obj;
             return user.Id == Id;
         }
 
 
         public override int GetHashCode()
         {
-            return this.Id.GetHashCode();
+            return Id.GetHashCode();
         }
     }
 }

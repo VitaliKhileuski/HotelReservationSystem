@@ -1,5 +1,4 @@
-﻿
-namespace HotelReservation.Api.Models.ResponseModels
+﻿namespace HotelReservation.Api.Models.ResponseModels
 {
     public class LocationResponseModel
     {

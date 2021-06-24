@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Net.Mime;
 
 namespace HotelReservation.Data.Entities
 {
@@ -16,15 +15,17 @@ namespace HotelReservation.Data.Entities
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType())
+            {
                 return false;
-            HotelEntity hotel = (HotelEntity)obj;
+            }
+            var hotel = (HotelEntity)obj;
             return hotel.Id == Id;
         }
 
 
         public override int GetHashCode()
         {
-            return this.Id.GetHashCode();
+            return Id.GetHashCode();
         }
 
     }

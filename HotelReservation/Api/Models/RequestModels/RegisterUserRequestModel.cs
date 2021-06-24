@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HotelReservation.Api.Models.RequestModels
+﻿namespace HotelReservation.Api.Models.RequestModels
 {
     public class RegisterUserRequestModel
     {

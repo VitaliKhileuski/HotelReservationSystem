@@ -1,5 +1,4 @@
-﻿
-namespace HotelReservation.Data.Entities
+﻿namespace HotelReservation.Data.Entities
 {
    public class RefreshTokenEntity : Entity
     {
