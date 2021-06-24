@@ -1,20 +1,16 @@
 ﻿using HotelReservation.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Security.Cryptography;
 using HotelReservation.Data.Configurations;
-using HotelReservation.Data.Interfaces;
 using DbContext = Microsoft.EntityFrameworkCore.DbContext;
 
 namespace HotelReservation.Data
 {
     public class Context : DbContext
     {
-        private readonly IPasswordHasher _hashPass;
-        public Context(DbContextOptions<Context> options,IPasswordHasher hash)
+        public Context(DbContextOptions<Context> options)
             : base(options)
         {
-            _hashPass = hash;
+
         }
 
         public DbSet<UserEntity> Users { get; set; }
@@ -41,6 +37,5 @@ namespace HotelReservation.Data
                 .ApplyConfiguration(new ServiceEntityConfiguration())
                 .ApplyConfiguration(new RoleEntityConfiguration());
         }
-
     }
 }

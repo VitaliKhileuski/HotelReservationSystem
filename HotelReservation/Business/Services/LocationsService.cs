@@ -34,7 +34,7 @@ namespace Business.Services
         }
         public List<string> GetCities(string country)
         {
-            List<string> cities = new List<string>();
+            var cities = new List<string>();
             var locationsEntities = _locationRepository.GetAll().ToList();
             if (locationsEntities.Count == 0)
             {

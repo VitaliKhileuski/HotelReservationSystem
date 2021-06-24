@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using HotelReservation.Data;
+﻿using HotelReservation.Data;
 using HotelReservation.Data.Interfaces;
 using HotelReservation.Data.Repositories;
 using Microsoft.Extensions.DependencyInjection;

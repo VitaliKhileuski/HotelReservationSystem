@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using HotelReservation.Data.Entities;
+﻿using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace HotelReservation.Data.Repositories
 {

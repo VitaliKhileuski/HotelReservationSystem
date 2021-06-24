@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -10,15 +9,11 @@ using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data;
 using HotelReservation.Data.Entities;
-using HotelReservation.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using HotelReservation.Data.Constants;
 using HotelReservation.Data.Interfaces;
-using Microsoft.AspNetCore.Identity;
 
 namespace Business.Services
 {

@@ -18,7 +18,5 @@ namespace HotelReservation.Data.Repositories
         {
             return await _db.Roles.FirstOrDefaultAsync(x => x.Name==name);
         }
-
     }
 }
-

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using Business.Exceptions;
 using HotelReservation.Data.Constants;
 using HotelReservation.Data.Entities;
@@ -16,10 +13,8 @@ namespace Business.Helpers
             {
                 return true;
             }
-            else
-            {
-                throw new BadRequestException($"user with {user.Id}  don't have permission to manage hotel with {hotel.Id} id");
-            }
+
+            throw new BadRequestException($"user with {user.Id}  don't have permission to manage hotel with {hotel.Id} id");
         }
     }
 }

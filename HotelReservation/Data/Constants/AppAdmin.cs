@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace HotelReservation.Data.Constants
+﻿namespace HotelReservation.Data.Constants
 {
     public static class AppAdmin
     {
-        public const int Id = 1;
         public const string RolenName = "Admin";
         public const string Name = "admin";
         public const string Email = "admin@gmail.com";

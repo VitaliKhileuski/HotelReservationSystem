@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Business
+﻿namespace Business
 {
     public class AuthOptions
     {
@@ -15,7 +11,5 @@ namespace Business
         public bool ValidateIssuer {get; set;}
         public bool ValidateAudience { get; set; }
         public bool ValidateIssuerSigningKey { get; set; }
-
-
     }
 }
