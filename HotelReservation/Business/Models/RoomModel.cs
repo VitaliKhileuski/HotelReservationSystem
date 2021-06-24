@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Business.Models
 {
    public class RoomModel
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public  UserModel User { get; set; }
         public  ICollection<OrderModel> Orders { get; set; }
         public  HotelModel Hotel { get; set; }

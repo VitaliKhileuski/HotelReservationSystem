@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -27,8 +28,8 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("{orderId:int}")]
-        public async Task<IActionResult> GetOrderById(int orderId)
+        [Route("{orderId}")]
+        public async Task<IActionResult> GetOrderById(string orderId)
         {
             var order = await _orderService.GetOrderById(orderId);
             var result = _mapper.Map<OrderModel, OrderResponseModel>(order);
@@ -37,8 +38,8 @@ namespace HotelReservation.Api.Controllers
 
         [HttpPost]
         [Authorize]
-        [Route("{roomId:int}/order")]
-        public async Task<IActionResult> CreateOrder(int roomId, [FromBody] OrderRequestModel order)
+        [Route("{roomId}/order")]
+        public async Task<IActionResult> CreateOrder(string roomId, [FromBody] OrderRequestModel order)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
             var orderModel = _mapper.Map<OrderRequestModel, OrderModel>(order);
@@ -53,8 +54,8 @@ namespace HotelReservation.Api.Controllers
 
         [HttpPut]
         [Authorize]
-        [Route("{orderId:int}/updateOrder")]
-        public async Task<IActionResult> UpdateOrder(int orderId, [FromBody] OrderRequestModel order)
+        [Route("{orderId}/updateOrder")]
+        public async Task<IActionResult> UpdateOrder(string orderId, [FromBody] OrderRequestModel order)
         {
             var orderModel = _mapper.Map<OrderRequestModel, OrderModel>(order);
             orderModel.Services = new List<ServiceModel>();
@@ -69,8 +70,8 @@ namespace HotelReservation.Api.Controllers
 
         [HttpDelete]
         [Authorize]
-        [Route("{orderId:int}/deleteOrder")]
-        public async Task<IActionResult> DeleteOrder(int orderId)
+        [Route("{orderId}/deleteOrder")]
+        public async Task<IActionResult> DeleteOrder(string orderId)
         {
             await _orderService.DeleteOrder(orderId);
             return Ok("Deleted Successfully");

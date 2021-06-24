@@ -79,7 +79,7 @@ namespace Business.Services
             return hotelModels;
         }
 
-        public async Task UpdateHotelAdmin(int hotelId, int userId)
+        public async Task UpdateHotelAdmin(int hotelId, string userId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -266,7 +266,7 @@ namespace Business.Services
             return Tuple.Create(pagedData, pages);
         }
 
-        public async Task DeleteHotelAdmin(int hotelId, int userId)
+        public async Task DeleteHotelAdmin(string hotelId, string userId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
 

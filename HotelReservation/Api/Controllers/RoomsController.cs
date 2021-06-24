@@ -27,8 +27,8 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
-        [Route("{hotelId:int}")]
-        public async Task<IActionResult> GetRooms(int hotelId)
+        [Route("{hotelId}")]
+        public async Task<IActionResult> GetRooms(string hotelId)
         {
             var roomModels = await _roomsService.GetRoomsFromHotel(hotelId);
             var roomResponseModels = _mapper.Map<ICollection<RoomResponseModel>>(roomModels);
@@ -36,8 +36,8 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
-        [Route("{hotelId:int}/pages")]
-        public async Task<IActionResult> GetPage(int hotelId,[FromQuery] Pagination filter)
+        [Route("{hotelId}/pages")]
+        public async Task<IActionResult> GetPage(string hotelId,[FromQuery] Pagination filter)
         {
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
             var pageInfo = await _roomsService.GetRoomsPage(hotelId,validFilter);
@@ -52,8 +52,8 @@ namespace HotelReservation.Api.Controllers
 
         [HttpPost]
         [Authorize(Policy = Policies.AllAdminsPermission)]
-        [Route("{hotelId:int}")]
-        public async Task<IActionResult> CreateRoom(int hotelId,RoomRequestModel room)
+        [Route("{hotelId}")]
+        public async Task<IActionResult> CreateRoom(string hotelId,RoomRequestModel room)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
             if (room == null)
@@ -68,9 +68,9 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpDelete]
-        [Route("{roomId:int}")]
+        [Route("{roomId}")]
         [Authorize(Policy = Policies.AllAdminsPermission)]
-        public async Task<IActionResult> DeleteRoom(int roomId)
+        public async Task<IActionResult> DeleteRoom(string roomId)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
             await _roomsService.DeleteRoom(roomId, userId);
@@ -78,9 +78,9 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpPut]
-        [Route("{roomId:int}")]
+        [Route("{roomId}")]
         [Authorize(Policy = Policies.AllAdminsPermission)]
-        public async Task<IActionResult> UpdateRoom(int roomId,[FromBody] RoomRequestModel room)
+        public async Task<IActionResult> UpdateRoom(string roomId,[FromBody] RoomRequestModel room)
         {
             var roomModel = _mapper.Map<RoomRequestModel, RoomModel>(room);
             var userId = TokenData.GetIdFromClaims(User.Claims);

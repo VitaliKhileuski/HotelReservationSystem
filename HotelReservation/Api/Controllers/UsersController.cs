@@ -26,16 +26,16 @@ namespace HotelReservation.Api.Controllers
         }
         [HttpGet]
         [Authorize(Policy = Policies.AdminPermission)]
-        [Route("{hotelId:int}/getPotentialHotelAdmins")]
-        public async Task<IActionResult> Get(int hotelId)
+        [Route("{hotelId}/getPotentialHotelAdmins")]
+        public async Task<IActionResult> Get(string hotelId)
         {
             var responseUsers = _mapper.Map<List<UserResponseViewModel>>(await _usersService.GetAll(hotelId));
            return Ok(responseUsers);
         }
 
         [HttpGet]
-        [Route("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
+        [Route("{id}")]
+        public async Task<IActionResult> GetById(string id)
         {
             var responseUser = _mapper.Map<UserModel, UserResponseViewModel>(await _usersService.GetById(id));
             return Ok(responseUser);
@@ -52,8 +52,8 @@ namespace HotelReservation.Api.Controllers
 
         [HttpDelete]
         [Authorize(Policy = "AdminPermission")]
-        [Route("{id:int}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        [Route("{id}")]
+        public async Task<IActionResult> DeleteUser(string id)
         {
             await _usersService.DeleteById(id);
             return Ok($"user with id {id} deleted successfully");
@@ -61,8 +61,8 @@ namespace HotelReservation.Api.Controllers
 
         [HttpPut]
         [Authorize]
-        [Route("{id:int}")]
-        public IActionResult Update(int id, [FromBody] UserResponseViewModel user)
+        [Route("{id}")]
+        public IActionResult Update(string id, [FromBody] UserResponseViewModel user)
         {
             var userModel = _mapper.Map<UserResponseViewModel, UserModel>(user);
             _usersService.Update(id, userModel);

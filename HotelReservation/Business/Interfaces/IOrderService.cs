@@ -1,13 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Business.Models;
 
 namespace Business.Interfaces
 {
     public interface IOrderService
     {
-        public Task<OrderModel> GetOrderById(int orderId);
-        public Task CreateOrder(int roomId, int userId, OrderModel order);
-        public Task UpdateOrder(int orderId, OrderModel newOrder);
-        public Task DeleteOrder(int orderId);
+        public Task<OrderModel> GetOrderById(Guid orderId);
+        public Task CreateOrder(Guid roomId, string userId, OrderModel order);
+        public Task UpdateOrder(Guid orderId, OrderModel newOrder);
+        public Task DeleteOrder(Guid orderId);
     }
 }

@@ -98,7 +98,7 @@ namespace Business.Services
             var userEntityFromDb = _db.Users.FirstOrDefault(x => x.Email == userEntity.Email);
             if (userEntityFromDb != null)
             { 
-                token = _tokenService.BuildToken(user.Email, Roles.User, user.Name, userEntityFromDb.Id);
+                token = _tokenService.BuildToken(user.Email, Roles.User, user.Name, userEntityFromDb.Id.ToString());
             }
             return new List<string> { token, refreshToken.Token };
         }

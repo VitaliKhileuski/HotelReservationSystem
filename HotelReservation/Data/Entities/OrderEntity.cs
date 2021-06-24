@@ -5,9 +5,9 @@ namespace HotelReservation.Data.Entities
 {
     public class OrderEntity : Entity
     {
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         public virtual UserEntity Customer { get; set; }
-        public int RoomId { get; set; }
+        public Guid RoomId { get; set; }
         public virtual RoomEntity Room { get; set; }
         public virtual ICollection<ServiceEntity> Services { get; set; }
         public DateTime DateOrdered { get; set; }

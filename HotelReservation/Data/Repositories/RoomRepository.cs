@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HotelReservation.Data.Entities;
@@ -15,11 +16,11 @@ namespace HotelReservation.Data.Repositories
         {
             _db = context;
         }
-        public IEnumerable<RoomEntity> GetRoomsPageFromHotel(int pageNumber, int pageSize,int hotelId)
+        public IEnumerable<RoomEntity> GetRoomsPageFromHotel(int pageNumber, int pageSize,Guid hotelId)
         {
             return _db.Rooms.Skip((pageNumber - 1) * pageSize).Take(pageSize).Where(x => x.HotelId==hotelId);
         }
-        public async Task<int> GetRoomsCount(int hotelId)
+        public async Task<int> GetRoomsCount(Guid hotelId)
         {
             return await _db.Rooms.Where(x => x.HotelId==hotelId).CountAsync();
         }

@@ -40,7 +40,7 @@ namespace Business.Services
             return services;
         }
 
-        public async Task<ServiceModel> GetServiceById(int serviceId)
+        public async Task<ServiceModel> GetServiceById(Guid serviceId)
         {
             var service = await _serviceRepository.GetAsync(serviceId);
             if (service == null)
@@ -52,7 +52,7 @@ namespace Business.Services
             return _mapper.Map<ServiceEntity, ServiceModel>(service);
 
         }
-        public async Task<Tuple<IEnumerable<ServiceModel>, int>> GetServicesPage(int hotelId, Pagination hotelPagination)
+        public async Task<Tuple<IEnumerable<ServiceModel>, int>> GetServicesPage(Guid hotelId, Pagination hotelPagination)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -68,7 +68,7 @@ namespace Business.Services
             return Tuple.Create(services, numberOfServices);
         }
 
-        public async Task UpdateService(int serviceId, int userId, ServiceModel serviceModel)
+        public async Task UpdateService(Guid serviceId, Guid userId, ServiceModel serviceModel)
         {
             var serviceEntity = await _serviceRepository.GetAsync(serviceId);
             if (serviceEntity == null)
@@ -99,7 +99,7 @@ namespace Business.Services
             }
         }
 
-        public async Task AddServiceToHotel(int hotelId, int userId, ServiceModel serviceModel)
+        public async Task AddServiceToHotel(Guid hotelId, Guid userId, ServiceModel serviceModel)
         {
             var userEntity = await _userRepository.GetAsync(userId);
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
@@ -125,7 +125,7 @@ namespace Business.Services
             }
         }
 
-        public async Task DeleteOrderFromHotel(int serviceId, int userId)
+        public async Task DeleteOrderFromHotel(Guid serviceId, Guid userId)
         {
             var serviceEntity = await _serviceRepository.GetAsync(serviceId);
             var userEntity = await _userRepository.GetAsync(userId);
