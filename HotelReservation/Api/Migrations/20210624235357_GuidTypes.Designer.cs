@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelReservation.Api.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20210608075315_AddedCascadeDeleteInHotel")]
-    partial class AddedCascadeDeleteInHotel
+    [Migration("20210624235357_GuidTypes")]
+    partial class GuidTypes
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,15 +21,29 @@ namespace HotelReservation.Api.Migrations
                 .HasAnnotation("ProductVersion", "5.0.5")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("HotelEntityUserEntity", b =>
+                {
+                    b.Property<Guid>("AdminsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("OwnedHotelsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("AdminsId", "OwnedHotelsId");
+
+                    b.HasIndex("OwnedHotelsId");
+
+                    b.ToTable("HotelEntityUserEntity");
+                });
+
             modelBuilder.Entity("HotelReservation.Data.Entities.HotelEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("AdminId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("ImageId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -38,17 +52,41 @@ namespace HotelReservation.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AdminId");
+                    b.HasIndex("ImageId");
 
                     b.ToTable("Hotels");
                 });
 
+            modelBuilder.Entity("HotelReservation.Data.Entities.ImageEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("ImageData")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<Guid?>("RoomEntityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoomEntityId");
+
+                    b.ToTable("Images");
+                });
+
             modelBuilder.Entity("HotelReservation.Data.Entities.LocationEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("BuildingNumber")
                         .IsRequired()
@@ -64,8 +102,8 @@ namespace HotelReservation.Api.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
 
-                    b.Property<int>("HotelId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("HotelId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Street")
                         .IsRequired()
@@ -82,10 +120,9 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("HotelReservation.Data.Entities.OrderEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("DateOrdered")
                         .HasColumnType("datetime2");
@@ -99,14 +136,14 @@ namespace HotelReservation.Api.Migrations
                     b.Property<int>("NumberOfDays")
                         .HasColumnType("int");
 
-                    b.Property<int>("RoomId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("RoomId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -119,10 +156,9 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("HotelReservation.Data.Entities.RefreshTokenEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Token")
                         .IsRequired()
@@ -135,10 +171,9 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("HotelReservation.Data.Entities.RoleEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -150,16 +185,15 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("HotelReservation.Data.Entities.RoomEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("BedsNumber")
                         .HasColumnType("int");
 
-                    b.Property<int>("HotelId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("HotelId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("PaymentPerDay")
                         .HasColumnType("decimal(18,4)");
@@ -169,8 +203,8 @@ namespace HotelReservation.Api.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -183,13 +217,12 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("HotelReservation.Data.Entities.ServiceEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("HotelId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("HotelId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -208,10 +241,9 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("HotelReservation.Data.Entities.UserEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -233,11 +265,11 @@ namespace HotelReservation.Api.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
-                    b.Property<int?>("RefreshTokenId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("RefreshTokenId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Surname")
                         .IsRequired()
@@ -257,11 +289,11 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("OrderEntityServiceEntity", b =>
                 {
-                    b.Property<int>("OrdersId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("OrdersId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ServicesId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ServicesId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("OrdersId", "ServicesId");
 
@@ -270,14 +302,35 @@ namespace HotelReservation.Api.Migrations
                     b.ToTable("OrderEntityServiceEntity");
                 });
 
+            modelBuilder.Entity("HotelEntityUserEntity", b =>
+                {
+                    b.HasOne("HotelReservation.Data.Entities.UserEntity", null)
+                        .WithMany()
+                        .HasForeignKey("AdminsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HotelReservation.Data.Entities.HotelEntity", null)
+                        .WithMany()
+                        .HasForeignKey("OwnedHotelsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("HotelReservation.Data.Entities.HotelEntity", b =>
                 {
-                    b.HasOne("HotelReservation.Data.Entities.UserEntity", "Admin")
-                        .WithMany("OwnedHotels")
-                        .HasForeignKey("AdminId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                    b.HasOne("HotelReservation.Data.Entities.ImageEntity", "Image")
+                        .WithMany()
+                        .HasForeignKey("ImageId");
 
-                    b.Navigation("Admin");
+                    b.Navigation("Image");
+                });
+
+            modelBuilder.Entity("HotelReservation.Data.Entities.ImageEntity", b =>
+                {
+                    b.HasOne("HotelReservation.Data.Entities.RoomEntity", null)
+                        .WithMany("Images")
+                        .HasForeignKey("RoomEntityId");
                 });
 
             modelBuilder.Entity("HotelReservation.Data.Entities.LocationEntity", b =>
@@ -315,7 +368,7 @@ namespace HotelReservation.Api.Migrations
                     b.HasOne("HotelReservation.Data.Entities.HotelEntity", "Hotel")
                         .WithMany("Rooms")
                         .HasForeignKey("HotelId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("HotelReservation.Data.Entities.UserEntity", "User")
@@ -393,14 +446,14 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("HotelReservation.Data.Entities.RoomEntity", b =>
                 {
+                    b.Navigation("Images");
+
                     b.Navigation("Order");
                 });
 
             modelBuilder.Entity("HotelReservation.Data.Entities.UserEntity", b =>
                 {
                     b.Navigation("Orders");
-
-                    b.Navigation("OwnedHotels");
 
                     b.Navigation("Rooms");
                 });

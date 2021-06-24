@@ -36,7 +36,7 @@ namespace HotelReservation.Api.Controllers
         }
         [HttpGet]
         [Route("{hotelId}/pages")]
-        public async Task<IActionResult> GetPage(string hotelId, [FromQuery] Pagination filter)
+        public async Task<IActionResult> GetPage(Guid hotelId, [FromQuery] Pagination filter)
         {
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
             var servicesWithCount = await _facilitiesService.GetServicesPage(hotelId, validFilter);
@@ -49,7 +49,7 @@ namespace HotelReservation.Api.Controllers
         [HttpGet]
         [Route("{serviceId}")]
         [Authorize]
-        public async Task<IActionResult> GetServiceById(string serviceId)
+        public async Task<IActionResult> GetServiceById(Guid serviceId)
         {
             var service = _mapper.Map<ServiceModel, ServiceResponseModel>(await _facilitiesService.GetServiceById(serviceId));
             return Ok(service);
@@ -57,7 +57,7 @@ namespace HotelReservation.Api.Controllers
         [HttpPut]
         [Route("{serviceId}")]
         [Authorize(Policy = Policies.AllAdminsPermission)]
-        public async Task<IActionResult> UpdateService(string serviceId, [FromBody] ServiceRequestModel service)
+        public async Task<IActionResult> UpdateService(Guid serviceId, [FromBody] ServiceRequestModel service)
         {
             var serviceModel = _mapper.Map<ServiceRequestModel, ServiceModel>(service);
             var userId = TokenData.GetIdFromClaims(User.Claims);
@@ -68,7 +68,7 @@ namespace HotelReservation.Api.Controllers
         [HttpPost]
         [Route("{hotelId}")]
         [Authorize(Policy = Policies.AllAdminsPermission)]
-        public async Task<IActionResult> AddServiceToHotel(string hotelId, [FromBody] ServiceRequestModel service)
+        public async Task<IActionResult> AddServiceToHotel(Guid hotelId, [FromBody] ServiceRequestModel service)
         {
             var serviceModel = _mapper.Map<ServiceRequestModel, ServiceModel>(service);
             var userId = TokenData.GetIdFromClaims(User.Claims);
@@ -79,7 +79,7 @@ namespace HotelReservation.Api.Controllers
         [HttpDelete]
         [Route("{serviceId}")]
         [Authorize(Policy = Policies.AllAdminsPermission)]
-        public async Task<IActionResult> DeleteServiceFromHotel(string serviceId)
+        public async Task<IActionResult> DeleteServiceFromHotel(Guid serviceId)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
             await _facilitiesService.DeleteOrderFromHotel(serviceId, userId);

@@ -13,6 +13,7 @@ namespace HotelReservation.Data.Interfaces
         IEnumerable<TEntity> GetAll();
 
         Task<TEntity> GetAsync(Guid id);
+        Task<TEntity> GetAsync(string id);
 
         IEnumerable<TEntity> Find(int pageNumber, int pageSize);
 

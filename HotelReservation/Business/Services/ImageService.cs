@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -33,7 +34,7 @@ namespace Business.Services
             _logger = logger;
         }
 
-        public async Task AddImageToHotel(ImageModel image,int hotelId,int userId)
+        public async Task AddImageToHotel(ImageModel image, Guid hotelId, string userId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -56,7 +57,7 @@ namespace Business.Services
             }
         }
 
-        public async Task<ImageModel> GetHotelImage(int hotelId)
+        public async Task<ImageModel> GetHotelImage(Guid hotelId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -74,7 +75,7 @@ namespace Business.Services
             return imageModel;
         }
 
-        public async Task<List<ImageModel>> GetRoomImages(int roomId)
+        public async Task<List<ImageModel>> GetRoomImages(Guid roomId)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
             if (roomEntity == null)
@@ -94,7 +95,7 @@ namespace Business.Services
             
         }
 
-        public async Task SetImagesToRoom(List<ImageModel> imagesData, int roomId, int userId)
+        public async Task SetImagesToRoom(List<ImageModel> imagesData, Guid roomId, string userId)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
             if (roomEntity == null)

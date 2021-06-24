@@ -33,7 +33,7 @@ namespace HotelReservation.Api.Controllers
         [HttpGet]
         [Authorize(Policy = Policies.AllAdminsPermission)]
         [Route("{id}")]
-        public async Task<HotelResponseModel> GetByiD(string id)
+        public async Task<HotelResponseModel> GetByiD(Guid id)
         {
             var responseHotel = _hotelMapper.Map<HotelModel, HotelResponseModel>(await _hotelsService.GetById(id));
             return responseHotel;
@@ -54,7 +54,7 @@ namespace HotelReservation.Api.Controllers
         [HttpGet]
         [Authorize(Policy = Policies.HotelAdminPermission)]
         [Route("hotelAdmin/{hotelAdminId}/pages")]
-        public async Task<IActionResult> GetHotelAdminsPage([FromQuery] Pagination filter,string  hotelAdminId)
+        public async Task<IActionResult> GetHotelAdminsPage([FromQuery] Pagination filter,Guid hotelAdminId)
         {
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
             var  hotelsWithCount = await _hotelsService.GetHotelAdminPages(validFilter,hotelAdminId);
@@ -75,7 +75,7 @@ namespace HotelReservation.Api.Controllers
         [HttpGet]
         [Authorize(Policy = Policies.AllAdminsPermission)]
         [Route("{hotelId}/getHotelAdmins")]
-        public async Task<IActionResult> GetHotelAdmins(string hotelId)
+        public async Task<IActionResult> GetHotelAdmins(Guid hotelId)
         {
             var hotelAdmins = await _hotelsService.GetHotelAdmins(hotelId);
             return Ok(_userMapper.Map<ICollection<UserResponseViewModel>>(hotelAdmins));
@@ -92,7 +92,7 @@ namespace HotelReservation.Api.Controllers
 
         [HttpPut]
         [Route("{hotelId}/setHotelAdmin")]
-        public async Task<IActionResult> UpdateHotelAdmin(string hotelId)
+        public async Task<IActionResult> UpdateHotelAdmin(Guid hotelId)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
             await _hotelsService.UpdateHotelAdmin(hotelId, userId);
@@ -101,7 +101,7 @@ namespace HotelReservation.Api.Controllers
         }
         [HttpPut]
         [Route("{hotelId}/deleteHotelAdmin")]
-        public async Task<IActionResult> DeleteHotelAdmin(string hotelId)
+        public async Task<IActionResult> DeleteHotelAdmin(Guid hotelId)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
             await _hotelsService.DeleteHotelAdmin(hotelId, userId);
@@ -112,7 +112,7 @@ namespace HotelReservation.Api.Controllers
         [HttpPut]
         [Authorize(Policy = Policies.AdminPermission)]
         [Route("{hotelId}")]
-        public async Task<IActionResult> EditHotel(string hotelId,[FromBody] HotelRequestModel hotel)
+        public async Task<IActionResult> EditHotel(Guid hotelId,[FromBody] HotelRequestModel hotel)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
             var hotelModel = _hotelMapper.Map<HotelRequestModel, HotelModel>(hotel);
@@ -123,7 +123,7 @@ namespace HotelReservation.Api.Controllers
         [HttpDelete]
         [Authorize(Policy = Policies.AdminPermission)]
         [Route("{hotelId}")]
-        public async Task<IActionResult> DeleteHotelById(string hotelId)
+        public async Task<IActionResult> DeleteHotelById(Guid hotelId)
         {
             await _hotelsService.DeleteHotelById(hotelId);
             return Ok("Deleted successfully");

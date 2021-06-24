@@ -10,6 +10,7 @@ using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
 using Microsoft.AspNetCore.Authorization;
 using HotelReservation.Api.Policy;
+using System;
 
 namespace HotelReservation.Api.Controllers
 {
@@ -28,7 +29,7 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Route("{hotelId}")]
-        public async Task<IActionResult> GetRooms(string hotelId)
+        public async Task<IActionResult> GetRooms(Guid hotelId)
         {
             var roomModels = await _roomsService.GetRoomsFromHotel(hotelId);
             var roomResponseModels = _mapper.Map<ICollection<RoomResponseModel>>(roomModels);
@@ -37,7 +38,7 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Route("{hotelId}/pages")]
-        public async Task<IActionResult> GetPage(string hotelId,[FromQuery] Pagination filter)
+        public async Task<IActionResult> GetPage(Guid hotelId,[FromQuery] Pagination filter)
         {
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
             var pageInfo = await _roomsService.GetRoomsPage(hotelId,validFilter);
@@ -53,7 +54,7 @@ namespace HotelReservation.Api.Controllers
         [HttpPost]
         [Authorize(Policy = Policies.AllAdminsPermission)]
         [Route("{hotelId}")]
-        public async Task<IActionResult> CreateRoom(string hotelId,RoomRequestModel room)
+        public async Task<IActionResult> CreateRoom(Guid hotelId,RoomRequestModel room)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
             if (room == null)
@@ -70,7 +71,7 @@ namespace HotelReservation.Api.Controllers
         [HttpDelete]
         [Route("{roomId}")]
         [Authorize(Policy = Policies.AllAdminsPermission)]
-        public async Task<IActionResult> DeleteRoom(string roomId)
+        public async Task<IActionResult> DeleteRoom(Guid roomId)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
             await _roomsService.DeleteRoom(roomId, userId);
@@ -80,7 +81,7 @@ namespace HotelReservation.Api.Controllers
         [HttpPut]
         [Route("{roomId}")]
         [Authorize(Policy = Policies.AllAdminsPermission)]
-        public async Task<IActionResult> UpdateRoom(string roomId,[FromBody] RoomRequestModel room)
+        public async Task<IActionResult> UpdateRoom(Guid roomId,[FromBody] RoomRequestModel room)
         {
             var roomModel = _mapper.Map<RoomRequestModel, RoomModel>(room);
             var userId = TokenData.GetIdFromClaims(User.Claims);

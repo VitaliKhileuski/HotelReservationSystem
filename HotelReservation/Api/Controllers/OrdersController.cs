@@ -29,7 +29,7 @@ namespace HotelReservation.Api.Controllers
         [HttpGet]
         [Authorize]
         [Route("{orderId}")]
-        public async Task<IActionResult> GetOrderById(string orderId)
+        public async Task<IActionResult> GetOrderById(Guid orderId)
         {
             var order = await _orderService.GetOrderById(orderId);
             var result = _mapper.Map<OrderModel, OrderResponseModel>(order);
@@ -39,7 +39,7 @@ namespace HotelReservation.Api.Controllers
         [HttpPost]
         [Authorize]
         [Route("{roomId}/order")]
-        public async Task<IActionResult> CreateOrder(string roomId, [FromBody] OrderRequestModel order)
+        public async Task<IActionResult> CreateOrder(Guid roomId, [FromBody] OrderRequestModel order)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
             var orderModel = _mapper.Map<OrderRequestModel, OrderModel>(order);
@@ -55,7 +55,7 @@ namespace HotelReservation.Api.Controllers
         [HttpPut]
         [Authorize]
         [Route("{orderId}/updateOrder")]
-        public async Task<IActionResult> UpdateOrder(string orderId, [FromBody] OrderRequestModel order)
+        public async Task<IActionResult> UpdateOrder(Guid orderId, [FromBody] OrderRequestModel order)
         {
             var orderModel = _mapper.Map<OrderRequestModel, OrderModel>(order);
             orderModel.Services = new List<ServiceModel>();
@@ -71,7 +71,7 @@ namespace HotelReservation.Api.Controllers
         [HttpDelete]
         [Authorize]
         [Route("{orderId}/deleteOrder")]
-        public async Task<IActionResult> DeleteOrder(string orderId)
+        public async Task<IActionResult> DeleteOrder(Guid orderId)
         {
             await _orderService.DeleteOrder(orderId);
             return Ok("Deleted Successfully");

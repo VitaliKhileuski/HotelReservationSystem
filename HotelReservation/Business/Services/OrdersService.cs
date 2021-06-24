@@ -30,7 +30,7 @@ namespace Business.Services
             _logger = logger;
         }
 
-        public async Task<OrderModel> GetOrderById(int orderId)
+        public async Task<OrderModel> GetOrderById(Guid orderId)
         {
             var order = await _orderRepository.GetAsync(orderId);
             if (order == null)
@@ -44,7 +44,7 @@ namespace Business.Services
             return orderModel;
         }
 
-        public async Task CreateOrder(int roomId, int userId,OrderModel order)
+        public async Task CreateOrder(Guid roomId, string userId, OrderModel order)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
             if (roomEntity == null)
@@ -78,7 +78,7 @@ namespace Business.Services
             await _roomRepository.UpdateAsync(roomEntity);
         }
 
-        public async Task UpdateOrder(int orderId, OrderModel newOrder)
+        public async Task UpdateOrder(Guid orderId, OrderModel newOrder)
         {
             if (newOrder == null)
             {
@@ -116,7 +116,7 @@ namespace Business.Services
             await  _orderRepository.UpdateAsync(currentOrder);
         }
 
-        public async Task DeleteOrder(int orderId)
+        public async Task DeleteOrder(Guid orderId)
         {
             var order = await _orderRepository.GetAsync(orderId);
             if (order == null)

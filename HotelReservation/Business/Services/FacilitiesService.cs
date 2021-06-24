@@ -68,7 +68,7 @@ namespace Business.Services
             return Tuple.Create(services, numberOfServices);
         }
 
-        public async Task UpdateService(Guid serviceId, Guid userId, ServiceModel serviceModel)
+        public async Task UpdateService(Guid serviceId, string userId, ServiceModel serviceModel)
         {
             var serviceEntity = await _serviceRepository.GetAsync(serviceId);
             if (serviceEntity == null)
@@ -99,7 +99,7 @@ namespace Business.Services
             }
         }
 
-        public async Task AddServiceToHotel(Guid hotelId, Guid userId, ServiceModel serviceModel)
+        public async Task AddServiceToHotel(Guid hotelId, string userId, ServiceModel serviceModel)
         {
             var userEntity = await _userRepository.GetAsync(userId);
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
@@ -125,7 +125,7 @@ namespace Business.Services
             }
         }
 
-        public async Task DeleteOrderFromHotel(Guid serviceId, Guid userId)
+        public async Task DeleteOrderFromHotel(Guid serviceId, string userId)
         {
             var serviceEntity = await _serviceRepository.GetAsync(serviceId);
             var userEntity = await _userRepository.GetAsync(userId);

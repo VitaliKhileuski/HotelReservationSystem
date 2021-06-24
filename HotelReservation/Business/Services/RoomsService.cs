@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -31,7 +32,7 @@ namespace Business.Services
             _logger = logger;
         }
 
-        public async Task AddRoom(int hotelId,RoomModel room,int userId)
+        public async Task AddRoom(Guid hotelId,RoomModel room, string userId)
         {
             if (room == null)
             {
@@ -60,7 +61,7 @@ namespace Business.Services
             }
         }
 
-        public async Task<ICollection<RoomModel>> GetRoomsFromHotel(int hotelId)
+        public async Task<ICollection<RoomModel>> GetRoomsFromHotel(Guid hotelId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -78,7 +79,7 @@ namespace Business.Services
             return _roomMapper.Map<ICollection<RoomModel>>(hotelEntity.Rooms.ToList());
         }
 
-        public async Task UpdateRoom(int roomId, int userId,RoomModel room)
+        public async Task UpdateRoom(Guid roomId, string userId,RoomModel room)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
             var userEntity =await _userRepository.GetAsync(userId);
@@ -91,7 +92,7 @@ namespace Business.Services
                 await _roomRepository.UpdateAsync(roomEntity);
             }
         }
-        public async Task<PageInfo<RoomModel>> GetRoomsPage(int hotelId,Pagination hotelPagination)
+        public async Task<PageInfo<RoomModel>> GetRoomsPage(Guid hotelId,Pagination hotelPagination)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -117,7 +118,7 @@ namespace Business.Services
             return roomPageInfo;
         }
 
-        public async Task DeleteRoom(int roomId, int userId)
+        public async Task DeleteRoom(Guid roomId, string userId)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
             if (roomEntity == null)

@@ -21,11 +21,11 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("HotelEntityUserEntity", b =>
                 {
-                    b.Property<int>("AdminsId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("AdminsId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OwnedHotelsId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("OwnedHotelsId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("AdminsId", "OwnedHotelsId");
 
@@ -36,13 +36,12 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("HotelReservation.Data.Entities.HotelEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("ImageId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("ImageId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -58,16 +57,15 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("HotelReservation.Data.Entities.ImageEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("ImageData")
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<int?>("RoomEntityId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("RoomEntityId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
@@ -84,10 +82,9 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("HotelReservation.Data.Entities.LocationEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("BuildingNumber")
                         .IsRequired()
@@ -103,8 +100,8 @@ namespace HotelReservation.Api.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
 
-                    b.Property<int>("HotelId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("HotelId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Street")
                         .IsRequired()
@@ -121,10 +118,9 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("HotelReservation.Data.Entities.OrderEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("DateOrdered")
                         .HasColumnType("datetime2");
@@ -138,14 +134,14 @@ namespace HotelReservation.Api.Migrations
                     b.Property<int>("NumberOfDays")
                         .HasColumnType("int");
 
-                    b.Property<int>("RoomId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("RoomId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -158,10 +154,9 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("HotelReservation.Data.Entities.RefreshTokenEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Token")
                         .IsRequired()
@@ -174,10 +169,9 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("HotelReservation.Data.Entities.RoleEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -189,16 +183,15 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("HotelReservation.Data.Entities.RoomEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("BedsNumber")
                         .HasColumnType("int");
 
-                    b.Property<int>("HotelId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("HotelId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("PaymentPerDay")
                         .HasColumnType("decimal(18,4)");
@@ -208,8 +201,8 @@ namespace HotelReservation.Api.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -222,13 +215,12 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("HotelReservation.Data.Entities.ServiceEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("HotelId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("HotelId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -247,10 +239,9 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("HotelReservation.Data.Entities.UserEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -272,11 +263,11 @@ namespace HotelReservation.Api.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
-                    b.Property<int?>("RefreshTokenId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("RefreshTokenId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Surname")
                         .IsRequired()
@@ -296,11 +287,11 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("OrderEntityServiceEntity", b =>
                 {
-                    b.Property<int>("OrdersId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("OrdersId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ServicesId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ServicesId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("OrdersId", "ServicesId");
 

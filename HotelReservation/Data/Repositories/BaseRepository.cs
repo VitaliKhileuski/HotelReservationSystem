@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HotelReservation.Data.Entities;
@@ -29,7 +30,11 @@ namespace HotelReservation.Data.Repositories
             return DbSet;
         }
 
-        public async Task<TEntity> GetAsync(int id)
+        public async Task<TEntity> GetAsync(Guid id)
+        {
+            return await DbSet.FirstOrDefaultAsync(entity => entity.Id.Equals(id));
+        }
+        public async Task<TEntity> GetAsync(string id)
         {
             return await DbSet.FirstOrDefaultAsync(entity => entity.Id.Equals(id));
         }
@@ -55,7 +60,7 @@ namespace HotelReservation.Data.Repositories
             return updatedEntityEntry.Entity;
         }
 
-        public async Task<TEntity> DeleteAsync(int id)
+        public async Task<TEntity> DeleteAsync(Guid id)
         {
             var deletingEntity = await DbSet.FindAsync(id);
 

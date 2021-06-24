@@ -60,7 +60,7 @@ namespace Business.Services
             await _hotelRepository.CreateAsync(hotelEntity);
         }
 
-        public async Task<HotelModel> GetById(int hotelId)
+        public async Task<HotelModel> GetById(Guid hotelId)
         {
             var hotelModel = _hotelMapper.Map<HotelEntity, HotelModel>(await _hotelRepository.GetAsync(hotelId));
             if (hotelModel == null)
@@ -79,7 +79,7 @@ namespace Business.Services
             return hotelModels;
         }
 
-        public async Task UpdateHotelAdmin(int hotelId, string userId)
+        public async Task UpdateHotelAdmin(Guid hotelId, string userId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -114,7 +114,7 @@ namespace Business.Services
            await _userRepository.UpdateAsync(userEntity);
         }
 
-        public async Task UpdateHotel(int hotelId, HotelModel hotel, int userId)
+        public async Task UpdateHotel(Guid hotelId, HotelModel hotel,string userId)
         {
             if (hotel == null)
             {
@@ -158,7 +158,7 @@ namespace Business.Services
                     await _hotelRepository.UpdateAsync(hotelEntity);
             }
         }
-        public async Task DeleteHotelById(int hotelId)
+        public async Task DeleteHotelById(Guid hotelId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -177,7 +177,7 @@ namespace Business.Services
 
             return Tuple.Create(hotels,numberOfPages);
         }
-        public async Task<Tuple<IEnumerable<HotelModel>, int>> GetHotelAdminPages(Pagination hotelPagination,int hotelAdminId)
+        public async Task<Tuple<IEnumerable<HotelModel>, int>> GetHotelAdminPages(Pagination hotelPagination,Guid hotelAdminId)
         {
             var hotelAdmin = await _userRepository.GetAsync(hotelAdminId);
             if (hotelAdmin == null)
@@ -192,7 +192,7 @@ namespace Business.Services
         }
 
 
-        public async Task<ICollection<UserModel>> GetHotelAdmins(int hotelId)
+        public async Task<ICollection<UserModel>> GetHotelAdmins(Guid hotelId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -266,7 +266,7 @@ namespace Business.Services
             return Tuple.Create(pagedData, pages);
         }
 
-        public async Task DeleteHotelAdmin(string hotelId, string userId)
+        public async Task DeleteHotelAdmin(Guid hotelId, string userId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
 

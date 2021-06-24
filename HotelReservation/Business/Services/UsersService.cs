@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -31,7 +32,7 @@ namespace Business.Services
             _tokenService = tokenService;
         }
 
-        public async Task<ICollection<UserModel>> GetAll(int hotelId)
+        public async Task<ICollection<UserModel>> GetAll(Guid hotelId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -44,7 +45,7 @@ namespace Business.Services
             return  _mapper.Map<ICollection<UserModel>>(users);
         }
 
-        public async Task<UserModel> GetById(int userId)
+        public async Task<UserModel> GetById(Guid userId)
         {
             var userEntity = await _userRepository.GetAsync(userId);
             if (userEntity == null)
@@ -83,7 +84,7 @@ namespace Business.Services
             await _userRepository.CreateAsync(userEntity);
         }
 
-        public async Task DeleteById(int userId)
+        public async Task DeleteById(Guid userId)
         {
 
             var userEntity = await _userRepository.GetAsync(userId);
@@ -96,7 +97,7 @@ namespace Business.Services
             await _userRepository.DeleteAsync(userId);
         }
 
-        public async Task Update(int userId,UserModel user)
+        public async Task Update(Guid userId,UserModel user)
         {
             var userEntity = await _userRepository.GetAsync(userId);
             if (userEntity == null)

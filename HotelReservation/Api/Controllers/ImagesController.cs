@@ -30,7 +30,7 @@ namespace HotelReservation.Api.Controllers
         [HttpPost]
         [Authorize(Policy = Policies.AllAdminsPermission)]
         [Route("{hotelId}/setHotelImage")]
-        public async Task<IActionResult> EditHotelImage(string hotelId,[FromBody] ImageRequestModel image)
+        public async Task<IActionResult> EditHotelImage(Guid hotelId,[FromBody] ImageRequestModel image)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
             var imageModel = _imageMapper.Map<ImageRequestModel, ImageModel>(image);
@@ -41,7 +41,7 @@ namespace HotelReservation.Api.Controllers
         [HttpPost]
         [Authorize(Policy = Policies.AllAdminsPermission)]
         [Route("{roomId}/setRoomImages")]
-        public async Task<IActionResult> SetRoomImages(string roomId, [FromBody] List<ImageRequestModel> images)
+        public async Task<IActionResult> SetRoomImages(Guid roomId, [FromBody] List<ImageRequestModel> images)
         {
             var imageModels = _imageMapper.Map<List<ImageModel>>(images);
             var userId = TokenData.GetIdFromClaims(User.Claims);
@@ -51,7 +51,7 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Route("{hotelId}/getHotelImage")]
-        public async Task<IActionResult> GetHotelImage(string hotelId)
+        public async Task<IActionResult> GetHotelImage(Guid hotelId)
         {
             var imageData =  await _imageService.GetHotelImage(hotelId);
             var imageResponse = _imageMapper.Map<ImageModel, ImageResponseModel>(imageData);
@@ -60,7 +60,7 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Route("{roomId}/getRoomImages")]
-        public async Task<IActionResult> GetRoomImages(string roomId)
+        public async Task<IActionResult> GetRoomImages(Guid roomId)
         {
             var imagesData = await _imageService.GetRoomImages(roomId);
 
