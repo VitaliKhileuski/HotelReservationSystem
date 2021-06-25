@@ -9,5 +9,6 @@ namespace HotelReservation.Api.Models.ResponseModels
         public LocationResponseModel Location { get; set; }
         public ICollection<RoomResponseModel> Rooms { get; set; }
         public ICollection<ServiceResponseModel> Services { get; set; }
+        public ICollection<string> ImageUrls { get; set; }
     }
 }

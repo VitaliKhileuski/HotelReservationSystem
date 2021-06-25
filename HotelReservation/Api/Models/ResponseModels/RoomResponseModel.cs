@@ -1,4 +1,6 @@
-﻿namespace HotelReservation.Api.Models.ResponseModels
+﻿using System.Collections.Generic;
+
+namespace HotelReservation.Api.Models.ResponseModels
 {
     public class RoomResponseModel
     {
@@ -7,6 +9,7 @@
         public string RoomNumber { get; set; }
         public int BedsNumber { get; set; }
         public double PaymentPerDay { get; set; }
+        public ICollection<string> ImageUrls { get; set; }
 
     }
 }

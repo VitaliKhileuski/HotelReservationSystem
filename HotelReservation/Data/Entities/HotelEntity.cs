@@ -10,8 +10,7 @@ namespace HotelReservation.Data.Entities
         public virtual List<RoomEntity> Rooms { get; set; }
         public virtual List<ServiceEntity> Services { get; set; }
         public virtual ICollection<UserEntity> Admins { get; set; }
-        public Guid? ImageId { get; set; }
-        public virtual ImageEntity Image { get; set; }
+        public virtual List<AttachmentEntity> Attachments { get; set; }
 
         public override bool Equals(object obj)
         {

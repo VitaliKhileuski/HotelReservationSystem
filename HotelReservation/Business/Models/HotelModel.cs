@@ -11,5 +11,6 @@ namespace Business.Models
         public LocationModel Location { get; set; }
         public ICollection<RoomModel> Rooms { get; set; }
         public ICollection<ServiceModel> Services { get; set; }
+        public ICollection<AttachmentModel> Attachments { get; set; }
     }
 }

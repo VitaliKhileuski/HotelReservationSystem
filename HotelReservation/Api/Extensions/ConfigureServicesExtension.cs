@@ -14,7 +14,7 @@ namespace HotelReservation.Api.Extensions
             services.AddScoped<IOrderService, OrdersService>();
             services.AddScoped<IHotelsService, HotelsService>();
             services.AddScoped<IUserService, UsersService>();
-            services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IAttachmentsService, AttachmentsService>();
             services.AddScoped<IFacilityService, FacilitiesService>();
             services.AddScoped<LocationsService>();
         }

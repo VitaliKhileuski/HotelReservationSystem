@@ -18,54 +18,47 @@ namespace HotelReservation.Api.Controllers
     [Route("api/[controller]")]
     public class ImagesController : Controller
     {
-        private readonly IImageService _imageService;
-        private readonly Mapper _imageMapper;
-
-        public ImagesController(IImageService imageService, CustomMapperConfiguration cfg)
+        private readonly IAttachmentsService _attachmentsService;
+        private readonly Mapper _attachmentMapper;
+        public ImagesController(IAttachmentsService attachmentsService, CustomMapperConfiguration cfg)
         {
-            _imageService = imageService;
-            _imageMapper = new Mapper(cfg.ImageConfiguration);
+            _attachmentsService = attachmentsService;
+            _attachmentMapper = new Mapper(cfg.OrderConfiguration);  //attach
         }
 
         [HttpPost]
         [Authorize(Policy = Policies.AllAdminsPermission)]
-        [Route("{hotelId}/setHotelImage")]
-        public async Task<IActionResult> EditHotelImage(Guid hotelId,[FromBody] ImageRequestModel image)
+        [Route("{hotelId}/setHotelImages")]
+        public async Task<IActionResult> EditHotelImage(Guid hotelId,[FromBody] List<FileRequestModel> files)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
-            var imageModel = _imageMapper.Map<ImageRequestModel, ImageModel>(image);
-            await _imageService.AddImageToHotel(imageModel, hotelId, userId);
+            var attachmentModels = _attachmentMapper.Map<List<AttachmentModel>>(files);
+            await _attachmentsService.SetImagesToHotel(attachmentModels, hotelId, userId);
             return Ok();
         }
 
         [HttpPost]
         [Authorize(Policy = Policies.AllAdminsPermission)]
         [Route("{roomId}/setRoomImages")]
-        public async Task<IActionResult> SetRoomImages(Guid roomId, [FromBody] List<ImageRequestModel> images)
+        public async Task<IActionResult> SetRoomImages(Guid roomId, [FromBody] List<FileRequestModel> files)
         {
-            var imageModels = _imageMapper.Map<List<ImageModel>>(images);
+            var attachmentModels = _attachmentMapper.Map<List<AttachmentModel>>(files);
             var userId = TokenData.GetIdFromClaims(User.Claims);
-            await _imageService.SetImagesToRoom(imageModels, roomId, userId);
+            await _attachmentsService.SetImagesToRoom(attachmentModels, roomId, userId);
             return Ok();
         }
 
         [HttpGet]
-        [Route("{hotelId}/getHotelImage")]
-        public async Task<IActionResult> GetHotelImage(Guid hotelId)
+        [Route("{fileId:guid}")]
+        public async Task<IActionResult> GetHotelImage(Guid fileId)
         {
-            var imageData =  await _imageService.GetHotelImage(hotelId);
-            var imageResponse = _imageMapper.Map<ImageModel, ImageResponseModel>(imageData);
-            return Ok(imageResponse);
-        }
-
-        [HttpGet]
-        [Route("{roomId}/getRoomImages")]
-        public async Task<IActionResult> GetRoomImages(Guid roomId)
-        {
-            var imagesData = await _imageService.GetRoomImages(roomId);
-
-            var responseImages = _imageMapper.Map<ICollection<ImageResponseModel>>(imagesData);
-            return Ok(responseImages);
+            var imageData =  await _attachmentsService.GetImage(fileId);
+            var file = new FileContentResult(imageData.Content.Content, imageData.Type)
+            {
+                FileDownloadName = imageData.Title
+            };
+            
+            return Ok(file);
         }
     }
 }

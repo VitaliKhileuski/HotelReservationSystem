@@ -15,8 +15,7 @@ namespace Business.Mappers
         public MapperConfiguration RoleConfiguration;
         public MapperConfiguration TokenConfiguration;
         public MapperConfiguration ServiceConfiguration;
-        public ImageConfiguration ImageConfiguration;
-        public IMapper _mapper;
+        public MapperConfiguration AttachmentConfiguration;
 
         public MapConfiguration()
         {
@@ -102,7 +101,11 @@ namespace Business.Mappers
 
 
             });
-            ImageConfiguration = new ImageConfiguration();
+            AttachmentConfiguration = new MapperConfiguration(x =>
+            {
+                x.CreateMap<AttachmentModel, AttachmentEntity>().ReverseMap();
+                x.CreateMap<FileContentModel, FileContentEntity>().ReverseMap();
+            });
         }
     }
 }
