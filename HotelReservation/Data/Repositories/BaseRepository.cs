@@ -36,7 +36,7 @@ namespace HotelReservation.Data.Repositories
         }
         public async Task<TEntity> GetAsync(string id)
         {
-            return await DbSet.FirstOrDefaultAsync(entity => entity.Id.Equals(id));
+            return await DbSet.FirstOrDefaultAsync(entity => entity.Id.ToString()==id);
         }
 
         public IEnumerable<TEntity> Find(int pageNumber, int pageSize)
