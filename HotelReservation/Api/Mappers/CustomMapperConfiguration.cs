@@ -13,9 +13,11 @@ namespace HotelReservation.Api.Mappers
         public MapperConfiguration OrderConfiguration;
         public MapperConfiguration TokenConfiguration;
         public MapperConfiguration ServiceConfiguration;
+        public AttachmentConfiguration AttachmentConfiguration;
 
         public CustomMapperConfiguration()
         {
+            AttachmentConfiguration = new AttachmentConfiguration();
             HotelConfiguration = new  HotelConfiguration();
             
             UsersConfiguration = new MapperConfiguration(x =>

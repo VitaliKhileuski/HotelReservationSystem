@@ -13,7 +13,7 @@ namespace HotelReservation.Api.Mappers
         public AttachmentConfiguration() : base(x =>
         {
             x.CreateMap<FileRequestModel, AttachmentModel>()
-                .ForMember(file => file.Content.Content, opt => opt.MapFrom(image => ImageConverter(image.FileBase64)));
+                .ForPath(file => file.FileContent.Content, opt => opt.MapFrom(image => ImageConverter(image.FileBase64)));
         })
         {
 

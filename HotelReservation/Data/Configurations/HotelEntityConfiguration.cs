@@ -32,7 +32,9 @@ namespace HotelReservation.Data.Configurations
                 .HasMany(x => x.Admins)
                 .WithMany(x => x.OwnedHotels);
             builder
-                .HasMany(x => x.Attachments);
+                .HasMany(x => x.Attachments)
+                .WithOne(x => x.Hotel)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

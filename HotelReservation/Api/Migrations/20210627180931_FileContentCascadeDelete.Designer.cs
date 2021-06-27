@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelReservation.Api.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20210624235357_GuidTypes")]
-    partial class GuidTypes
+    [Migration("20210627180931_FileContentCascadeDelete")]
+    partial class FileContentCascadeDelete
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -36,13 +36,60 @@ namespace HotelReservation.Api.Migrations
                     b.ToTable("HotelEntityUserEntity");
                 });
 
-            modelBuilder.Entity("HotelReservation.Data.Entities.HotelEntity", b =>
+            modelBuilder.Entity("HotelReservation.Data.Entities.AttachmentEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ImageId")
+                    b.Property<Guid>("FileContentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FileExtension")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("HotelEntityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("RoomEntityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FileContentId")
+                        .IsUnique();
+
+                    b.HasIndex("HotelEntityId");
+
+                    b.HasIndex("RoomEntityId");
+
+                    b.ToTable("Attachments");
+                });
+
+            modelBuilder.Entity("HotelReservation.Data.Entities.FileContentEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AttachmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("Content")
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Files");
+                });
+
+            modelBuilder.Entity("HotelReservation.Data.Entities.HotelEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
@@ -52,34 +99,7 @@ namespace HotelReservation.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ImageId");
-
                     b.ToTable("Hotels");
-                });
-
-            modelBuilder.Entity("HotelReservation.Data.Entities.ImageEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<byte[]>("ImageData")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<Guid?>("RoomEntityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Type")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoomEntityId");
-
-                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("HotelReservation.Data.Entities.LocationEntity", b =>
@@ -317,20 +337,23 @@ namespace HotelReservation.Api.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("HotelReservation.Data.Entities.HotelEntity", b =>
+            modelBuilder.Entity("HotelReservation.Data.Entities.AttachmentEntity", b =>
                 {
-                    b.HasOne("HotelReservation.Data.Entities.ImageEntity", "Image")
-                        .WithMany()
-                        .HasForeignKey("ImageId");
+                    b.HasOne("HotelReservation.Data.Entities.FileContentEntity", "FileContent")
+                        .WithOne("Attachment")
+                        .HasForeignKey("HotelReservation.Data.Entities.AttachmentEntity", "FileContentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Image");
-                });
+                    b.HasOne("HotelReservation.Data.Entities.HotelEntity", null)
+                        .WithMany("Attachments")
+                        .HasForeignKey("HotelEntityId");
 
-            modelBuilder.Entity("HotelReservation.Data.Entities.ImageEntity", b =>
-                {
                     b.HasOne("HotelReservation.Data.Entities.RoomEntity", null)
-                        .WithMany("Images")
+                        .WithMany("Attachments")
                         .HasForeignKey("RoomEntityId");
+
+                    b.Navigation("FileContent");
                 });
 
             modelBuilder.Entity("HotelReservation.Data.Entities.LocationEntity", b =>
@@ -425,8 +448,15 @@ namespace HotelReservation.Api.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("HotelReservation.Data.Entities.FileContentEntity", b =>
+                {
+                    b.Navigation("Attachment");
+                });
+
             modelBuilder.Entity("HotelReservation.Data.Entities.HotelEntity", b =>
                 {
+                    b.Navigation("Attachments");
+
                     b.Navigation("Location");
 
                     b.Navigation("Rooms");
@@ -446,7 +476,7 @@ namespace HotelReservation.Api.Migrations
 
             modelBuilder.Entity("HotelReservation.Data.Entities.RoomEntity", b =>
                 {
-                    b.Navigation("Images");
+                    b.Navigation("Attachments");
 
                     b.Navigation("Order");
                 });

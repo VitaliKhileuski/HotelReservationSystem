@@ -11,7 +11,10 @@ namespace HotelReservation.Data.Configurations
         public void Configure(EntityTypeBuilder<AttachmentEntity> builder)
         {
             builder
-                .HasOne(x => x.Content);
+                .HasOne(x => x.FileContent)
+                .WithOne(x => x.Attachment)
+                .HasForeignKey<AttachmentEntity>(x => x.FileContentId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

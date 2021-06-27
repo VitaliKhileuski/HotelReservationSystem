@@ -23,7 +23,7 @@ namespace HotelReservation.Api.Controllers
         public ImagesController(IAttachmentsService attachmentsService, CustomMapperConfiguration cfg)
         {
             _attachmentsService = attachmentsService;
-            _attachmentMapper = new Mapper(cfg.OrderConfiguration);  //attach
+            _attachmentMapper = new Mapper(cfg.AttachmentConfiguration);  //attach
         }
 
         [HttpPost]
@@ -53,9 +53,9 @@ namespace HotelReservation.Api.Controllers
         public async Task<IActionResult> GetHotelImage(Guid fileId)
         {
             var imageData =  await _attachmentsService.GetImage(fileId);
-            var file = new FileContentResult(imageData.Content.Content, imageData.Type)
+            var file = new FileContentResult(imageData.FileContent.Content, imageData.FileExtension)
             {
-                FileDownloadName = imageData.Title
+                FileDownloadName = imageData.FileName
             };
             
             return Ok(file);

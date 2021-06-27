@@ -4,14 +4,16 @@ using HotelReservation.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HotelReservation.Api.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20210625233633_Attachments2")]
+    partial class Attachments2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,10 +51,10 @@ namespace HotelReservation.Api.Migrations
                     b.Property<string>("FileName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("HotelId")
+                    b.Property<Guid?>("HotelEntityId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("RoomId")
+                    b.Property<Guid?>("RoomEntityId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -60,9 +62,9 @@ namespace HotelReservation.Api.Migrations
                     b.HasIndex("FileContentId")
                         .IsUnique();
 
-                    b.HasIndex("HotelId");
+                    b.HasIndex("HotelEntityId");
 
-                    b.HasIndex("RoomId");
+                    b.HasIndex("RoomEntityId");
 
                     b.ToTable("Attachments");
                 });
@@ -71,9 +73,6 @@ namespace HotelReservation.Api.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AttachmentId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("Content")
@@ -343,23 +342,15 @@ namespace HotelReservation.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HotelReservation.Data.Entities.HotelEntity", "Hotel")
+                    b.HasOne("HotelReservation.Data.Entities.HotelEntity", null)
                         .WithMany("Attachments")
-                        .HasForeignKey("HotelId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("HotelEntityId");
 
-                    b.HasOne("HotelReservation.Data.Entities.RoomEntity", "Room")
+                    b.HasOne("HotelReservation.Data.Entities.RoomEntity", null)
                         .WithMany("Attachments")
-                        .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("RoomEntityId");
 
                     b.Navigation("FileContent");
-
-                    b.Navigation("Hotel");
-
-                    b.Navigation("Room");
                 });
 
             modelBuilder.Entity("HotelReservation.Data.Entities.LocationEntity", b =>

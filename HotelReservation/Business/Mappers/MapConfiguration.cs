@@ -50,6 +50,8 @@ namespace Business.Mappers
                     .ForMember(x => x.Orders, opt => opt.Ignore())
                     .ForMember(x => x.Rooms, opt => opt.Ignore())
                     .ForMember(x => x.Role, opt => opt.Ignore());
+                x.CreateMap<AttachmentEntity, AttachmentModel>().ReverseMap();
+                x.CreateMap<FileContentEntity, FileContentModel>().ReverseMap();
             });
             LocationConfiguration = new MapperConfiguration(x =>
             {
@@ -80,6 +82,8 @@ namespace Business.Mappers
                 x.CreateMap<OrderEntity, OrderModel>()
                 .ForMember(x => x.Room, opt => opt.Ignore())
                 .ForMember(x => x.Customer, opt =>opt.Ignore());
+                x.CreateMap<AttachmentEntity, AttachmentModel>().ReverseMap();
+                x.CreateMap<FileContentEntity, FileContentModel>().ReverseMap();
             });
             RoleConfiguration = new MapperConfiguration(x =>
             {

@@ -20,17 +20,19 @@ namespace Business.Services
         private readonly IHotelRepository _hotelRepository;
         private readonly IUserRepository _userRepository;
         private readonly IRoomRepository _roomRepository;
+        private readonly IFileContentRepository _fileContentReposity;
         private readonly Mapper _attachmentMapper;
         private readonly ILogger<AttachmentEntity> _logger;
 
         public AttachmentsService(IAttachmentRepository attachmentRepository,IHotelRepository hotelRepository,IUserRepository userRepository,
-            IRoomRepository roomRepository, ILogger<AttachmentEntity> logger,  MapConfiguration cfg)
+            IRoomRepository roomRepository,IFileContentRepository fileContentRepository, ILogger<AttachmentEntity> logger,  MapConfiguration cfg)
         {
             _attachmentMapper = new Mapper(cfg.AttachmentConfiguration);
             _attachmentRepository = attachmentRepository;
             _hotelRepository = hotelRepository;
             _userRepository = userRepository;
             _roomRepository = roomRepository;
+            _fileContentReposity = fileContentRepository;
             _logger = logger;
         }
 
@@ -55,11 +57,11 @@ namespace Business.Services
                 {
                     var attachmentEntities = _attachmentMapper.Map<List<AttachmentEntity>>(attachments);
 
-                    var attachmentsIds = hotelEntity.Attachments.Select(image => image.Id).ToList();
+                    var attachmentsIds = hotelEntity.Attachments.Select(image => image.FileContent.Id).ToList();
 
                     foreach (var id in attachmentsIds)
                     {
-                        await _attachmentRepository.DeleteAsync(id);
+                        await _fileContentReposity.DeleteAsync(id);
                     }
                     hotelEntity.Attachments = attachmentEntities;
                 }
@@ -105,11 +107,11 @@ namespace Business.Services
                 {
                     var attachmentEntities = _attachmentMapper.Map<List<AttachmentEntity>>(attachments);
 
-                    var imageIds = roomEntity.Attachments.Select(image => image.Id).ToList();
+                    var imageIds = roomEntity.Attachments.Select(image => image.FileContent.Id).ToList();
 
                     foreach (var id in imageIds)
                     {
-                        await _attachmentRepository.DeleteAsync(id);
+                        await _fileContentReposity.DeleteAsync(id);
                     }
                     roomEntity.Attachments = attachmentEntities;
                 }
