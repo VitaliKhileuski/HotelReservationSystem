@@ -11,10 +11,7 @@ namespace HotelReservation.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<FileContentEntity> builder)
         {
-            builder
-                .HasOne(x => x.Attachment)
-                .WithOne(x => x.FileContent)
-                .OnDelete(DeleteBehavior.Cascade);
+            
         }
     }
 }

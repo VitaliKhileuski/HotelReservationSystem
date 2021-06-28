@@ -117,7 +117,7 @@ namespace HotelReservation.Api.Controllers
             var userId = TokenData.GetIdFromClaims(User.Claims);
             var hotelModel = _hotelMapper.Map<HotelRequestModel, HotelModel>(hotel);
             await _hotelsService.UpdateHotel(hotelId, hotelModel,userId);
-            return Ok("Updated Successfully");
+            return Ok();
         }
 
         [HttpDelete]
@@ -125,8 +125,9 @@ namespace HotelReservation.Api.Controllers
         [Route("{hotelId}")]
         public async Task<IActionResult> DeleteHotelById(Guid hotelId)
         {
-            await _hotelsService.DeleteHotelById(hotelId);
-            return Ok("Deleted successfully");
+            var userId = TokenData.GetIdFromClaims(User.Claims);
+            await _hotelsService.DeleteHotelById(hotelId,userId);
+            return Ok();
         }
     }
 }

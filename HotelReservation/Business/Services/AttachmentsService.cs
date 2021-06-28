@@ -20,7 +20,7 @@ namespace Business.Services
         private readonly IHotelRepository _hotelRepository;
         private readonly IUserRepository _userRepository;
         private readonly IRoomRepository _roomRepository;
-        private readonly IFileContentRepository _fileContentReposity;
+        private readonly IFileContentRepository _fileContentRepository;
         private readonly Mapper _attachmentMapper;
         private readonly ILogger<AttachmentEntity> _logger;
 
@@ -32,7 +32,7 @@ namespace Business.Services
             _hotelRepository = hotelRepository;
             _userRepository = userRepository;
             _roomRepository = roomRepository;
-            _fileContentReposity = fileContentRepository;
+            _fileContentRepository = fileContentRepository;
             _logger = logger;
         }
 
@@ -61,7 +61,7 @@ namespace Business.Services
 
                     foreach (var id in attachmentsIds)
                     {
-                        await _fileContentReposity.DeleteAsync(id);
+                        await _fileContentRepository.DeleteAsync(id);
                     }
                     hotelEntity.Attachments = attachmentEntities;
                 }
@@ -111,7 +111,7 @@ namespace Business.Services
 
                     foreach (var id in imageIds)
                     {
-                        await _fileContentReposity.DeleteAsync(id);
+                        await _fileContentRepository.DeleteAsync(id);
                     }
                     roomEntity.Attachments = attachmentEntities;
                 }

@@ -35,7 +35,7 @@ namespace HotelReservation.Data.Configurations
             builder
                 .HasMany(x => x.Attachments)
                 .WithOne(x => x.Room)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

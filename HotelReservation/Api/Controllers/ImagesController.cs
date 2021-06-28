@@ -50,7 +50,7 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Route("{fileId:guid}")]
-        public async Task<IActionResult> GetHotelImage(Guid fileId)
+        public async Task<FileContentResult> GetHotelImage(Guid fileId)
         {
             var imageData =  await _attachmentsService.GetImage(fileId);
             var file = new FileContentResult(imageData.FileContent.Content, imageData.FileExtension)
@@ -58,7 +58,7 @@ namespace HotelReservation.Api.Controllers
                 FileDownloadName = imageData.FileName
             };
             
-            return Ok(file);
+            return file;
         }
     }
 }

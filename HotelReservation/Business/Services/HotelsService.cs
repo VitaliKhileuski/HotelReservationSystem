@@ -23,15 +23,17 @@ namespace Business.Services
         private readonly Mapper _hotelMapper;
         private readonly Mapper _userMapper;
         private readonly ILocationRepository _locationRepository;
+        private readonly IFileContentRepository _fileContentRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly ILogger<HotelsService> _logger;
 
         public HotelsService(ILogger<HotelsService>  logger, IHotelRepository hotelRepository,IRoleRepository roleRepository,
-            IUserRepository userRepository,ILocationRepository locationRepository, MapConfiguration cfg)
+            IUserRepository userRepository,ILocationRepository locationRepository,IFileContentRepository fileContentRepository, MapConfiguration cfg)
         {
             _hotelRepository = hotelRepository;
             _userRepository = userRepository;
             _locationRepository = locationRepository;
+            _fileContentRepository = fileContentRepository;
             _locationMapper = new Mapper(cfg.LocationConfiguration);
             _hotelMapper = new Mapper(cfg.HotelConfiguration);
             _userMapper = new Mapper(cfg.UserConfiguration);
@@ -158,7 +160,7 @@ namespace Business.Services
                     await _hotelRepository.UpdateAsync(hotelEntity);
             }
         }
-        public async Task DeleteHotelById(Guid hotelId)
+        public async Task DeleteHotelById(Guid hotelId,string userId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -166,7 +168,23 @@ namespace Business.Services
                 _logger.LogError($"hotel with {hotelId} id not exists");
                 throw new NotFoundException($"hotel with {hotelId} id not exists");
             }
-            await _hotelRepository.DeleteAsync(hotelId);
+
+            var userEntity = await _userRepository.GetAsync(userId);
+            if (userEntity == null)
+            {
+                _logger.LogError($"user with {userId} id not exists");
+                throw new NotFoundException($"user with {userId} id not exists");
+            }
+            if (PermissionVerifier.CheckPermission(hotelEntity, userEntity))
+            {
+                var imageIds = hotelEntity.Attachments.Select(image => image.FileContent.Id).ToList();
+
+                foreach (var id in imageIds)
+                {
+                    await _fileContentRepository.DeleteAsync(id);
+                }
+                await _hotelRepository.DeleteAsync(hotelId);
+            }
         }
 
         public async Task<Tuple<IEnumerable<HotelModel>,int>> GetHotelsPage(Pagination hotelPagination)

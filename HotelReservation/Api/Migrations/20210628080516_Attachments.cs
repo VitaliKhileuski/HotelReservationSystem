@@ -185,9 +185,9 @@ namespace HotelReservation.Api.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FileName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FileExtension = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FileContentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    HotelEntityId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    RoomEntityId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    RoomId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    HotelId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    FileContentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -199,17 +199,16 @@ namespace HotelReservation.Api.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Attachments_Hotels_HotelEntityId",
-                        column: x => x.HotelEntityId,
+                        name: "FK_Attachments_Hotels_HotelId",
+                        column: x => x.HotelId,
                         principalTable: "Hotels",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Attachments_Rooms_RoomEntityId",
-                        column: x => x.RoomEntityId,
+                        name: "FK_Attachments_Rooms_RoomId",
+                        column: x => x.RoomId,
                         principalTable: "Rooms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -272,14 +271,14 @@ namespace HotelReservation.Api.Migrations
                 column: "FileContentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Attachments_HotelEntityId",
+                name: "IX_Attachments_HotelId",
                 table: "Attachments",
-                column: "HotelEntityId");
+                column: "HotelId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Attachments_RoomEntityId",
+                name: "IX_Attachments_RoomId",
                 table: "Attachments",
-                column: "RoomEntityId");
+                column: "RoomId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_HotelEntityUserEntity_OwnedHotelsId",

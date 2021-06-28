@@ -49,7 +49,7 @@ namespace HotelReservation.Api.Migrations
                     b.Property<string>("FileName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("HotelId")
+                    b.Property<Guid?>("HotelId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("RoomId")
@@ -57,8 +57,7 @@ namespace HotelReservation.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FileContentId")
-                        .IsUnique();
+                    b.HasIndex("FileContentId");
 
                     b.HasIndex("HotelId");
 
@@ -71,9 +70,6 @@ namespace HotelReservation.Api.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AttachmentId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("Content")
@@ -338,21 +334,20 @@ namespace HotelReservation.Api.Migrations
             modelBuilder.Entity("HotelReservation.Data.Entities.AttachmentEntity", b =>
                 {
                     b.HasOne("HotelReservation.Data.Entities.FileContentEntity", "FileContent")
-                        .WithOne("Attachment")
-                        .HasForeignKey("HotelReservation.Data.Entities.AttachmentEntity", "FileContentId")
+                        .WithMany()
+                        .HasForeignKey("FileContentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("HotelReservation.Data.Entities.HotelEntity", "Hotel")
                         .WithMany("Attachments")
                         .HasForeignKey("HotelId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("HotelReservation.Data.Entities.RoomEntity", "Room")
                         .WithMany("Attachments")
                         .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("FileContent");
@@ -452,11 +447,6 @@ namespace HotelReservation.Api.Migrations
                         .HasForeignKey("ServicesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("HotelReservation.Data.Entities.FileContentEntity", b =>
-                {
-                    b.Navigation("Attachment");
                 });
 
             modelBuilder.Entity("HotelReservation.Data.Entities.HotelEntity", b =>

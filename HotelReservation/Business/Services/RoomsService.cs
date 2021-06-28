@@ -19,15 +19,17 @@ namespace Business.Services
         private readonly IRoomRepository  _roomRepository;
         private readonly IHotelRepository _hotelRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IFileContentRepository _fileContentRepository;
         private readonly Mapper _roomMapper;
         private readonly ILogger<RoomsService> _logger;
 
         public RoomsService(ILogger<RoomsService> logger, IRoomRepository roomRepository, IHotelRepository hotelRepository,
-            IUserRepository userRepository,MapConfiguration cfg)
+            IUserRepository userRepository,IFileContentRepository fileContentRepository, MapConfiguration cfg)
         {
             _userRepository = userRepository;
             _roomRepository = roomRepository;
             _hotelRepository = hotelRepository;
+            _fileContentRepository = fileContentRepository;
             _roomMapper = new Mapper(cfg.RoomConfiguration);
             _logger = logger;
         }
@@ -136,6 +138,12 @@ namespace Business.Services
             var hotelEntity = roomEntity.Hotel;
             if (PermissionVerifier.CheckPermission(hotelEntity, userEntity))
             {
+                var imageIds = roomEntity.Attachments.Select(image => image.FileContent.Id).ToList();
+
+                foreach (var id in imageIds)
+                {
+                    await _fileContentRepository.DeleteAsync(id);
+                }
                 await _roomRepository.DeleteAsync(roomId);
             }
         }
