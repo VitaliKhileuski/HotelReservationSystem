@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Interfaces;
@@ -17,54 +18,59 @@ namespace HotelReservation.Api.Controllers
     [Route("api/[controller]")]
     public class ImagesController : Controller
     {
-        private readonly IImageService _imageService;
-        private readonly Mapper _imageMapper;
-
-        public ImagesController(IImageService imageService, CustomMapperConfiguration cfg)
+        private readonly IAttachmentsService _attachmentsService;
+        private readonly Mapper _attachmentMapper;
+        public ImagesController(IAttachmentsService attachmentsService, CustomMapperConfiguration cfg)
         {
-            _imageService = imageService;
-            _imageMapper = new Mapper(cfg.ImageConfiguration);
+            _attachmentsService = attachmentsService;
+            _attachmentMapper = new Mapper(cfg.AttachmentConfiguration);  //attach
         }
 
         [HttpPost]
         [Authorize(Policy = Policies.AllAdminsPermission)]
-        [Route("{hotelId:int}/setHotelImage")]
-        public async Task<IActionResult> EditHotelImage(int hotelId,[FromBody] ImageRequestModel image)
+        [Route("{hotelId}/setHotelImages")]
+        public async Task<IActionResult> EditHotelImage(Guid hotelId,[FromBody] List<FileRequestModel> files)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
-            var imageModel = _imageMapper.Map<ImageRequestModel, ImageModel>(image);
-            await _imageService.AddImageToHotel(imageModel, hotelId, userId);
+            var attachmentModels = _attachmentMapper.Map<List<AttachmentModel>>(files);
+            await _attachmentsService.SetImagesToHotel(attachmentModels, hotelId, userId);
             return Ok();
         }
 
         [HttpPost]
         [Authorize(Policy = Policies.AllAdminsPermission)]
-        [Route("{roomId:int}/setRoomImages")]
-        public async Task<IActionResult> SetRoomImages(int roomId, [FromBody] List<ImageRequestModel> images)
+        [Route("{roomId}/setRoomImages")]
+        public async Task<IActionResult> SetRoomImages(Guid roomId, [FromBody] List<FileRequestModel> files)
         {
-            var imageModels = _imageMapper.Map<List<ImageModel>>(images);
+            var attachmentModels = _attachmentMapper.Map<List<AttachmentModel>>(files);
             var userId = TokenData.GetIdFromClaims(User.Claims);
-            await _imageService.SetImagesToRoom(imageModels, roomId, userId);
+            await _attachmentsService.SetImagesToRoom(attachmentModels, roomId, userId);
             return Ok();
         }
 
         [HttpGet]
-        [Route("{hotelId:int}/getHotelImage")]
-        public async Task<IActionResult> GetHotelImage(int hotelId)
+        [Route("{fileId:guid}")]
+        public async Task<FileContentResult> GetHotelImage(Guid fileId)
         {
-            var imageData =  await _imageService.GetHotelImage(hotelId);
-            var imageResponse = _imageMapper.Map<ImageModel, ImageResponseModel>(imageData);
-            return Ok(imageResponse);
+            var imageData =  await _attachmentsService.GetImage(fileId);
+            var file = new FileContentResult(imageData.FileContent.Content, imageData.FileExtension)
+            {
+                FileDownloadName = imageData.FileName
+            };
+            
+            return file;
         }
-
         [HttpGet]
-        [Route("{roomId:int}/getRoomImages")]
-        public async Task<IActionResult> GetRoomImages(int roomId)
+        [Route("{fileId:guid}/imageInfo")]
+        public async Task<IActionResult> GetHotelImageInfo(Guid fileId)
         {
-            var imagesData = await _imageService.GetRoomImages(roomId);
+            var imageData = await _attachmentsService.GetImage(fileId);
+            var file = new FileContentResult(imageData.FileContent.Content, imageData.FileExtension)
+            {
+                FileDownloadName = imageData.FileName
+            };
 
-            var responseImages = _imageMapper.Map<ICollection<ImageResponseModel>>(imagesData);
-            return Ok(responseImages);
+            return Ok(file);
         }
     }
 }

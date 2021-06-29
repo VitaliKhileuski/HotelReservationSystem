@@ -7,11 +7,11 @@ namespace HotelReservation.Api.Helpers
 {
     public  class TokenData
     {
-        public static int GetIdFromClaims(IEnumerable<Claim> claims)
+        public static string GetIdFromClaims(IEnumerable<Claim> claims)
         {
-            var idClaim = int.Parse(claims.FirstOrDefault(x =>
-                    x.Type.ToString().Equals("id", StringComparison.InvariantCultureIgnoreCase))
-                ?.Value ?? string.Empty);
+            var idClaim = claims.FirstOrDefault(x =>
+                    x.Type.Equals("id", StringComparison.InvariantCultureIgnoreCase))
+                ?.Value ?? string.Empty;
             return idClaim;
         }
     }

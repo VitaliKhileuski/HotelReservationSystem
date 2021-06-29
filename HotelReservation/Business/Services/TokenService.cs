@@ -18,7 +18,7 @@ namespace Business.Services
             _options = options.Value;
         }
 
-        public string BuildToken(string email, string roleName,string firstname, int id)
+        public string BuildToken(string email, string roleName,string firstname,Guid id)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);

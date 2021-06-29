@@ -33,7 +33,9 @@ namespace HotelReservation.Data.Configurations
                 .WithOne(x => x.Room)
                 .OnDelete(DeleteBehavior.Restrict);
             builder
-                .HasMany(x => x.Images);
+                .HasMany(x => x.Attachments)
+                .WithOne(x => x.Room)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

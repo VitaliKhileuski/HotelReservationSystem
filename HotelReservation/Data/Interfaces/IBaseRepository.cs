@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using HotelReservation.Data.Entities;
 
@@ -11,7 +12,8 @@ namespace HotelReservation.Data.Interfaces
 
         IEnumerable<TEntity> GetAll();
 
-        Task<TEntity> GetAsync(int id);
+        Task<TEntity> GetAsync(Guid id);
+        Task<TEntity> GetAsync(string id);
 
         IEnumerable<TEntity> Find(int pageNumber, int pageSize);
 
@@ -19,6 +21,6 @@ namespace HotelReservation.Data.Interfaces
 
         Task<TEntity> UpdateAsync(TEntity newEntity);
 
-        Task<TEntity> DeleteAsync(int id);
+        Task<TEntity> DeleteAsync(Guid id);
     }
 }

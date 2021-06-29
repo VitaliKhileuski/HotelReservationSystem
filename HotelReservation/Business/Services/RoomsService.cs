@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -18,20 +19,22 @@ namespace Business.Services
         private readonly IRoomRepository  _roomRepository;
         private readonly IHotelRepository _hotelRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IFileContentRepository _fileContentRepository;
         private readonly Mapper _roomMapper;
         private readonly ILogger<RoomsService> _logger;
 
         public RoomsService(ILogger<RoomsService> logger, IRoomRepository roomRepository, IHotelRepository hotelRepository,
-            IUserRepository userRepository,MapConfiguration cfg)
+            IUserRepository userRepository,IFileContentRepository fileContentRepository, MapConfiguration cfg)
         {
             _userRepository = userRepository;
             _roomRepository = roomRepository;
             _hotelRepository = hotelRepository;
+            _fileContentRepository = fileContentRepository;
             _roomMapper = new Mapper(cfg.RoomConfiguration);
             _logger = logger;
         }
 
-        public async Task AddRoom(int hotelId,RoomModel room,int userId)
+        public async Task AddRoom(Guid hotelId,RoomModel room, string userId)
         {
             if (room == null)
             {
@@ -60,7 +63,7 @@ namespace Business.Services
             }
         }
 
-        public async Task<ICollection<RoomModel>> GetRoomsFromHotel(int hotelId)
+        public async Task<ICollection<RoomModel>> GetRoomsFromHotel(Guid hotelId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -78,7 +81,7 @@ namespace Business.Services
             return _roomMapper.Map<ICollection<RoomModel>>(hotelEntity.Rooms.ToList());
         }
 
-        public async Task UpdateRoom(int roomId, int userId,RoomModel room)
+        public async Task UpdateRoom(Guid roomId, string userId,RoomModel room)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
             var userEntity =await _userRepository.GetAsync(userId);
@@ -91,7 +94,7 @@ namespace Business.Services
                 await _roomRepository.UpdateAsync(roomEntity);
             }
         }
-        public async Task<PageInfo<RoomModel>> GetRoomsPage(int hotelId,Pagination hotelPagination)
+        public async Task<PageInfo<RoomModel>> GetRoomsPage(Guid hotelId,Pagination hotelPagination)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -117,7 +120,7 @@ namespace Business.Services
             return roomPageInfo;
         }
 
-        public async Task DeleteRoom(int roomId, int userId)
+        public async Task DeleteRoom(Guid roomId, string userId)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
             if (roomEntity == null)
@@ -135,6 +138,12 @@ namespace Business.Services
             var hotelEntity = roomEntity.Hotel;
             if (PermissionVerifier.CheckPermission(hotelEntity, userEntity))
             {
+                var imageIds = roomEntity.Attachments.Select(image => image.FileContent.Id).ToList();
+
+                foreach (var id in imageIds)
+                {
+                    await _fileContentRepository.DeleteAsync(id);
+                }
                 await _roomRepository.DeleteAsync(roomId);
             }
         }

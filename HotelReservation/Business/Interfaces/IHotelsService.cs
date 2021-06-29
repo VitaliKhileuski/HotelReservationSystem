@@ -8,14 +8,14 @@ namespace Business.Interfaces
     public interface IHotelsService
     {
         Task AddHotel(HotelModel hotel);
-        Task<HotelModel> GetById(int id);
-        Task UpdateHotelAdmin(int hotelId, int userId);
-        Task UpdateHotel(int hotelId, HotelModel hotel,int userId);
-        Task DeleteHotelById(int hotelId);
-        Tuple<List<HotelModel>,int> GetFilteredHotels(DateTime checkInDate, DateTime checkOutDate, string country, string city, Pagination hotelPagination);
+        Task<HotelModel> GetById(Guid id);
+        Task UpdateHotelAdmin(Guid hotelId, string userId);
+        Task UpdateHotel(Guid hotelId, HotelModel hotel,string userId);
+        Task DeleteHotelById(Guid hotelId,string userId);
+        Task<PageInfo<HotelModel>> GetFilteredHotels(DateTime checkInDate, DateTime checkOutDate, string country, string city, Pagination hotelPagination);
         Task<Tuple<IEnumerable<HotelModel>, int>> GetHotelsPage(Pagination hotelPagination);
-        Task<ICollection<UserModel>> GetHotelAdmins(int hotelId);
-        Task DeleteHotelAdmin(int hotelId, int userId);
-        Task<Tuple<IEnumerable<HotelModel>, int>> GetHotelAdminPages(Pagination hotelPagination, int hotelAdminId);
+        Task<ICollection<UserModel>> GetHotelAdmins(Guid hotelId);
+        Task DeleteHotelAdmin(Guid hotelId, string userId);
+        Task<Tuple<IEnumerable<HotelModel>, int>> GetHotelAdminPages(Pagination hotelPagination, Guid hotelAdminId);
     }
 }

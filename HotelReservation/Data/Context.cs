@@ -13,15 +13,16 @@ namespace HotelReservation.Data
 
         }
 
+        public DbSet<RoleEntity> Roles { get; set; }
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<HotelEntity> Hotels { get; set; }
         public DbSet<LocationEntity> Locations { get; set; }
         public DbSet<OrderEntity> Orders { get; set; }
-        public DbSet<RoleEntity> Roles { get; set; }
         public DbSet<RoomEntity> Rooms { get; set; }
         public DbSet<RefreshTokenEntity> RefreshTokens { get; set; }
         public DbSet<ServiceEntity> Services { get; set; }
-        public DbSet<ImageEntity> Images { get; set; }
+        public DbSet<FileContentEntity> Files { get; set; }
+        public DbSet<AttachmentEntity> Attachments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,7 +36,9 @@ namespace HotelReservation.Data
                 .ApplyConfiguration(new RoomEntityConfiguration())
                 .ApplyConfiguration(new RefreshTokenConfiguration())
                 .ApplyConfiguration(new ServiceEntityConfiguration())
-                .ApplyConfiguration(new RoleEntityConfiguration());
+                .ApplyConfiguration(new RoleEntityConfiguration())
+                .ApplyConfiguration(new AttachmentEntityConfiguration())
+                .ApplyConfiguration(new FileContentConfiguration());
         }
     }
 }
