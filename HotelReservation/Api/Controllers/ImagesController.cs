@@ -60,5 +60,17 @@ namespace HotelReservation.Api.Controllers
             
             return file;
         }
+        [HttpGet]
+        [Route("{fileId:guid}/imageInfo")]
+        public async Task<IActionResult> GetHotelImageInfo(Guid fileId)
+        {
+            var imageData = await _attachmentsService.GetImage(fileId);
+            var file = new FileContentResult(imageData.FileContent.Content, imageData.FileExtension)
+            {
+                FileDownloadName = imageData.FileName
+            };
+
+            return Ok(file);
+        }
     }
 }

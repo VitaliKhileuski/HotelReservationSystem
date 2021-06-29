@@ -222,7 +222,7 @@ namespace Business.Services
             return _userMapper.Map<ICollection<UserModel>>(hotelEntity.Admins);
         }
 
-    public Tuple<List<HotelModel>,int> GetFilteredHotels(DateTime checkInDate,DateTime checkOutDate,string country,string city, Pagination hotelPagination)
+        public async Task<PageInfo<HotelModel>> GetFilteredHotels(DateTime checkInDate,DateTime checkOutDate,string country,string city, Pagination hotelPagination)
         {
             int pages=0;
             var filteredHotels = new List<HotelModel>();
@@ -280,8 +280,14 @@ namespace Business.Services
                 .Skip((hotelPagination.PageNumber - 1) * hotelPagination.PageSize)
                 .Take(hotelPagination.PageSize)
                 .ToList();
-
-            return Tuple.Create(pagedData, pages);
+            var numberOfHotels = await _hotelRepository.GetCountAsync();
+            var hotelPageInfo = new PageInfo<HotelModel>
+            {
+                Items = pagedData,
+                NumberOfItems = numberOfHotels,
+                NumberOfPages = pages
+            };
+            return hotelPageInfo;
         }
 
         public async Task DeleteHotelAdmin(Guid hotelId, string userId)

@@ -185,7 +185,7 @@ namespace HotelReservation.Api.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FileName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FileExtension = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    RoomId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoomId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     HotelId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     FileContentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -202,8 +202,7 @@ namespace HotelReservation.Api.Migrations
                         name: "FK_Attachments_Hotels_HotelId",
                         column: x => x.HotelId,
                         principalTable: "Hotels",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Attachments_Rooms_RoomId",
                         column: x => x.RoomId,

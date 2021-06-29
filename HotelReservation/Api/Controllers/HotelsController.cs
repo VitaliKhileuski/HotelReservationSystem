@@ -31,7 +31,6 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = Policies.AllAdminsPermission)]
         [Route("{id}")]
         public async Task<HotelResponseModel> GetByiD(Guid id)
         {
@@ -65,11 +64,20 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetFilteredGHotels(DateTime checkInDate, DateTime checkOutDate, string country,
+        public async Task<IActionResult> GetFilteredGHotels(DateTime checkInDate, DateTime checkOutDate, string country,
             string city, [FromQuery] Pagination filter)
         {
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
-            return Ok(_hotelsService.GetFilteredHotels(checkInDate, checkOutDate, country, city, validFilter));
+            var pageInfo = await  _hotelsService.GetFilteredHotels(checkInDate, checkOutDate, country, city, validFilter);
+            var hotels = _hotelMapper.Map<List<HotelResponseModel>>(pageInfo.Items);
+            var responsePageInfo = new PageInfo<HotelResponseModel>
+            {
+                Items = hotels,
+                NumberOfItems = pageInfo.NumberOfItems,
+                NumberOfPages = pageInfo.NumberOfPages
+            };
+
+            return Ok(responsePageInfo);
         }
 
         [HttpGet]
