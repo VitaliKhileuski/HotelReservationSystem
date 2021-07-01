@@ -29,7 +29,7 @@ namespace HotelReservation.Data.Configurations
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
             builder
-                .HasMany(x => x.Order)
+                .HasMany(x => x.Orders)
                 .WithOne(x => x.Room)
                 .OnDelete(DeleteBehavior.Restrict);
             builder

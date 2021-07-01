@@ -242,7 +242,7 @@ namespace Business.Services
                 {
                     if (string.IsNullOrEmpty(city) || hotel.Location.City == city)
                     {
-                        if (hotel.Rooms == null)
+                        if (hotel.Rooms != null)
                         {
                             foreach (var room in hotel.Rooms)
                             {
@@ -271,22 +271,8 @@ namespace Business.Services
                     }
                 }
             }
-            pages = filteredHotels.Count / hotelPagination.PageSize;
-            if (filteredHotels.Count % hotelPagination.PageSize != 0)
-            {
-                pages++;
-            }
-            var pagedData = filteredHotels
-                .Skip((hotelPagination.PageNumber - 1) * hotelPagination.PageSize)
-                .Take(hotelPagination.PageSize)
-                .ToList();
-            var numberOfHotels = await _hotelRepository.GetCountAsync();
-            var hotelPageInfo = new PageInfo<HotelModel>
-            {
-                Items = pagedData,
-                NumberOfItems = numberOfHotels,
-                NumberOfPages = pages
-            };
+
+            var hotelPageInfo = PageInfoCreator<HotelModel>.GetPageInfo(filteredHotels, hotelPagination);
             return hotelPageInfo;
         }
 
