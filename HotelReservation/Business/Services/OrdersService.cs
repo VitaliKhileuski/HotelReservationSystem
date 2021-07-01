@@ -64,14 +64,14 @@ namespace Business.Services
                     }   
                 }
             }
-            orderEntity.Services = services;
+            // orderEntity.Services = services;
             var userEntity = await _userRepository.GetAsync(userId);
             
             orderEntity.Customer = userEntity;
             roomEntity.User = userEntity;
             orderEntity.DateOrdered = DateTime.Now;
             orderEntity.NumberOfDays = orderEntity.EndDate.Subtract(orderEntity.StartDate).Days;
-            orderEntity.FullPrice = GetFullPrice(orderEntity,roomEntity);
+            //orderEntity.FullPrice = GetFullPrice(orderEntity,roomEntity);
             orderEntity.Room = roomEntity;
             userEntity.Orders.Add(orderEntity);
             await _orderRepository.CreateAsync(orderEntity);
@@ -110,9 +110,9 @@ namespace Business.Services
             currentOrder.StartDate = orderEntity.StartDate;
             currentOrder.NumberOfDays = currentOrder.EndDate.Subtract(currentOrder.StartDate).Days;
             currentOrder.Services = orderEntity.Services;
-            currentOrder.FullPrice = GetFullPrice(currentOrder,roomEntity);
+           // currentOrder.FullPrice = GetFullPrice(currentOrder,roomEntity);
             await _orderRepository.UpdateAsync(currentOrder);
-            currentOrder.Services = services;
+           // currentOrder.Services = services;
             await  _orderRepository.UpdateAsync(currentOrder);
         }
 
@@ -127,9 +127,9 @@ namespace Business.Services
             await _orderRepository.DeleteAsync(orderId);
         }
 
-        private decimal GetFullPrice(OrderEntity order,RoomEntity room)
-        {
-            return order.EndDate.Subtract(order.StartDate).Days * room.PaymentPerDay + order.Services.Sum(service => service.Payment);
-        }
+        //private decimal GetFullPrice(OrderEntity order,RoomEntity room)
+        //{
+        //  //  return order.EndDate.Subtract(order.StartDate).Days * room.PaymentPerDay + order.Services.Sum(service => service.Payment);
+        //}
     }
 }

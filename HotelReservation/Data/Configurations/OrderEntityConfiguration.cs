@@ -31,7 +31,7 @@ namespace HotelReservation.Data.Configurations
                 .WithMany(x => x.Orders);
             builder
                 .HasMany(x => x.Services)
-                .WithMany(x => x.Orders);
+                .WithOne(x => x.Order);
         }
     }
 }
