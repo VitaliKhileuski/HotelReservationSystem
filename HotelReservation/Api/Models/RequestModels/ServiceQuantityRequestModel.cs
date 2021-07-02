@@ -7,5 +7,7 @@ namespace HotelReservation.Api.Models.RequestModels
 {
     public class ServiceQuantityRequestModel
     {
+        public Guid ServiceId { get; set; }
+        public int Quantity { get; set; }
     }
 }

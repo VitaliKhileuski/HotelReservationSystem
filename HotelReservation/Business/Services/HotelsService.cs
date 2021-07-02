@@ -76,7 +76,8 @@ namespace Business.Services
 
         public List<HotelModel> GetAll()
         {
-            var hotelModels = _hotelMapper.Map<List<HotelModel>>(_hotelRepository.GetAll().ToList());
+            var hotelEntities = _hotelRepository.GetAll().ToList();
+            var hotelModels = _hotelMapper.Map<List<HotelModel>>(hotelEntities);
 
             return hotelModels;
         }
@@ -246,7 +247,7 @@ namespace Business.Services
                         {
                             foreach (var room in hotel.Rooms)
                             {
-                                if (room.Orders != null)
+                                if (room.Orders != null && room.Orders.Count!=0)
                                 {
                                     if (room.Orders.Any(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate || checkOutDate > order.StartDate && checkOutDate < order.EndDate
                                                                    || order.StartDate > checkInDate && order.StartDate < checkOutDate || order.EndDate > checkInDate && order.EndDate < checkOutDate)))

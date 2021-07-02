@@ -4,12 +4,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Interfaces;
+using Business.Mappers;
 using Business.Models;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
 using Microsoft.AspNetCore.Authorization;
 using HotelReservation.Api.Helpers;
+using HotelReservation.Data.Entities;
+using HotelReservation.Data.Interfaces;
 
 namespace HotelReservation.Api.Controllers
 {
@@ -19,11 +22,14 @@ namespace HotelReservation.Api.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly Mapper _mapper;
+        private readonly IMapper _modelMapper;
 
-        public OrdersController(IOrderService orderService,CustomMapperConfiguration cfg)
+
+        public OrdersController(IOrderService orderService,CustomMapperConfiguration cfg,MapConfiguration modelCfg)
         {
             _orderService = orderService;
             _mapper = new Mapper(cfg.OrderConfiguration);
+            _modelMapper = new Mapper(modelCfg.ServiceConfiguration);
         }
 
         [HttpGet]
@@ -43,30 +49,34 @@ namespace HotelReservation.Api.Controllers
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
             var orderModel = _mapper.Map<OrderRequestModel, OrderModel>(order);
-            orderModel.Services = new List<ServiceModel>();
-            foreach(var id in order.ServicesId)
+            orderModel.Services = new List<ServiceQuantityModel>();
+            foreach (var serviceQuantity in order.ServiceQuantities)
             {
-                orderModel.Services.Add(new ServiceModel { Id = id });
+                orderModel.Services.Add(new ServiceQuantityModel
+                {
+                    Quantity = serviceQuantity.Quantity,
+                    Service = new ServiceModel()
+                    {
+                        Id =  serviceQuantity.ServiceId
+                    }
+                });
             }
+
             await _orderService.CreateOrder(roomId, userId, orderModel);
             return Ok("Ordered");
         }
 
-        [HttpPut]
-        [Authorize]
-        [Route("{orderId}/updateOrder")]
-        public async Task<IActionResult> UpdateOrder(Guid orderId, [FromBody] OrderRequestModel order)
-        {
-            var orderModel = _mapper.Map<OrderRequestModel, OrderModel>(order);
-            orderModel.Services = new List<ServiceModel>();
-            foreach (var id in order.ServicesId)
-            {
-                orderModel.Services.Add(new ServiceModel { Id = id });
-            }
+        //[HttpPut]
+        //[Authorize]
+        //[Route("{orderId}/updateOrder")]
+        //public async Task<IActionResult> UpdateOrder(Guid orderId, [FromBody] OrderRequestModel order)
+        //{
+        //    var orderModel = _mapper.Map<OrderRequestModel, OrderModel>(order);
+        //    orderModel.Services = new List<ServiceModel>();
 
-            await _orderService.UpdateOrder(orderId, orderModel);
-            return Ok("Updated successfully");
-        }
+        //    await _orderService.UpdateOrder(orderId, orderModel);
+        //    return Ok("Updated successfully");
+        //}
 
         [HttpDelete]
         [Authorize]

@@ -4,7 +4,11 @@ using System.Text;
 
 namespace Business.Models
 {
-    class ServiceQuantityModel
+    public class ServiceQuantityModel
     {
+        public Guid Id { get; set; }
+        public  ServiceModel Service { get; set; }
+        public int Quantity { get; set; }
+        public  OrderModel Order { get; set; }
     }
 }

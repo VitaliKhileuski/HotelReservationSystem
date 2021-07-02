@@ -13,6 +13,7 @@ namespace Business.Mappers
     public OrderConfiguration() : base(x =>
     {
         x.CreateMap<OrderEntity, OrderModel>().ReverseMap();
+        x.CreateMap<ServiceQuantityModel, ServiceQuantityEntity>().ReverseMap();
         x.CreateMap<UserEntity, UserModel>()
             .ForMember(x => x.Orders, opt => opt.Ignore());
         x.CreateMap<RoomEntity, RoomModel>();

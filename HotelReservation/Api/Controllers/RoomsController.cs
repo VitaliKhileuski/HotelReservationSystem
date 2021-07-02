@@ -51,6 +51,14 @@ namespace HotelReservation.Api.Controllers
             return Ok(responsePageInfo);
         }
 
+        [HttpGet]
+        [Route("{roomId}/isEmpty")]
+        public async Task<IActionResult> IsRoomEmpty(Guid roomId, DateTime checkInDate, DateTime checkOutDate)
+        {
+            var isEmpty = await _roomsService.IsRoomEmpty(roomId, checkInDate, checkOutDate);
+            return Ok(isEmpty);
+        }
+
         [HttpPost]
         [Authorize(Policy = Policies.AllAdminsPermission)]
         [Route("{hotelId}")]

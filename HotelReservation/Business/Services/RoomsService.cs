@@ -151,5 +151,29 @@ namespace Business.Services
                 await _roomRepository.DeleteAsync(roomId);
             }
         }
+
+        public async Task<bool> IsRoomEmpty(Guid roomId, DateTime checkInDate, DateTime checkOutDate)
+        {
+            var roomEntity = await _roomRepository.GetAsync(roomId);
+            if (roomEntity == null)
+            {
+                _logger.LogError($"room with {roomId} id not exists");
+                throw new NotFoundException($"room with {roomId} id not exists");
+            }
+            if (roomEntity.Orders != null && roomEntity.Orders.Count != 0)
+            {
+                if (roomEntity.Orders.Any(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate || checkOutDate > order.StartDate && checkOutDate < order.EndDate
+                    || order.StartDate > checkInDate && order.StartDate < checkOutDate || order.EndDate > checkInDate && order.EndDate < checkOutDate)))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

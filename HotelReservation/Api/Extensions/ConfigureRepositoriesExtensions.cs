@@ -1,4 +1,6 @@
-﻿using HotelReservation.Data;
+﻿using AutoMapper;
+using HotelReservation.Api.Mappers;
+using HotelReservation.Data;
 using HotelReservation.Data.Interfaces;
 using HotelReservation.Data.Repositories;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +21,7 @@ namespace HotelReservation.Api.Extensions
             services.AddScoped<IServiceRepository, ServiceRepository>();
             services.AddScoped<IAttachmentRepository, AttachmentRepository>();
             services.AddScoped<IFileContentRepository, FileContentRepository>();
+            services.AddScoped<OrderConfiguration>();
         }
     }
 }

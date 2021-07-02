@@ -18,15 +18,17 @@ namespace Business.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IUserRepository _userRepository;
         private readonly IRoomRepository _roomRepository;
+        private readonly IServiceRepository _serviceRepository;
         private readonly Mapper _mapper;
         private readonly ILogger<OrdersService> _logger;
         public OrdersService(ILogger<OrdersService> logger, IOrderRepository orderRepository, IUserRepository userRepository,
-            IRoomRepository roomRepository, MapConfiguration cfg)
+            IRoomRepository roomRepository,IServiceRepository serviceRepository, MapConfiguration cfg)
         {
             _orderRepository = orderRepository;
             _userRepository = userRepository;
             _roomRepository = roomRepository;
             _mapper = new Mapper(cfg.OrderConfiguration);
+            _serviceRepository = serviceRepository;
             _logger = logger;
         }
 
@@ -53,28 +55,39 @@ namespace Business.Services
                 throw new NotFoundException($"room with {roomId} id not exists");
             }
             var orderEntity = _mapper.Map<OrderModel, OrderEntity>(order);
-            List<ServiceEntity> services = new List<ServiceEntity>();
-            foreach (var service in roomEntity.Hotel.Services)
+            var serviceQuantities = new List<ServiceQuantityEntity>();
+            foreach (var serviceQuantity in order.Services)
             {
-                foreach (var orderService in orderEntity.Services)
+                foreach(var service in roomEntity.Hotel.Services)
                 {
-                    if (service.Id == orderService.Id)
+                    if (service.Id == serviceQuantity.Service.Id)
                     {
-                        services.Add(service);
-                    }   
+                        serviceQuantities.Add(new ServiceQuantityEntity
+                        {
+                            Service =  service,
+                            Quantity = serviceQuantity.Quantity
+                        });
+                    }
                 }
             }
-            // orderEntity.Services = services;
+
+            orderEntity.Services = serviceQuantities;
             var userEntity = await _userRepository.GetAsync(userId);
-            
+            if (userEntity == null)
+            {
+                _logger.LogError($"user with {userId} id not exists");
+                throw new NotFoundException($"user with {userId} id not exists");
+            }
+
             orderEntity.Customer = userEntity;
             roomEntity.User = userEntity;
             orderEntity.DateOrdered = DateTime.Now;
             orderEntity.NumberOfDays = orderEntity.EndDate.Subtract(orderEntity.StartDate).Days;
-            //orderEntity.FullPrice = GetFullPrice(orderEntity,roomEntity);
+            orderEntity.FullPrice = GetFullPrice(orderEntity,roomEntity);
             orderEntity.Room = roomEntity;
             userEntity.Orders.Add(orderEntity);
-            await _orderRepository.CreateAsync(orderEntity);
+            roomEntity.Orders.Add(orderEntity);
+            await _userRepository.UpdateAsync(userEntity);
             await _roomRepository.UpdateAsync(roomEntity);
         }
 
@@ -110,10 +123,8 @@ namespace Business.Services
             currentOrder.StartDate = orderEntity.StartDate;
             currentOrder.NumberOfDays = currentOrder.EndDate.Subtract(currentOrder.StartDate).Days;
             currentOrder.Services = orderEntity.Services;
-           // currentOrder.FullPrice = GetFullPrice(currentOrder,roomEntity);
+            currentOrder.FullPrice = GetFullPrice(currentOrder,roomEntity);
             await _orderRepository.UpdateAsync(currentOrder);
-           // currentOrder.Services = services;
-            await  _orderRepository.UpdateAsync(currentOrder);
         }
 
         public async Task DeleteOrder(Guid orderId)
@@ -127,9 +138,9 @@ namespace Business.Services
             await _orderRepository.DeleteAsync(orderId);
         }
 
-        //private decimal GetFullPrice(OrderEntity order,RoomEntity room)
-        //{
-        //  //  return order.EndDate.Subtract(order.StartDate).Days * room.PaymentPerDay + order.Services.Sum(service => service.Payment);
-        //}
+        private decimal GetFullPrice(OrderEntity order, RoomEntity room)
+        {
+              return order.EndDate.Subtract(order.StartDate).Days * room.PaymentPerDay + order.Services.Sum(serviceQuantity => serviceQuantity.Service.Payment*serviceQuantity.Quantity);
+        }
     }
 }
