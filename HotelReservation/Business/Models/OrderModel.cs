@@ -7,7 +7,8 @@ namespace Business.Models
    {
         public Guid Id { get; set; }
         public ICollection<ServiceQuantityModel> Services;
-        public  UserModel Customer { get; set; }
+        public string UserEmail { get; set; }
+        public UserModel Customer { get; set; }
         public RoomModel Room { get; set; }
         public DateTime DateOrdered { get; set; }
         public DateTime StartDate { get; set; }

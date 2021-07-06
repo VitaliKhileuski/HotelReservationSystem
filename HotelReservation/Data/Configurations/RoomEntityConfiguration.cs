@@ -24,11 +24,6 @@ namespace HotelReservation.Data.Configurations
                 .HasForeignKey(x => x.HotelId)
                 .OnDelete(DeleteBehavior.Cascade);
             builder
-                .HasOne(x => x.User)
-                .WithMany(x => x.Rooms)
-                .HasForeignKey(x => x.UserId)
-                .OnDelete(DeleteBehavior.NoAction);
-            builder
                 .HasMany(x => x.Orders)
                 .WithOne(x => x.Room)
                 .OnDelete(DeleteBehavior.Restrict);

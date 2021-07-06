@@ -217,14 +217,9 @@ namespace HotelReservation.Api.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("HotelId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Rooms");
                 });
@@ -289,9 +284,10 @@ namespace HotelReservation.Api.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(100)")
+                        .HasDefaultValue("user");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -299,7 +295,6 @@ namespace HotelReservation.Api.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
@@ -310,9 +305,10 @@ namespace HotelReservation.Api.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Surname")
-                        .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(200)")
+                        .HasDefaultValue("user");
 
                     b.HasKey("Id");
 
@@ -403,14 +399,7 @@ namespace HotelReservation.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HotelReservation.Data.Entities.UserEntity", "User")
-                        .WithMany("Rooms")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.Navigation("Hotel");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("HotelReservation.Data.Entities.ServiceEntity", b =>
@@ -497,8 +486,6 @@ namespace HotelReservation.Api.Migrations
             modelBuilder.Entity("HotelReservation.Data.Entities.UserEntity", b =>
                 {
                     b.Navigation("Orders");
-
-                    b.Navigation("Rooms");
                 });
 #pragma warning restore 612, 618
         }

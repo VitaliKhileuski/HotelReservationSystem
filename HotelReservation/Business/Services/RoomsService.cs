@@ -105,7 +105,7 @@ namespace Business.Services
                 {
                     if (room.Orders != null && room.Orders.Count!=0)
                     {
-                        if (room.Orders.Any(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate || checkOutDate > order.StartDate && checkOutDate < order.EndDate
+                        if (room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate || checkOutDate > order.StartDate && checkOutDate < order.EndDate
                             || order.StartDate > checkInDate && order.StartDate < checkOutDate || order.EndDate > checkInDate && order.EndDate < checkOutDate)))
                         {
                             filteredRooms.Add(room);
@@ -162,7 +162,7 @@ namespace Business.Services
             }
             if (roomEntity.Orders != null && roomEntity.Orders.Count != 0)
             {
-                if (roomEntity.Orders.Any(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate || checkOutDate > order.StartDate && checkOutDate < order.EndDate
+                if (roomEntity.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate || checkOutDate > order.StartDate && checkOutDate < order.EndDate
                     || order.StartDate > checkInDate && order.StartDate < checkOutDate || order.EndDate > checkInDate && order.EndDate < checkOutDate)))
                 {
                     return true;

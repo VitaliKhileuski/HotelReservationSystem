@@ -43,11 +43,9 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         [Route("{roomId}/order")]
         public async Task<IActionResult> CreateOrder(Guid roomId, [FromBody] OrderRequestModel order)
         {
-            var userId = TokenData.GetIdFromClaims(User.Claims);
             var orderModel = _mapper.Map<OrderRequestModel, OrderModel>(order);
             orderModel.Services = new List<ServiceQuantityModel>();
             foreach (var serviceQuantity in order.ServiceQuantities)
@@ -55,14 +53,14 @@ namespace HotelReservation.Api.Controllers
                 orderModel.Services.Add(new ServiceQuantityModel
                 {
                     Quantity = serviceQuantity.Quantity,
-                    Service = new ServiceModel()
+                    Service = new ServiceModel
                     {
                         Id =  serviceQuantity.ServiceId
                     }
                 });
             }
 
-            await _orderService.CreateOrder(roomId, userId, orderModel);
+            await _orderService.CreateOrder(roomId, orderModel);
             return Ok("Ordered");
         }
 

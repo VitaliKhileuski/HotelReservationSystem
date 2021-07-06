@@ -225,7 +225,6 @@ namespace Business.Services
 
         public async Task<PageInfo<HotelModel>> GetFilteredHotels(DateTime checkInDate,DateTime checkOutDate,string country,string city, Pagination hotelPagination)
         {
-            int pages=0;
             var filteredHotels = new List<HotelModel>();
             bool flag = false;
             var hotels = GetAll();
@@ -249,8 +248,10 @@ namespace Business.Services
                             {
                                 if (room.Orders != null && room.Orders.Count!=0)
                                 {
-                                    if (room.Orders.Any(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate || checkOutDate > order.StartDate && checkOutDate < order.EndDate
-                                                                   || order.StartDate > checkInDate && order.StartDate < checkOutDate || order.EndDate > checkInDate && order.EndDate < checkOutDate)))
+                                    if (room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
+                                                                   checkOutDate > order.StartDate && checkOutDate < order.EndDate ||
+                                                                   order.StartDate > checkInDate && order.StartDate < checkOutDate ||
+                                                                   order.EndDate > checkInDate && order.EndDate < checkOutDate)))
                                     {
                                         filteredHotels.Add(hotel);
                                         flag = true;

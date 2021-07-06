@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HotelReservation.Api.Migrations
 {
-    public partial class Attachments : Migration
+    public partial class DeleteConnectionBetweenRoomAndUser : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -78,6 +78,27 @@ namespace HotelReservation.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Rooms",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    HotelId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoomNumber = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    BedsNumber = table.Column<int>(type: "int", nullable: false),
+                    PaymentPerDay = table.Column<decimal>(type: "decimal(18,4)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Rooms", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Rooms_Hotels_HotelId",
+                        column: x => x.HotelId,
+                        principalTable: "Hotels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Services",
                 columns: table => new
                 {
@@ -105,9 +126,9 @@ namespace HotelReservation.Api.Migrations
                     RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RefreshTokenId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Surname = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true, defaultValue: "user"),
+                    Surname = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true, defaultValue: "user"),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
                     Password = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
@@ -125,57 +146,6 @@ namespace HotelReservation.Api.Migrations
                         principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "HotelEntityUserEntity",
-                columns: table => new
-                {
-                    AdminsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OwnedHotelsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_HotelEntityUserEntity", x => new { x.AdminsId, x.OwnedHotelsId });
-                    table.ForeignKey(
-                        name: "FK_HotelEntityUserEntity_Hotels_OwnedHotelsId",
-                        column: x => x.OwnedHotelsId,
-                        principalTable: "Hotels",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_HotelEntityUserEntity_Users_AdminsId",
-                        column: x => x.AdminsId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Rooms",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    HotelId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RoomNumber = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    BedsNumber = table.Column<int>(type: "int", nullable: false),
-                    PaymentPerDay = table.Column<decimal>(type: "decimal(18,4)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Rooms", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Rooms_Hotels_HotelId",
-                        column: x => x.HotelId,
-                        principalTable: "Hotels",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Rooms_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -211,6 +181,30 @@ namespace HotelReservation.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "HotelEntityUserEntity",
+                columns: table => new
+                {
+                    AdminsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OwnedHotelsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HotelEntityUserEntity", x => new { x.AdminsId, x.OwnedHotelsId });
+                    table.ForeignKey(
+                        name: "FK_HotelEntityUserEntity_Hotels_OwnedHotelsId",
+                        column: x => x.OwnedHotelsId,
+                        principalTable: "Hotels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_HotelEntityUserEntity_Users_AdminsId",
+                        column: x => x.AdminsId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
                 {
@@ -241,24 +235,26 @@ namespace HotelReservation.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OrderEntityServiceEntity",
+                name: "ServiceQuantities",
                 columns: table => new
                 {
-                    OrdersId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ServicesId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ServiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrderEntityServiceEntity", x => new { x.OrdersId, x.ServicesId });
+                    table.PrimaryKey("PK_ServiceQuantities", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_OrderEntityServiceEntity_Orders_OrdersId",
-                        column: x => x.OrdersId,
+                        name: "FK_ServiceQuantities_Orders_OrderId",
+                        column: x => x.OrderId,
                         principalTable: "Orders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_OrderEntityServiceEntity_Services_ServicesId",
-                        column: x => x.ServicesId,
+                        name: "FK_ServiceQuantities_Services_ServiceId",
+                        column: x => x.ServiceId,
                         principalTable: "Services",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -291,11 +287,6 @@ namespace HotelReservation.Api.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderEntityServiceEntity_ServicesId",
-                table: "OrderEntityServiceEntity",
-                column: "ServicesId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Orders_RoomId",
                 table: "Orders",
                 column: "RoomId");
@@ -311,9 +302,14 @@ namespace HotelReservation.Api.Migrations
                 column: "HotelId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rooms_UserId",
-                table: "Rooms",
-                column: "UserId");
+                name: "IX_ServiceQuantities_OrderId",
+                table: "ServiceQuantities",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ServiceQuantities_ServiceId",
+                table: "ServiceQuantities",
+                column: "ServiceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Services_HotelId",
@@ -345,7 +341,7 @@ namespace HotelReservation.Api.Migrations
                 name: "Locations");
 
             migrationBuilder.DropTable(
-                name: "OrderEntityServiceEntity");
+                name: "ServiceQuantities");
 
             migrationBuilder.DropTable(
                 name: "Files");
@@ -360,10 +356,10 @@ namespace HotelReservation.Api.Migrations
                 name: "Rooms");
 
             migrationBuilder.DropTable(
-                name: "Hotels");
+                name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Hotels");
 
             migrationBuilder.DropTable(
                 name: "RefreshTokens");

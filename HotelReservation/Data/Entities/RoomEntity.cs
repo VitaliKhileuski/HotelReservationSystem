@@ -5,8 +5,6 @@ namespace HotelReservation.Data.Entities
 {
    public  class RoomEntity : Entity
     {
-        public Guid? UserId { get; set; }
-        public virtual UserEntity User { get; set; }
         public virtual ICollection<OrderEntity> Orders { get; set; }
         public virtual List<AttachmentEntity> Attachments { get; set; }
         public Guid HotelId { get; set; }

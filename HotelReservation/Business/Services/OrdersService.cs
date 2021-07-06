@@ -46,7 +46,7 @@ namespace Business.Services
             return orderModel;
         }
 
-        public async Task CreateOrder(Guid roomId, string userId, OrderModel order)
+        public async Task CreateOrder(Guid roomId, OrderModel order)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
             if (roomEntity == null)
@@ -72,15 +72,14 @@ namespace Business.Services
             }
 
             orderEntity.Services = serviceQuantities;
-            var userEntity = await _userRepository.GetAsync(userId);
+            var userEntity = await _userRepository.GetAsyncByEmail(order.UserEmail);
             if (userEntity == null)
             {
-                _logger.LogError($"user with {userId} id not exists");
-                throw new NotFoundException($"user with {userId} id not exists");
+                _logger.LogError($"user with {order.UserEmail} email not exists");
+                throw new NotFoundException($"user with {order.UserEmail} email not exists");
             }
 
             orderEntity.Customer = userEntity;
-            roomEntity.User = userEntity;
             orderEntity.DateOrdered = DateTime.Now;
             orderEntity.NumberOfDays = orderEntity.EndDate.Subtract(orderEntity.StartDate).Days;
             orderEntity.FullPrice = GetFullPrice(orderEntity,roomEntity);
