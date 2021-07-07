@@ -21,6 +21,7 @@ namespace HotelReservation.Api.Mappers
         {
             x.CreateMap<OrderRequestModel, OrderModel>();
             x.CreateMap<ServiceQuantityRequestModel, ServiceQuantityModel>();
+            x.CreateMap<ServiceQuantityModel, ServiceQuantityResponseModel>();
             x.CreateMap<ServiceRequestModel, ServiceModel>()
                 .ForMember(x => x.Hotel, opt => opt.Ignore());
             x.CreateMap<ServiceModel, ServiceResponseModel>();

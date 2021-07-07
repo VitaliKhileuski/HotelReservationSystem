@@ -18,13 +18,13 @@ namespace Business.Helpers
                 .Take(paginationInfo.PageSize)
                 .ToList();
             var numberOfItems = items.Count;
-            var hotelPageInfo = new PageInfo<T>
+            var pageInfo = new PageInfo<T>
             {
                 Items = pagedData,
                 NumberOfItems = numberOfItems,
                 NumberOfPages = pages
             };
-            return hotelPageInfo;
+            return pageInfo;
         }
     }
 }

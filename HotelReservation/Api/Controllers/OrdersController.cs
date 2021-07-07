@@ -42,6 +42,24 @@ namespace HotelReservation.Api.Controllers
             return Ok(result);
         }
 
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetPage([FromQuery] Pagination filter)
+        {
+            var userId = TokenData.GetIdFromClaims(User.Claims);
+            var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
+            var pageInfo = await _orderService.GetOrdersPage(userId, validFilter);
+            var orders = _mapper.Map<List<OrderResponseModel>>(pageInfo.Items);
+            var responsePageInfo = new PageInfo<OrderResponseModel>
+            {
+                Items = orders,
+                NumberOfItems = pageInfo.NumberOfItems,
+                NumberOfPages = pageInfo.NumberOfPages
+            };
+
+            return Ok(responsePageInfo);
+        }
+
         [HttpPost]
         [Route("{roomId}/order")]
         public async Task<IActionResult> CreateOrder(Guid roomId, [FromBody] OrderRequestModel order)

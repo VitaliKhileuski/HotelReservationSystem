@@ -262,6 +262,7 @@ namespace Business.Services
                                 else
                                 {
                                     filteredHotels.Add(hotel);
+                                    break;
                                 }
                             }
                         

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
@@ -105,8 +106,7 @@ namespace Business.Services
                 {
                     if (room.Orders != null && room.Orders.Count!=0)
                     {
-                        if (room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate || checkOutDate > order.StartDate && checkOutDate < order.EndDate
-                            || order.StartDate > checkInDate && order.StartDate < checkOutDate || order.EndDate > checkInDate && order.EndDate < checkOutDate)))
+                        if (IsAvailableToBook(room, checkInDate, checkOutDate))
                         {
                             filteredRooms.Add(room);
                         }
@@ -162,8 +162,7 @@ namespace Business.Services
             }
             if (roomEntity.Orders != null && roomEntity.Orders.Count != 0)
             {
-                if (roomEntity.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate || checkOutDate > order.StartDate && checkOutDate < order.EndDate
-                    || order.StartDate > checkInDate && order.StartDate < checkOutDate || order.EndDate > checkInDate && order.EndDate < checkOutDate)))
+                if (IsAvailableToBook(roomEntity,checkInDate,checkOutDate))
                 {
                     return true;
                 }
@@ -174,6 +173,14 @@ namespace Business.Services
             }
 
             return false;
+        }
+
+        private bool IsAvailableToBook(RoomEntity room, DateTime checkInDate, DateTime checkOutDate)
+        {
+            return room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
+                                              checkOutDate > order.StartDate && checkOutDate < order.EndDate
+                                              || order.StartDate > checkInDate && order.StartDate < checkOutDate ||
+                                              order.EndDate > checkInDate && order.EndDate < checkOutDate));
         }
     }
 }
