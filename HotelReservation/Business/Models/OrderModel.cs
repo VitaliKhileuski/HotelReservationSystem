@@ -6,8 +6,9 @@ namespace Business.Models
    public class OrderModel
    {
         public Guid Id { get; set; }
-       public ICollection<ServiceModel> Services;
-        public  UserModel Customer { get; set; }
+        public ICollection<ServiceQuantityModel> Services;
+        public string UserEmail { get; set; }
+        public UserModel Customer { get; set; }
         public RoomModel Room { get; set; }
         public DateTime DateOrdered { get; set; }
         public DateTime StartDate { get; set; }

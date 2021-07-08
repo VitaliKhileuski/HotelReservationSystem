@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
@@ -63,23 +64,18 @@ namespace Business.Services
             }
         }
 
-        public async Task<ICollection<RoomModel>> GetRoomsFromHotel(Guid hotelId)
-        {
-            var hotelEntity = await _hotelRepository.GetAsync(hotelId);
-            if (hotelEntity == null)
-            {
-                _logger.LogError($"hotel with {hotelId} id not exists");
-                throw new NotFoundException($"hotel with {hotelId} id not exists");
-            }
+        //public async Task<ICollection<RoomModel>> GetRoomsFromHotel(Guid hotelId,DateTime checkInDate,DateTime checkOutDate)
+        //{
+        //    var hotelEntity = await _hotelRepository.GetAsync(hotelId);
+        //    if (hotelEntity == null)
+        //    {
+        //        _logger.LogError($"hotel with {hotelId} id not exists");
+        //        throw new NotFoundException($"hotel with {hotelId} id not exists");
+        //    }
 
-            if (hotelEntity.Rooms.Capacity == 0)
-            {
-                _logger.LogError("no rooms in this hotel");
-                throw new NotFoundException("no rooms in this hotel");
-            }
-
-            return _roomMapper.Map<ICollection<RoomModel>>(hotelEntity.Rooms.ToList());
-        }
+           
+        //    return _roomMapper.Map<ICollection<RoomModel>>(filteredRooms.ToList());
+        //}
 
         public async Task UpdateRoom(Guid roomId, string userId,RoomModel room)
         {
@@ -94,7 +90,7 @@ namespace Business.Services
                 await _roomRepository.UpdateAsync(roomEntity);
             }
         }
-        public async Task<PageInfo<RoomModel>> GetRoomsPage(Guid hotelId,Pagination hotelPagination)
+        public async Task<PageInfo<RoomModel>> GetRoomsPage(Guid hotelId,DateTime checkInDate,DateTime checkOutDate, Pagination roomPagination)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -102,21 +98,29 @@ namespace Business.Services
                 _logger.LogError($"hotel with {hotelId} id not exists");
                 throw new NotFoundException($"hotel with {hotelId} id not exists");
             }
-            var rooms = _roomMapper.Map<IEnumerable<RoomModel>>(_roomRepository.GetRoomsPageFromHotel(hotelPagination.PageNumber,
-                hotelPagination.PageSize,hotelId));
-            var numberOfRooms = await _roomRepository.GetRoomsCount(hotelId);
 
-            int  numberOfPages = numberOfRooms / hotelPagination.PageSize;
-            if (numberOfRooms % hotelPagination.PageSize != 0)
+            var filteredRooms = new List<RoomEntity>();
+            if (hotelEntity.Rooms != null)
             {
-                numberOfPages++;
+                foreach (var room in hotelEntity.Rooms)
+                {
+                    if (room.Orders != null && room.Orders.Count!=0)
+                    {
+                        if (IsAvailableToBook(room, checkInDate, checkOutDate))
+                        {
+                            filteredRooms.Add(room);
+                        }
+                    }
+                    else
+                    {
+                        filteredRooms.Add(room);
+                    }
+                }
+
             }
-            var roomPageInfo = new PageInfo<RoomModel>
-            {
-                Items = rooms, NumberOfItems = numberOfRooms, NumberOfPages = numberOfPages
-            };
 
-
+            var filteredRoomModels = _roomMapper.Map<ICollection<RoomModel>>(filteredRooms);
+           var roomPageInfo = PageInfoCreator<RoomModel>.GetPageInfo(filteredRoomModels, roomPagination);
             return roomPageInfo;
         }
 
@@ -146,6 +150,37 @@ namespace Business.Services
                 }
                 await _roomRepository.DeleteAsync(roomId);
             }
+        }
+
+        public async Task<bool> IsRoomEmpty(Guid roomId, DateTime checkInDate, DateTime checkOutDate)
+        {
+            var roomEntity = await _roomRepository.GetAsync(roomId);
+            if (roomEntity == null)
+            {
+                _logger.LogError($"room with {roomId} id not exists");
+                throw new NotFoundException($"room with {roomId} id not exists");
+            }
+            if (roomEntity.Orders != null && roomEntity.Orders.Count != 0)
+            {
+                if (IsAvailableToBook(roomEntity,checkInDate,checkOutDate))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool IsAvailableToBook(RoomEntity room, DateTime checkInDate, DateTime checkOutDate)
+        {
+            return room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
+                                              checkOutDate > order.StartDate && checkOutDate < order.EndDate
+                                              || order.StartDate > checkInDate && order.StartDate < checkOutDate ||
+                                              order.EndDate > checkInDate && order.EndDate < checkOutDate));
         }
     }
 }

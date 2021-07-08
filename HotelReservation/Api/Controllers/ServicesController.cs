@@ -28,7 +28,6 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public IActionResult GetAllServices()
         {
             var orders = _mapper.Map<ICollection<ServiceResponseModel>>(_facilitiesService.GetAllServices());

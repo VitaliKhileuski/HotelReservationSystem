@@ -15,16 +15,15 @@ namespace HotelReservation.Data.Configurations
                 .HasMaxLength(100);
             builder
                 .Property(x => x.Name)
-                .IsRequired()
+                .HasDefaultValue("user")
                 .HasMaxLength(100);
             builder.Property(x => x.Surname)
-                .IsRequired()
+                .HasDefaultValue("user")
                 .HasMaxLength(200);
             builder.Property(x => x.Password)
                 .IsRequired()
                 .HasMaxLength(100);
             builder.Property(x => x.PhoneNumber)
-                .IsRequired()
                 .HasMaxLength(15);
             builder.
                 HasOne(x => x.Role)

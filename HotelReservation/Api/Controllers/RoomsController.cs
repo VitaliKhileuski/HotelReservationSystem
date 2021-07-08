@@ -27,21 +27,21 @@ namespace HotelReservation.Api.Controllers
             _mapper = new Mapper(cfg.RoomConfiguration);
         }
 
-        [HttpGet]
-        [Route("{hotelId}")]
-        public async Task<IActionResult> GetRooms(Guid hotelId)
-        {
-            var roomModels = await _roomsService.GetRoomsFromHotel(hotelId);
-            var roomResponseModels = _mapper.Map<ICollection<RoomResponseModel>>(roomModels);
-            return Ok(roomResponseModels);
-        }
+        // [HttpGet]
+        // [Route("{hotelId}")]
+        // public async Task<IActionResult> GetRooms(Guid hotelId, DateTime checkInDate, DateTime checkOutDate)
+        // {
+        //     var roomModels = await _roomsService.GetRoomsFromHotel(hotelId,checkInDate,checkOutDate);
+        //     var roomResponseModels = _mapper.Map<ICollection<RoomResponseModel>>(roomModels);
+        //     return Ok(roomResponseModels);
+        // }
 
         [HttpGet]
-        [Route("{hotelId}/pages")]
-        public async Task<IActionResult> GetPage(Guid hotelId,[FromQuery] Pagination filter)
+        [Route("{hotelId}")]
+        public async Task<IActionResult> GetPage(Guid hotelId,DateTime checkInDate,DateTime checkOutDate, [FromQuery] Pagination filter)
         {
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
-            var pageInfo = await _roomsService.GetRoomsPage(hotelId,validFilter);
+            var pageInfo = await _roomsService.GetRoomsPage(hotelId,checkInDate,checkOutDate,validFilter);
             var rooms = _mapper.Map<List<RoomResponseModel>>(pageInfo.Items);
             var responsePageInfo = new PageInfo<RoomResponseModel>
             {
@@ -49,6 +49,14 @@ namespace HotelReservation.Api.Controllers
             };
 
             return Ok(responsePageInfo);
+        }
+
+        [HttpGet]
+        [Route("{roomId}/isEmpty")]
+        public async Task<IActionResult> IsRoomEmpty(Guid roomId, DateTime checkInDate, DateTime checkOutDate)
+        {
+            var isEmpty = await _roomsService.IsRoomEmpty(roomId, checkInDate, checkOutDate);
+            return Ok(isEmpty);
         }
 
         [HttpPost]

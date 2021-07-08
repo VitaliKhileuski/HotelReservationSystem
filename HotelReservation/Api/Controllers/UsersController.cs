@@ -43,7 +43,6 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = Policies.AdminPermission)]
         public async Task<IActionResult> AddUser([FromBody] UserRequestModel user)
         {
             var userModel = _mapper.Map<UserRequestModel,UserModel>(user);

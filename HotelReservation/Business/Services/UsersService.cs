@@ -7,6 +7,8 @@ using Business.Exceptions;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
+using Castle.Core.Internal;
+using HotelReservation.Data.Constants;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -17,16 +19,18 @@ namespace Business.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IHotelRepository _hotelRepository;
+        private readonly IRoleRepository _roleRepository;
         private readonly Mapper _mapper;
         private readonly ILogger<UsersService> _logger;
         private readonly IPasswordHasher _hash;
         private readonly ITokenService _tokenService;
         public UsersService(ILogger<UsersService> logger, IUserRepository userRepository,
-            IHotelRepository hotelRepository, MapConfiguration cfg, IPasswordHasher hash, ITokenService tokenService)
+            IHotelRepository hotelRepository,IRoleRepository roleRepository, MapConfiguration cfg, IPasswordHasher hash, ITokenService tokenService)
         {
             _mapper = new Mapper(cfg.UserConfiguration);
             _userRepository = userRepository;
             _hotelRepository = hotelRepository;
+            _roleRepository = roleRepository;
             _logger = logger;
             _hash = hash;
             _tokenService = tokenService;
@@ -72,9 +76,10 @@ namespace Business.Services
             }
 
             var userEntity = _mapper.Map<UserModel, UserEntity>(user);
-            userEntity.Password = _hash.GenerateHash(userEntity.Password, SHA256.Create());
-            userEntity.RoleId = user.RoleId;
-
+            var password = user.Password.IsNullOrEmpty() ? "testtest1" : user.Password;
+            userEntity.Password = _hash.GenerateHash(password, SHA256.Create());
+            var role = await _roleRepository.GetAsyncByName(Roles.User);
+            userEntity.Role = role;
             var refreshToken = new RefreshTokenEntity
             {
                 Token = _tokenService.GenerateRefreshToken(),

@@ -76,7 +76,8 @@ namespace Business.Services
 
         public List<HotelModel> GetAll()
         {
-            var hotelModels = _hotelMapper.Map<List<HotelModel>>(_hotelRepository.GetAll().ToList());
+            var hotelEntities = _hotelRepository.GetAll().ToList();
+            var hotelModels = _hotelMapper.Map<List<HotelModel>>(hotelEntities);
 
             return hotelModels;
         }
@@ -224,7 +225,6 @@ namespace Business.Services
 
         public async Task<PageInfo<HotelModel>> GetFilteredHotels(DateTime checkInDate,DateTime checkOutDate,string country,string city, Pagination hotelPagination)
         {
-            int pages=0;
             var filteredHotels = new List<HotelModel>();
             bool flag = false;
             var hotels = GetAll();
@@ -242,14 +242,16 @@ namespace Business.Services
                 {
                     if (string.IsNullOrEmpty(city) || hotel.Location.City == city)
                     {
-                        if (hotel.Rooms == null)
+                        if (hotel.Rooms != null)
                         {
                             foreach (var room in hotel.Rooms)
                             {
-                                if (room.Orders != null)
+                                if (room.Orders != null && room.Orders.Count!=0)
                                 {
-                                    if (room.Orders.Any(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate || checkOutDate > order.StartDate && checkOutDate < order.EndDate
-                                                                   || order.StartDate > checkInDate && order.StartDate < checkOutDate || order.EndDate > checkInDate && order.EndDate < checkOutDate)))
+                                    if (room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
+                                                                   checkOutDate > order.StartDate && checkOutDate < order.EndDate ||
+                                                                   order.StartDate > checkInDate && order.StartDate < checkOutDate ||
+                                                                   order.EndDate > checkInDate && order.EndDate < checkOutDate)))
                                     {
                                         filteredHotels.Add(hotel);
                                         flag = true;
@@ -260,6 +262,7 @@ namespace Business.Services
                                 else
                                 {
                                     filteredHotels.Add(hotel);
+                                    break;
                                 }
                             }
                         
@@ -271,22 +274,8 @@ namespace Business.Services
                     }
                 }
             }
-            pages = filteredHotels.Count / hotelPagination.PageSize;
-            if (filteredHotels.Count % hotelPagination.PageSize != 0)
-            {
-                pages++;
-            }
-            var pagedData = filteredHotels
-                .Skip((hotelPagination.PageNumber - 1) * hotelPagination.PageSize)
-                .Take(hotelPagination.PageSize)
-                .ToList();
-            var numberOfHotels = await _hotelRepository.GetCountAsync();
-            var hotelPageInfo = new PageInfo<HotelModel>
-            {
-                Items = pagedData,
-                NumberOfItems = numberOfHotels,
-                NumberOfPages = pages
-            };
+
+            var hotelPageInfo = PageInfoCreator<HotelModel>.GetPageInfo(filteredHotels, hotelPagination);
             return hotelPageInfo;
         }
 

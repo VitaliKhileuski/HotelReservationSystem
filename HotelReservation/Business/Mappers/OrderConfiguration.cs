@@ -13,12 +13,15 @@ namespace Business.Mappers
     public OrderConfiguration() : base(x =>
     {
         x.CreateMap<OrderEntity, OrderModel>().ReverseMap();
+        x.CreateMap<ServiceQuantityModel, ServiceQuantityEntity>().ReverseMap();
         x.CreateMap<UserEntity, UserModel>()
             .ForMember(x => x.Orders, opt => opt.Ignore());
-        x.CreateMap<RoomEntity, RoomModel>();
+        x.CreateMap<RoomEntity, RoomModel>()
+            .ForMember(x => x.Attachments, opt => opt.Ignore());
         x.CreateMap<ServiceModel, ServiceEntity>().ReverseMap();
         x.CreateMap<RoleEntity, RoleModel>();
-        x.CreateMap<HotelEntity, HotelModel>();
+        x.CreateMap<HotelEntity, HotelModel>()
+            .ForMember(x => x.Attachments, opt => opt.Ignore());
         x.CreateMap<LocationEntity, LocationModel>();
     })
     {

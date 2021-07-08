@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
+using Business.Helpers;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
+using HotelReservation.Data.Constants;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
 namespace Business.Services
@@ -18,15 +22,17 @@ namespace Business.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IUserRepository _userRepository;
         private readonly IRoomRepository _roomRepository;
+        private readonly IServiceRepository _serviceRepository;
         private readonly Mapper _mapper;
         private readonly ILogger<OrdersService> _logger;
         public OrdersService(ILogger<OrdersService> logger, IOrderRepository orderRepository, IUserRepository userRepository,
-            IRoomRepository roomRepository, MapConfiguration cfg)
+            IRoomRepository roomRepository,IServiceRepository serviceRepository, MapConfiguration cfg)
         {
             _orderRepository = orderRepository;
             _userRepository = userRepository;
             _roomRepository = roomRepository;
             _mapper = new Mapper(cfg.OrderConfiguration);
+            _serviceRepository = serviceRepository;
             _logger = logger;
         }
 
@@ -44,7 +50,7 @@ namespace Business.Services
             return orderModel;
         }
 
-        public async Task CreateOrder(Guid roomId, string userId, OrderModel order)
+        public async Task CreateOrder(Guid roomId, OrderModel order)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
             if (roomEntity == null)
@@ -53,28 +59,38 @@ namespace Business.Services
                 throw new NotFoundException($"room with {roomId} id not exists");
             }
             var orderEntity = _mapper.Map<OrderModel, OrderEntity>(order);
-            List<ServiceEntity> services = new List<ServiceEntity>();
-            foreach (var service in roomEntity.Hotel.Services)
+            var serviceQuantities = new List<ServiceQuantityEntity>();
+            foreach (var serviceQuantity in order.Services)
             {
-                foreach (var orderService in orderEntity.Services)
+                foreach(var service in roomEntity.Hotel.Services)
                 {
-                    if (service.Id == orderService.Id)
+                    if (service.Id == serviceQuantity.Service.Id)
                     {
-                        services.Add(service);
-                    }   
+                        serviceQuantities.Add(new ServiceQuantityEntity
+                        {
+                            Service =  service,
+                            Quantity = serviceQuantity.Quantity
+                        });
+                    }
                 }
             }
-            orderEntity.Services = services;
-            var userEntity = await _userRepository.GetAsync(userId);
-            
+
+            orderEntity.Services = serviceQuantities;
+            var userEntity = await _userRepository.GetAsyncByEmail(order.UserEmail);
+            if (userEntity == null)
+            {
+                _logger.LogError($"user with {order.UserEmail} email not exists");
+                throw new NotFoundException($"user with {order.UserEmail} email not exists");
+            }
+
             orderEntity.Customer = userEntity;
-            roomEntity.User = userEntity;
             orderEntity.DateOrdered = DateTime.Now;
             orderEntity.NumberOfDays = orderEntity.EndDate.Subtract(orderEntity.StartDate).Days;
             orderEntity.FullPrice = GetFullPrice(orderEntity,roomEntity);
             orderEntity.Room = roomEntity;
             userEntity.Orders.Add(orderEntity);
-            await _orderRepository.CreateAsync(orderEntity);
+            roomEntity.Orders.Add(orderEntity);
+            await _userRepository.UpdateAsync(userEntity);
             await _roomRepository.UpdateAsync(roomEntity);
         }
 
@@ -112,8 +128,6 @@ namespace Business.Services
             currentOrder.Services = orderEntity.Services;
             currentOrder.FullPrice = GetFullPrice(currentOrder,roomEntity);
             await _orderRepository.UpdateAsync(currentOrder);
-            currentOrder.Services = services;
-            await  _orderRepository.UpdateAsync(currentOrder);
         }
 
         public async Task DeleteOrder(Guid orderId)
@@ -127,9 +141,61 @@ namespace Business.Services
             await _orderRepository.DeleteAsync(orderId);
         }
 
-        private decimal GetFullPrice(OrderEntity order,RoomEntity room)
+        public async Task<PageInfo<OrderModel>> GetOrdersPage(string userId, Pagination pagination)
         {
-            return order.EndDate.Subtract(order.StartDate).Days * room.PaymentPerDay + order.Services.Sum(service => service.Payment);
+            var userEntity = await _userRepository.GetAsync(userId);
+            if (userEntity == null)
+            {
+                _logger.LogError($"user with {userId} id not exists");
+                throw new NotFoundException($"user with {userId} id not exists");
+            }
+            switch (userEntity.Role.Name)
+            {
+                case Roles.Admin:
+                     return GetOrdersForAdmin(pagination);
+                case Roles.HotelAdmin:
+                    return GetOrdersForHotelAdmin(userEntity, pagination);
+                case Roles.User:
+                   return GetOrdersForUser(userEntity, pagination);
+                default:
+                    return new PageInfo<OrderModel>();
+            }
         }
+
+        private PageInfo<OrderModel> GetOrdersForAdmin(Pagination pagination)
+        { 
+            var orderModels = _mapper.Map<ICollection<OrderModel>>(_orderRepository.GetAll());
+            var page = PageInfoCreator<OrderModel>.GetPageInfo(orderModels,pagination);
+            return page;
+        }
+
+        private PageInfo<OrderModel> GetOrdersForHotelAdmin(UserEntity userEntity, Pagination pagination)
+        {
+            var orders = new List<OrderEntity>();
+            foreach (var hotel in userEntity.OwnedHotels)
+            {
+                foreach (var room in hotel.Rooms)
+                {
+                    orders.AddRange(room.Orders);
+                }
+            }
+
+            var orderModels = _mapper.Map<ICollection<OrderModel>>(orders);
+            var page = PageInfoCreator<OrderModel>.GetPageInfo(orderModels, pagination);
+            return page;
+        }
+
+        private PageInfo<OrderModel> GetOrdersForUser(UserEntity userEntity, Pagination pagination)
+        {
+            var orderModels = _mapper.Map<ICollection<OrderModel>>(userEntity.Orders);
+            var page = PageInfoCreator<OrderModel>.GetPageInfo(orderModels, pagination);
+            return page;
+        }
+
+        private decimal GetFullPrice(OrderEntity order, RoomEntity room)
+        {
+              return order.EndDate.Subtract(order.StartDate).Days * room.PaymentPerDay + order.Services.Sum(serviceQuantity => serviceQuantity.Service.Payment*serviceQuantity.Quantity);
+        }
+
     }
 }

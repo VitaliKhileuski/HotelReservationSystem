@@ -23,6 +23,7 @@ namespace HotelReservation.Data
         public DbSet<ServiceEntity> Services { get; set; }
         public DbSet<FileContentEntity> Files { get; set; }
         public DbSet<AttachmentEntity> Attachments { get; set; }
+        public DbSet<ServiceQuantityEntity> ServiceQuantities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
