@@ -82,7 +82,7 @@ namespace Business.Services
             return hotelModels;
         }
 
-        public async Task UpdateHotelAdmin(Guid hotelId, string userId)
+        public async Task UpdateHotelAdmin(Guid hotelId,Guid adminId, string userId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -90,11 +90,12 @@ namespace Business.Services
                 _logger.LogError($"hotel with {hotelId} id not exists");
                 throw new NotFoundException($"hotel with {hotelId} id not exists");
             }
-            var userEntity = await _userRepository.GetAsync(userId);
+
+            var userEntity = await _userRepository.GetAsync(adminId);
             if (userEntity == null)
             {
-                _logger.LogError($"user with {userId} id not exists");
-                throw new NotFoundException($"user with {userId} id not exists");
+                _logger.LogError($"user with {adminId} id not exists");
+                throw new NotFoundException($"user with {adminId} id not exists");
             }
 
             if (hotelEntity.Admins == null)

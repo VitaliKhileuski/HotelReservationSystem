@@ -22,6 +22,8 @@ namespace Business.Mappers
                 .ForMember(x => x.Rooms, opt => opt.Ignore());
             x.CreateMap<HotelEntity, HotelModel>();
             x.CreateMap<LocationEntity, LocationModel>();
+            x.CreateMap<AttachmentEntity, AttachmentModel>();
+            x.CreateMap<FileContentEntity, FileContentModel>();
         })
         {
 

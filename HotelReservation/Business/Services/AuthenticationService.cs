@@ -77,6 +77,9 @@ namespace Business.Services
 
         public async Task<List<string>> Registration(RegisterUserModel user)
         {
+            user.Name ??= "User";
+            user.Password ??= "testtest1";
+            user.Surname ??= "User";
             var token  = String.Empty;
             var dbUser = await GetUserFromDb(user.Email);
             if (dbUser != null)

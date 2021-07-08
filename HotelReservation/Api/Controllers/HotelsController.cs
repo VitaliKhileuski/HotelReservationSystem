@@ -99,11 +99,11 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpPut]
-        [Route("{hotelId}/setHotelAdmin")]
-        public async Task<IActionResult> UpdateHotelAdmin(Guid hotelId)
+        [Route("{hotelId}/{adminId}/setHotelAdmin")]
+        public async Task<IActionResult> UpdateHotelAdmin(Guid hotelId, Guid adminId)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
-            await _hotelsService.UpdateHotelAdmin(hotelId, userId);
+            await _hotelsService.UpdateHotelAdmin(hotelId, adminId, userId);
 
             return Ok();
         }

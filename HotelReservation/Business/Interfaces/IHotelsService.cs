@@ -9,7 +9,7 @@ namespace Business.Interfaces
     {
         Task AddHotel(HotelModel hotel);
         Task<HotelModel> GetById(Guid id);
-        Task UpdateHotelAdmin(Guid hotelId, string userId);
+        Task UpdateHotelAdmin(Guid hotelId,Guid adminId, string userId);
         Task UpdateHotel(Guid hotelId, HotelModel hotel,string userId);
         Task DeleteHotelById(Guid hotelId,string userId);
         Task<PageInfo<HotelModel>> GetFilteredHotels(DateTime checkInDate, DateTime checkOutDate, string country, string city, Pagination hotelPagination);

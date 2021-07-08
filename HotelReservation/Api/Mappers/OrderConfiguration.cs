@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Business.Mappers;
 using Business.Models;
+using HotelReservation.Api.Helpers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
 using HotelReservation.Data.Entities;
@@ -27,7 +28,8 @@ namespace HotelReservation.Api.Mappers
             x.CreateMap<ServiceModel, ServiceResponseModel>();
             x.CreateMap<OrderModel, OrderResponseModel>();
             x.CreateMap<RoleModel, RoleResponseModel>();
-            x.CreateMap<RoomModel, RoomResponseModel>();
+            x.CreateMap<RoomModel, RoomResponseModel>()
+                .ForMember(x => x.ImageUrls, opt => opt.MapFrom(room => UrlHelper.GetUrls(room.Attachments))); ;
             x.CreateMap<HotelModel, HotelResponseModel>()
                 .ForMember(X => X.Services, opt => opt.Ignore())
                 .ForMember(x => x.Rooms, opt => opt.Ignore());
