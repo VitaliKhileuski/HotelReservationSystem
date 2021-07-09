@@ -150,7 +150,7 @@ namespace Business.Services
 
             
 
-            if (PermissionVerifier.CheckPermission(hotelEntity, userEntity))
+            if (PermissionVerifier.CheckHotelPermission(hotelEntity, userEntity))
             {
 
                 hotelEntity.Name = hotel.Name;
@@ -177,7 +177,7 @@ namespace Business.Services
                 _logger.LogError($"user with {userId} id not exists");
                 throw new NotFoundException($"user with {userId} id not exists");
             }
-            if (PermissionVerifier.CheckPermission(hotelEntity, userEntity))
+            if (PermissionVerifier.CheckHotelPermission(hotelEntity, userEntity))
             {
                 var imageIds = hotelEntity.Attachments.Select(image => image.FileContent.Id).ToList();
 

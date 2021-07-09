@@ -47,7 +47,7 @@ namespace Business.Services
 
             var userEntity = await _userRepository.GetAsync(userId);
 
-            if (PermissionVerifier.CheckPermission(hotelEntity, userEntity))
+            if (PermissionVerifier.CheckHotelPermission(hotelEntity, userEntity))
             {
                 if (hotelEntity.Attachments == null)
                 {
@@ -97,7 +97,7 @@ namespace Business.Services
                 throw new NotFoundException($"user with {userId} id not exists");
             }
 
-            if (PermissionVerifier.CheckPermission(roomEntity.Hotel, userEntity))
+            if (PermissionVerifier.CheckHotelPermission(roomEntity.Hotel, userEntity))
             {
                 if (roomEntity.Attachments == null)
                 {

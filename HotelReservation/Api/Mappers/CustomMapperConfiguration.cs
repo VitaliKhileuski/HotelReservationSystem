@@ -24,6 +24,7 @@ namespace HotelReservation.Api.Mappers
             RoomConfiguration = new RoomConfiguration();
             UsersConfiguration = new MapperConfiguration(x =>
             {
+                x.CreateMap<UserRequestModel, UserModel>();
                 x.CreateMap<LoginUserRequestModel, LoginUserModel>();
                 x.CreateMap<RegisterUserRequestModel, RegisterUserModel>();
                 x.CreateMap<UserRequestModel, UserModel>();

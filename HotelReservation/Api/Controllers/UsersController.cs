@@ -10,6 +10,7 @@ using HotelReservation.Api.Models.ResponseModels;
 using HotelReservation.Api.Policy;
 using Microsoft.AspNetCore.Authorization;
 using System;
+using HotelReservation.Api.Helpers;
 
 namespace HotelReservation.Api.Controllers
 {
@@ -35,10 +36,13 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [Route("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var responseUser = _mapper.Map<UserModel, UserResponseViewModel>(await _usersService.GetById(id));
+            var userId = TokenData.GetIdFromClaims(User.Claims);
+            var userModel = await _usersService.GetById(id, userId);
+            var responseUser = _mapper.Map<UserModel, UserResponseViewModel>(userModel);
             return Ok(responseUser);
         }
 
@@ -62,11 +66,13 @@ namespace HotelReservation.Api.Controllers
         [HttpPut]
         [Authorize]
         [Route("{id}")]
-        public IActionResult Update(Guid id, [FromBody] UserResponseViewModel user)
+        public async Task<IActionResult> Update(Guid id, [FromBody] UserRequestModel user)
         {
-            var userModel = _mapper.Map<UserResponseViewModel, UserModel>(user);
-            _usersService.Update(id, userModel);
-            return Ok($"user with id {id} updated successfully");
+            
+                var userId = TokenData.GetIdFromClaims(User.Claims);
+                var userModel = _mapper.Map<UserRequestModel, UserModel>(user);
+               await _usersService.Update(id, userId, userModel);
+               return Ok();
         }
     }
 }

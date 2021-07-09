@@ -57,7 +57,7 @@ namespace Business.Services
                 throw new NotFoundException($"user with {userId} id not exists");
             }
             var roomEntity = _roomMapper.Map<RoomModel, RoomEntity>(room);
-            if (PermissionVerifier.CheckPermission(hotelEntity, userEntity))
+            if (PermissionVerifier.CheckHotelPermission(hotelEntity, userEntity))
             {
                 hotelEntity.Rooms.Add(roomEntity); 
                 await _hotelRepository.UpdateAsync(hotelEntity);
@@ -82,7 +82,7 @@ namespace Business.Services
             var roomEntity = await _roomRepository.GetAsync(roomId);
             var userEntity =await _userRepository.GetAsync(userId);
             var hotelEntity = roomEntity.Hotel; 
-            if (PermissionVerifier.CheckPermission(hotelEntity, userEntity))
+            if (PermissionVerifier.CheckHotelPermission(hotelEntity, userEntity))
             {
                 roomEntity.RoomNumber = room.RoomNumber;
                 roomEntity.BedsNumber = room.BedsNumber;
@@ -140,7 +140,7 @@ namespace Business.Services
                 throw new NotFoundException($"user with {userId} id not exists");
             }
             var hotelEntity = roomEntity.Hotel;
-            if (PermissionVerifier.CheckPermission(hotelEntity, userEntity))
+            if (PermissionVerifier.CheckHotelPermission(hotelEntity, userEntity))
             {
                 var imageIds = roomEntity.Attachments.Select(image => image.FileContent.Id).ToList();
 
