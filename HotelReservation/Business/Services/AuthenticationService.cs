@@ -22,18 +22,18 @@ namespace Business.Services
         private readonly Context _db;
         private readonly IPasswordHasher _hash;
         private readonly ITokenService _tokenService;
-        private readonly IUserRepository _repository;
+        private readonly IUserRepository _userRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<AuthenticationService> _logger;
 
         public AuthenticationService(ILogger<AuthenticationService> logger, Context context, IPasswordHasher hashPassword, ITokenService tokenService,
-            MapConfiguration cfg, IUserRepository repository, IRoleRepository roleRepository, IMapper mapper)
+            MapConfiguration cfg, IUserRepository userRepository, IRoleRepository roleRepository, IMapper mapper)
         {
             _db = context;
             _hash = hashPassword;
             _tokenService = tokenService;
-            _repository = repository;
+            _userRepository = userRepository;
             _roleRepository = roleRepository;
             _mapper = new Mapper(cfg.UserConfiguration);
             _logger = logger;
@@ -97,7 +97,7 @@ namespace Business.Services
                 Token = _tokenService.GenerateRefreshToken(), User = userEntity
             };
             userEntity.RefreshToken = refreshToken;
-            await _repository.CreateAsync(userEntity);
+            await _userRepository.CreateAsync(userEntity);
             var userEntityFromDb = _db.Users.FirstOrDefault(x => x.Email == userEntity.Email);
             if (userEntityFromDb != null)
             { 
@@ -146,6 +146,18 @@ namespace Business.Services
         {
             var currentHash = _hash.GenerateHash(password, SHA256.Create());
             return currentHash == hash;
+        }
+
+        public async Task<bool> IsPasswordCorrect(string userId,string password)
+        {
+            var userEntity = await _userRepository.GetAsync(userId);
+            if (userEntity == null)
+            {
+                _logger.LogError($"user with {userId} id not exists");
+                throw new NotFoundException($"user with {userId} id not exists");
+            }
+
+            return userEntity.Password == _hash.GenerateHash(password,SHA256.Create());
         }
     }
 }

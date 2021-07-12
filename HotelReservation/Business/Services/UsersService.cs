@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -109,7 +110,20 @@ namespace Business.Services
             await _userRepository.DeleteAsync(userId);
         }
 
-        public async Task Update(Guid id,string userId, UserModel user)
+        public async Task<PageInfo<UserModel>> GetUsersPage(string userId, Pagination pagination)
+        {
+            var userEntity = await _userRepository.GetAsync(userId);
+            if (userEntity == null)
+            {
+                _logger.LogError($"user with {userId} id not exists");
+                throw new NotFoundException($"user with {userId} id not exists");
+            }
+            var users = _mapper.Map < ICollection < UserModel>>(_userRepository.GetAll());
+            var page = PageInfoCreator<UserModel>.GetPageInfo(users, pagination);
+            return page;
+        }
+
+public async Task<string> Update(Guid id,string userId, UserModel user)
         {
             var userEntity = await _userRepository.GetAsync(id);
             if (userEntity == null)
@@ -154,7 +168,12 @@ namespace Business.Services
                 }
 
                 await _userRepository.UpdateAsync(userEntity);
+                var newToken = _tokenService.BuildToken(userEntity.Email, userEntity.Role.Name, userEntity.Name,
+                    userEntity.Id);
+                return newToken;
             }
+
+            throw new BadRequestException("you don't have any permissions");
         }
     }
 }

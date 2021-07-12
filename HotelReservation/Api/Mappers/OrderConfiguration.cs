@@ -34,6 +34,8 @@ namespace HotelReservation.Api.Mappers
                 .ForMember(X => X.Services, opt => opt.Ignore())
                 .ForMember(x => x.Rooms, opt => opt.Ignore());
             x.CreateMap<LocationModel, LocationResponseModel>();
+            x.CreateMap<UserModel, UserResponseViewModel>()
+                .ForMember(x => x.Orders, opt => opt.Ignore());
         })
         {
 
