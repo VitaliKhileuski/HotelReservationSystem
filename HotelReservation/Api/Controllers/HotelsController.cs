@@ -64,11 +64,12 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetFilteredGHotels(DateTime checkInDate, DateTime checkOutDate, string country,
+        [Route("page")]
+        public async Task<IActionResult> GetFilteredGHotels(string userId, DateTime checkInDate, DateTime checkOutDate, string country,
             string city, [FromQuery] Pagination filter)
         {
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
-            var pageInfo = await  _hotelsService.GetFilteredHotels(checkInDate, checkOutDate, country, city, validFilter);
+            var pageInfo = await  _hotelsService.GetFilteredHotels(userId, checkInDate, checkOutDate, country, city, validFilter);
             var hotels = _hotelMapper.Map<List<HotelResponseModel>>(pageInfo.Items);
             var responsePageInfo = new PageInfo<HotelResponseModel>
             {

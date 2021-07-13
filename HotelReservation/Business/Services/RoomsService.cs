@@ -64,19 +64,6 @@ namespace Business.Services
             }
         }
 
-        //public async Task<ICollection<RoomModel>> GetRoomsFromHotel(Guid hotelId,DateTime checkInDate,DateTime checkOutDate)
-        //{
-        //    var hotelEntity = await _hotelRepository.GetAsync(hotelId);
-        //    if (hotelEntity == null)
-        //    {
-        //        _logger.LogError($"hotel with {hotelId} id not exists");
-        //        throw new NotFoundException($"hotel with {hotelId} id not exists");
-        //    }
-
-           
-        //    return _roomMapper.Map<ICollection<RoomModel>>(filteredRooms.ToList());
-        //}
-
         public async Task UpdateRoom(Guid roomId, string userId,RoomModel room)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
@@ -90,7 +77,7 @@ namespace Business.Services
                 await _roomRepository.UpdateAsync(roomEntity);
             }
         }
-        public async Task<PageInfo<RoomModel>> GetRoomsPage(Guid hotelId,DateTime checkInDate,DateTime checkOutDate, Pagination roomPagination)
+        public async Task<PageInfo<RoomModel>> GetRoomsPage(Guid hotelId,string userId, DateTime checkInDate,DateTime checkOutDate, Pagination roomPagination)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -104,17 +91,24 @@ namespace Business.Services
             {
                 foreach (var room in hotelEntity.Rooms)
                 {
-                    if (room.Orders != null && room.Orders.Count!=0)
+
+                    if (room.UnblockDate==null || room.PotentialCustomerId==userId ||  DateTime.Now > room.UnblockDate)
                     {
-                        if (IsAvailableToBook(room, checkInDate, checkOutDate))
+
+                        if (room.Orders != null && room.Orders.Count != 0)
+                        {
+                            if (IsAvailableToBook(room, checkInDate, checkOutDate))
+                            {
+                                filteredRooms.Add(room);
+                            }
+                        }
+                        else
                         {
                             filteredRooms.Add(room);
                         }
                     }
-                    else
-                    {
-                        filteredRooms.Add(room);
-                    }
+                    
+                       
                 }
 
             }
@@ -181,6 +175,27 @@ namespace Business.Services
                                               checkOutDate > order.StartDate && checkOutDate < order.EndDate
                                               || order.StartDate > checkInDate && order.StartDate < checkOutDate ||
                                               order.EndDate > checkInDate && order.EndDate < checkOutDate));
+        }
+
+        public async Task BlockRoomById(Guid roomId,string userId)
+        {
+            var userEntity = await _userRepository.GetAsync(userId);
+            if (userEntity == null)
+            {
+                _logger.LogError($"user with {userId} id not exists");
+                throw new NotFoundException($"user with {userId} id not exists");
+            }
+            var roomEntity = await _roomRepository.GetAsync(roomId);
+            if (roomEntity == null)
+            {
+                _logger.LogError($"room with {roomId} id not exists");
+                throw new NotFoundException($"room with {roomId} id not exists");
+            }
+            const double blockTime = 30;
+            var unblockDate = DateTime.Now.AddMinutes(blockTime);
+            roomEntity.UnblockDate = unblockDate;
+            roomEntity.PotentialCustomerId = userId;
+                await _roomRepository.UpdateAsync(roomEntity);
         }
     }
 }

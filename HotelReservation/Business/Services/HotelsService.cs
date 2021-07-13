@@ -74,14 +74,6 @@ namespace Business.Services
 
         }
 
-        public List<HotelModel> GetAll()
-        {
-            var hotelEntities = _hotelRepository.GetAll().ToList();
-            var hotelModels = _hotelMapper.Map<List<HotelModel>>(hotelEntities);
-
-            return hotelModels;
-        }
-
         public async Task UpdateHotelAdmin(Guid hotelId,Guid adminId, string userId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
@@ -224,11 +216,11 @@ namespace Business.Services
             return _userMapper.Map<ICollection<UserModel>>(hotelEntity.Admins);
         }
 
-        public async Task<PageInfo<HotelModel>> GetFilteredHotels(DateTime checkInDate,DateTime checkOutDate,string country,string city, Pagination hotelPagination)
+        public async Task<PageInfo<HotelModel>> GetFilteredHotels(string userId, DateTime checkInDate,DateTime checkOutDate,string country,string city, Pagination hotelPagination)
         {
-            var filteredHotels = new List<HotelModel>();
+            var filteredHotels = new List<HotelEntity>();
             bool flag = false;
-            var hotels = GetAll();
+            var hotels = _hotelRepository.GetAll();
             if (country == "null")
             {
                 country = null;
@@ -247,24 +239,28 @@ namespace Business.Services
                         {
                             foreach (var room in hotel.Rooms)
                             {
-                                if (room.Orders != null && room.Orders.Count!=0)
+                                if (room.UnblockDate==null || room.PotentialCustomerId == userId || DateTime.Now > room.UnblockDate)
                                 {
-                                    if (room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
-                                                                   checkOutDate > order.StartDate && checkOutDate < order.EndDate ||
-                                                                   order.StartDate > checkInDate && order.StartDate < checkOutDate ||
-                                                                   order.EndDate > checkInDate && order.EndDate < checkOutDate)))
+                                    if (room.Orders != null && room.Orders.Count != 0)
+                                    {
+                                        if (room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
+                                                                       checkOutDate > order.StartDate && checkOutDate < order.EndDate ||
+                                                                       order.StartDate > checkInDate && order.StartDate < checkOutDate ||
+                                                                       order.EndDate > checkInDate && order.EndDate < checkOutDate)))
+                                        {
+                                            filteredHotels.Add(hotel);
+                                            flag = true;
+                                        }
+
+                                        if (flag) break;
+                                    }
+                                    else
                                     {
                                         filteredHotels.Add(hotel);
-                                        flag = true;
+                                        break;
                                     }
-
-                                    if (flag) break;
                                 }
-                                else
-                                {
-                                    filteredHotels.Add(hotel);
-                                    break;
-                                }
+                                
                             }
                         
                         }
@@ -276,7 +272,8 @@ namespace Business.Services
                 }
             }
 
-            var hotelPageInfo = PageInfoCreator<HotelModel>.GetPageInfo(filteredHotels, hotelPagination);
+            var hotelModels = _hotelMapper.Map<ICollection<HotelModel>>(filteredHotels);
+            var hotelPageInfo = PageInfoCreator<HotelModel>.GetPageInfo(hotelModels, hotelPagination);
             return hotelPageInfo;
         }
 
