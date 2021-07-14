@@ -96,26 +96,27 @@ namespace HotelReservation.Api.Controllers
         public async Task<IActionResult> AddHotel([FromBody] HotelModel hotel)
         {
             await  _hotelsService.AddHotel(hotel);
-            return Ok("added successfully");
+            return Ok();
         }
 
         [HttpPut]
+        [Authorize(Policy = Policies.AdminPermission)]
         [Route("{hotelId}/{adminId}/setHotelAdmin")]
         public async Task<IActionResult> UpdateHotelAdmin(Guid hotelId, Guid adminId)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
-            await _hotelsService.UpdateHotelAdmin(hotelId, adminId, userId);
+            await _hotelsService.UpdateHotelAdmin(hotelId, adminId);
 
             return Ok();
         }
         [HttpPut]
-        [Route("{hotelId}/deleteHotelAdmin")]
-        public async Task<IActionResult> DeleteHotelAdmin(Guid hotelId)
+        [Authorize(Policy = Policies.AdminPermission)]
+        [Route("{hotelId}/{adminId}/deleteHotelAdmin")]
+        public async Task<IActionResult> DeleteHotelAdmin(Guid hotelId,Guid adminId)
         {
-            var userId = TokenData.GetIdFromClaims(User.Claims);
-            await _hotelsService.DeleteHotelAdmin(hotelId, userId);
+            await _hotelsService.DeleteHotelAdmin(hotelId, adminId);
 
-            return Ok("admin deleted successfully");
+            return Ok();
         }
 
         [HttpPut]

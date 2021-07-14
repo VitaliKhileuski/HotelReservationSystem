@@ -74,7 +74,7 @@ namespace Business.Services
 
         }
 
-        public async Task UpdateHotelAdmin(Guid hotelId,Guid adminId, string userId)
+        public async Task UpdateHotelAdmin(Guid hotelId,Guid adminId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -277,7 +277,7 @@ namespace Business.Services
             return hotelPageInfo;
         }
 
-        public async Task DeleteHotelAdmin(Guid hotelId, string userId)
+        public async Task DeleteHotelAdmin(Guid hotelId, Guid userId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
 
