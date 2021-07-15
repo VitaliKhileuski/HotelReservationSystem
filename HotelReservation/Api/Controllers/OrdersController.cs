@@ -100,7 +100,7 @@ namespace HotelReservation.Api.Controllers
         public async Task<IActionResult> DeleteOrder(Guid orderId)
         {
             await _orderService.DeleteOrder(orderId);
-            return Ok("Deleted Successfully");
+            return Ok();
         }
     }
 }

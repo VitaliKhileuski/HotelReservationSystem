@@ -91,7 +91,7 @@ namespace Business.Services
                 throw new NotFoundException($"user with {userId} id not exists");
             }
 
-            if (PermissionVerifier.CheckPermission(serviceEntity.Hotel, userEntity))
+            if (PermissionVerifier.CheckHotelPermission(serviceEntity.Hotel, userEntity))
             {
                 serviceEntity.Name = serviceModel.Name;
                 serviceEntity.Payment = serviceModel.Payment;
@@ -104,7 +104,7 @@ namespace Business.Services
             var userEntity = await _userRepository.GetAsync(userId);
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
 
-            if (PermissionVerifier.CheckPermission(hotelEntity, userEntity))
+            if (PermissionVerifier.CheckHotelPermission(hotelEntity, userEntity))
             {
                 if (hotelEntity == null)
                 {
@@ -130,7 +130,7 @@ namespace Business.Services
             var serviceEntity = await _serviceRepository.GetAsync(serviceId);
             var userEntity = await _userRepository.GetAsync(userId);
             var hotelEntity = serviceEntity.Hotel;
-            if (PermissionVerifier.CheckPermission(hotelEntity, userEntity))
+            if (PermissionVerifier.CheckHotelPermission(hotelEntity, userEntity))
             {
                await _serviceRepository.DeleteAsync(serviceId);
             }

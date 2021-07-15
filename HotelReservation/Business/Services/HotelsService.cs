@@ -74,15 +74,7 @@ namespace Business.Services
 
         }
 
-        public List<HotelModel> GetAll()
-        {
-            var hotelEntities = _hotelRepository.GetAll().ToList();
-            var hotelModels = _hotelMapper.Map<List<HotelModel>>(hotelEntities);
-
-            return hotelModels;
-        }
-
-        public async Task UpdateHotelAdmin(Guid hotelId, string userId)
+        public async Task UpdateHotelAdmin(Guid hotelId,Guid adminId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -90,11 +82,12 @@ namespace Business.Services
                 _logger.LogError($"hotel with {hotelId} id not exists");
                 throw new NotFoundException($"hotel with {hotelId} id not exists");
             }
-            var userEntity = await _userRepository.GetAsync(userId);
+
+            var userEntity = await _userRepository.GetAsync(adminId);
             if (userEntity == null)
             {
-                _logger.LogError($"user with {userId} id not exists");
-                throw new NotFoundException($"user with {userId} id not exists");
+                _logger.LogError($"user with {adminId} id not exists");
+                throw new NotFoundException($"user with {adminId} id not exists");
             }
 
             if (hotelEntity.Admins == null)
@@ -149,7 +142,7 @@ namespace Business.Services
 
             
 
-            if (PermissionVerifier.CheckPermission(hotelEntity, userEntity))
+            if (PermissionVerifier.CheckHotelPermission(hotelEntity, userEntity))
             {
 
                 hotelEntity.Name = hotel.Name;
@@ -176,7 +169,7 @@ namespace Business.Services
                 _logger.LogError($"user with {userId} id not exists");
                 throw new NotFoundException($"user with {userId} id not exists");
             }
-            if (PermissionVerifier.CheckPermission(hotelEntity, userEntity))
+            if (PermissionVerifier.CheckHotelPermission(hotelEntity, userEntity))
             {
                 var imageIds = hotelEntity.Attachments.Select(image => image.FileContent.Id).ToList();
 
@@ -223,11 +216,11 @@ namespace Business.Services
             return _userMapper.Map<ICollection<UserModel>>(hotelEntity.Admins);
         }
 
-        public async Task<PageInfo<HotelModel>> GetFilteredHotels(DateTime checkInDate,DateTime checkOutDate,string country,string city, Pagination hotelPagination)
+        public async Task<PageInfo<HotelModel>> GetFilteredHotels(string userId, DateTime checkInDate,DateTime checkOutDate,string country,string city, string hotelName, Pagination hotelPagination)
         {
-            var filteredHotels = new List<HotelModel>();
+            var filteredHotels = new List<HotelEntity>();
             bool flag = false;
-            var hotels = GetAll();
+            var hotels = _hotelRepository.GetAll();
             if (country == "null")
             {
                 country = null;
@@ -236,34 +229,42 @@ namespace Business.Services
             {
                 city = null;
             }
+
+            if (hotelName == "null")
+            {
+                hotelName = null;
+            }
             foreach (var hotel in hotels)
             {
-                if (string.IsNullOrEmpty(country) || hotel.Location.Country == country)
+                
+                if ((string.IsNullOrEmpty(country) || hotel.Location.Country == country) && (string.IsNullOrEmpty(city) || hotel.Location.City == city) && (string.IsNullOrEmpty(hotelName) || hotel.Name==hotelName))
                 {
-                    if (string.IsNullOrEmpty(city) || hotel.Location.City == city)
-                    {
-                        if (hotel.Rooms != null)
+                    if (hotel.Rooms != null)
                         {
                             foreach (var room in hotel.Rooms)
                             {
-                                if (room.Orders != null && room.Orders.Count!=0)
+                                if (room.UnblockDate==null || room.PotentialCustomerId == userId || DateTime.Now > room.UnblockDate)
                                 {
-                                    if (room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
-                                                                   checkOutDate > order.StartDate && checkOutDate < order.EndDate ||
-                                                                   order.StartDate > checkInDate && order.StartDate < checkOutDate ||
-                                                                   order.EndDate > checkInDate && order.EndDate < checkOutDate)))
+                                    if (room.Orders != null && room.Orders.Count != 0)
+                                    {
+                                        if (room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
+                                                                       checkOutDate > order.StartDate && checkOutDate < order.EndDate ||
+                                                                       order.StartDate > checkInDate && order.StartDate < checkOutDate ||
+                                                                       order.EndDate > checkInDate && order.EndDate < checkOutDate)))
+                                        {
+                                            filteredHotels.Add(hotel);
+                                            flag = true;
+                                        }
+
+                                        if (flag) break;
+                                    }
+                                    else
                                     {
                                         filteredHotels.Add(hotel);
-                                        flag = true;
+                                        break;
                                     }
-
-                                    if (flag) break;
                                 }
-                                else
-                                {
-                                    filteredHotels.Add(hotel);
-                                    break;
-                                }
+                                
                             }
                         
                         }
@@ -271,15 +272,16 @@ namespace Business.Services
                         {
                             filteredHotels.Add(hotel);
                         }
-                    }
+                    
                 }
             }
 
-            var hotelPageInfo = PageInfoCreator<HotelModel>.GetPageInfo(filteredHotels, hotelPagination);
+            var hotelModels = _hotelMapper.Map<ICollection<HotelModel>>(filteredHotels);
+            var hotelPageInfo = PageInfoCreator<HotelModel>.GetPageInfo(hotelModels, hotelPagination);
             return hotelPageInfo;
         }
 
-        public async Task DeleteHotelAdmin(Guid hotelId, string userId)
+        public async Task DeleteHotelAdmin(Guid hotelId, Guid userId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
 
@@ -315,6 +317,11 @@ namespace Business.Services
                                                                             x.Location.City == hotel.Location.City &&
                                                                             x.Location.Street == hotel.Location.Street && x.Location.BuildingNumber == hotel.Location.BuildingNumber);
             return hotelEntity == null;
+        }
+
+        public IEnumerable<string> GetHotelNames()
+        {
+            return _hotelRepository.GetHotelNames();
         }
     }
 }

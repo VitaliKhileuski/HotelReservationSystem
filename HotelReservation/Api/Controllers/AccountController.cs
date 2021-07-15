@@ -5,6 +5,7 @@ using AutoMapper;
 using Business.Exceptions;
 using Business.Interfaces;
 using Business.Models;
+using HotelReservation.Api.Helpers;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using Microsoft.AspNetCore.Authorization;
@@ -52,6 +53,17 @@ namespace HotelReservation.Api.Controllers
         public IActionResult TokenVerification()
         {
             return Ok();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("checkPassword")]
+        public async Task<IActionResult> CheckPassword([FromBody] LoginUserRequestModel user)
+        {
+            var userId = TokenData.GetIdFromClaims(User.Claims);
+            var result = await  _authService.IsPasswordCorrect(userId,user.Password);
+            return Ok(result);
+
         }
     }
 }

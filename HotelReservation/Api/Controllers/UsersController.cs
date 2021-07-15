@@ -10,6 +10,9 @@ using HotelReservation.Api.Models.ResponseModels;
 using HotelReservation.Api.Policy;
 using Microsoft.AspNetCore.Authorization;
 using System;
+using System.Collections;
+using HotelReservation.Api.Helpers;
+using HotelReservation.Data.Entities;
 
 namespace HotelReservation.Api.Controllers
 {
@@ -25,33 +28,74 @@ namespace HotelReservation.Api.Controllers
             _mapper = new Mapper(cfg.UsersConfiguration);
             _usersService = usersService;
         }
+
         [HttpGet]
         [Authorize(Policy = Policies.AdminPermission)]
         [Route("{hotelId}/getPotentialHotelAdmins")]
         public async Task<IActionResult> Get(Guid hotelId)
         {
             var responseUsers = _mapper.Map<List<UserResponseViewModel>>(await _usersService.GetAll(hotelId));
-           return Ok(responseUsers);
+            return Ok(responseUsers);
         }
 
         [HttpGet]
+        [Authorize]
         [Route("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var responseUser = _mapper.Map<UserModel, UserResponseViewModel>(await _usersService.GetById(id));
+            var userId = TokenData.GetIdFromClaims(User.Claims);
+            var userModel = await _usersService.GetById(id, userId);
+            var responseUser = _mapper.Map<UserModel, UserResponseViewModel>(userModel);
             return Ok(responseUser);
         }
+
+        [HttpGet]
+        [Authorize(Policy = Policies.AdminPermission)]
+        [Route("emails")]
+
+        public IActionResult GetUsersEmails()
+        {
+            var emails = _usersService.GetUsersEmails();
+            return Ok(emails);
+        }
+
+        [HttpGet]
+        [Authorize(Policy = Policies.AdminPermission)]
+        [Route("surnames")]
+
+        public IActionResult GetUsersSurnames()
+        {
+            var emails = _usersService.GetUsersSurnames();
+            return Ok(emails);
+        }
+
+        [HttpGet]
+        [Authorize(Policy = Policies.AdminPermission)]
+        public async Task<IActionResult> GetUsersPage([FromQuery] Pagination pagination)
+        {
+            var userId = TokenData.GetIdFromClaims(User.Claims);
+            var pageInfo = await _usersService.GetUsersPage(userId, pagination);
+            var userResponseModels = _mapper.Map <ICollection<UserResponseViewModel>>(pageInfo.Items);
+            var page = new PageInfo<UserResponseViewModel>
+            {
+                Items = userResponseModels,
+                NumberOfItems = pageInfo.NumberOfItems,
+                NumberOfPages = pageInfo.NumberOfPages
+            };
+            return Ok(page);
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> AddUser([FromBody] UserRequestModel user)
         {
-            var userModel = _mapper.Map<UserRequestModel,UserModel>(user);
+            var userModel = _mapper.Map<UserRequestModel, UserModel>(user);
             await _usersService.AddUser(userModel);
             return Ok("added successfully");
         }
 
         [HttpDelete]
-        [Authorize(Policy = "AdminPermission")]
+        [Authorize(Policy = Policies.AdminPermission)]
         [Route("{id}")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
@@ -62,11 +106,17 @@ namespace HotelReservation.Api.Controllers
         [HttpPut]
         [Authorize]
         [Route("{id}")]
-        public IActionResult Update(Guid id, [FromBody] UserResponseViewModel user)
+        public async Task<IActionResult> Update(Guid id, [FromBody] UserRequestModel user)
         {
-            var userModel = _mapper.Map<UserResponseViewModel, UserModel>(user);
-            _usersService.Update(id, userModel);
-            return Ok($"user with id {id} updated successfully");
+
+            var userId = TokenData.GetIdFromClaims(User.Claims);
+            var userModel = _mapper.Map<UserRequestModel, UserModel>(user);
+            var token = await _usersService.Update(id, userId, userModel);
+            var tokenModel = new TokenModel
+            {
+                Token = token
+            };
+            return Ok(tokenModel);
         }
     }
 }

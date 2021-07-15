@@ -4,14 +4,16 @@ using HotelReservation.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HotelReservation.Api.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20210713081923_AddUnblockDateToRoom")]
+    partial class AddUnblockDateToRoom
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -212,15 +214,12 @@ namespace HotelReservation.Api.Migrations
                     b.Property<decimal>("PaymentPerDay")
                         .HasColumnType("decimal(18,4)");
 
-                    b.Property<string>("PotentialCustomerId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("RoomNumber")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.Property<DateTime?>("UnblockDate")
+                    b.Property<DateTime>("UnblockDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");

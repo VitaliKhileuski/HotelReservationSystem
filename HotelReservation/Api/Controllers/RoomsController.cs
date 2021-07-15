@@ -38,10 +38,10 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Route("{hotelId}")]
-        public async Task<IActionResult> GetPage(Guid hotelId,DateTime checkInDate,DateTime checkOutDate, [FromQuery] Pagination filter)
+        public async Task<IActionResult> GetPage(Guid hotelId,string userId, DateTime checkInDate,DateTime checkOutDate, [FromQuery] Pagination filter)
         {
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
-            var pageInfo = await _roomsService.GetRoomsPage(hotelId,checkInDate,checkOutDate,validFilter);
+            var pageInfo = await _roomsService.GetRoomsPage(hotelId,userId,checkInDate,checkOutDate,validFilter);
             var rooms = _mapper.Map<List<RoomResponseModel>>(pageInfo.Items);
             var responsePageInfo = new PageInfo<RoomResponseModel>
             {
@@ -74,6 +74,16 @@ namespace HotelReservation.Api.Controllers
             await _roomsService.AddRoom(hotelId, roomModel, userId);
             return Ok("Added successfully");
             
+        }
+
+        [HttpPut]
+        [Authorize]
+        [Route("{roomId}/block")]
+        public async Task<IActionResult> BlockRoomById(Guid roomId)
+        {
+            var userId = TokenData.GetIdFromClaims(User.Claims);
+            await _roomsService.BlockRoomById(roomId,userId);
+            return Ok();
         }
 
         [HttpDelete]

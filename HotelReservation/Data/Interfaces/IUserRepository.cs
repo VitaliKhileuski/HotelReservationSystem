@@ -8,5 +8,7 @@ namespace HotelReservation.Data.Interfaces
     {
         Task<UserEntity> GetAsyncByEmail(string email);
         IEnumerable<UserEntity> GetUsers(HotelEntity hotel);
+        IEnumerable<string> GetUsersSurnames();
+        IEnumerable<string> GetUsersEmails();
     }
 }

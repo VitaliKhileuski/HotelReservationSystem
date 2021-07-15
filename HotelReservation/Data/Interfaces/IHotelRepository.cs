@@ -8,5 +8,6 @@ namespace HotelReservation.Data.Interfaces
     {
         IEnumerable<HotelEntity> GetHotelAdminsHotels(int pageNumber, int pageSize, UserEntity hotelAdmin);
         Task<int> GetHotelAdminsHotelsCount(UserEntity hotelAdmin);
+         IEnumerable<string> GetHotelNames();
     }
 }

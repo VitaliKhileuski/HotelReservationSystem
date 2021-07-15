@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
+using Business.Helpers;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
@@ -49,7 +51,7 @@ namespace Business.Services
             return  _mapper.Map<ICollection<UserModel>>(users);
         }
 
-        public async Task<UserModel> GetById(Guid userId)
+        public async Task<UserModel> GetById(Guid id,string userId)
         {
             var userEntity = await _userRepository.GetAsync(userId);
             if (userEntity == null)
@@ -57,7 +59,13 @@ namespace Business.Services
                 _logger.LogError($"user with {userId} id not exists");
                 throw new NotFoundException($"user with {userId} id not exists");
             }
-            return _mapper.Map<UserEntity,UserModel>(userEntity);
+
+            if (PermissionVerifier.CheckUserPermission(userEntity, userId))
+            {
+                return _mapper.Map<UserEntity, UserModel>(userEntity);
+            }
+
+            throw new BadRequestException("you don't have permissions to get user info");
         }
 
         public async Task AddUser(UserModel user)
@@ -102,7 +110,7 @@ namespace Business.Services
             await _userRepository.DeleteAsync(userId);
         }
 
-        public async Task Update(Guid userId,UserModel user)
+        public async Task<PageInfo<UserModel>> GetUsersPage(string userId, Pagination pagination)
         {
             var userEntity = await _userRepository.GetAsync(userId);
             if (userEntity == null)
@@ -110,12 +118,73 @@ namespace Business.Services
                 _logger.LogError($"user with {userId} id not exists");
                 throw new NotFoundException($"user with {userId} id not exists");
             }
-            var newUser = _mapper.Map<UserModel,UserEntity>(user);
-            userEntity.Email = newUser.Email;
-            userEntity.Name = newUser.Name;
-            userEntity.Surname = newUser.Surname;
-            userEntity.PhoneNumber = userEntity.PhoneNumber;
-            await _userRepository.UpdateAsync(userEntity);
+            var users = _mapper.Map < ICollection < UserModel>>(_userRepository.GetAll());
+            var page = PageInfoCreator<UserModel>.GetPageInfo(users, pagination);
+            return page;
+        }
+
+public async Task<string> Update(Guid id,string userId, UserModel user)
+        {
+            var userEntity = await _userRepository.GetAsync(id);
+            if (userEntity == null)
+            {
+                _logger.LogError($"user with {userId} id not exists");
+                throw new NotFoundException($"user with {userId} id not exists");
+            }
+
+            if (PermissionVerifier.CheckUserPermission(userEntity, userId))
+            {
+                var newUser = _mapper.Map<UserModel, UserEntity>(user);
+
+                if (newUser.Email != null && userEntity.Email!=user.Email)
+                {
+                    var dbUser = await _userRepository.GetAsyncByEmail(user.Email);
+                    if (dbUser != null)
+                    {
+                        _logger.LogError("user with that email already exists");
+                        throw new BadRequestException("user with that email already exists");
+                    }
+                    userEntity.Email = newUser.Email;
+                }
+
+                if (newUser.Name != null)
+                {
+                    userEntity.Name = newUser.Name;
+                }
+
+                if (newUser.Surname != null)
+                {
+                    userEntity.Surname = newUser.Surname;
+                }
+
+                if (newUser.PhoneNumber != null)
+                {
+                    userEntity.PhoneNumber = newUser.PhoneNumber;
+                }
+
+                if (newUser.Password != null)
+                {
+                    userEntity.Password = _hash.GenerateHash(newUser.Password, SHA256.Create());
+                }
+
+                await _userRepository.UpdateAsync(userEntity);
+                var newToken = _tokenService.BuildToken(userEntity.Email, userEntity.Role.Name, userEntity.Name,
+                    userEntity.Id);
+                return newToken;
+            }
+
+            throw new BadRequestException("you don't have any permissions");
+        }
+
+        public IEnumerable<string> GetUsersEmails()
+        {
+          var emails = _userRepository.GetUsersEmails();
+          return emails;
+        }
+        public IEnumerable<string> GetUsersSurnames()
+        {
+            var surnames = _userRepository.GetUsersSurnames();
+            return surnames;
         }
     }
 }

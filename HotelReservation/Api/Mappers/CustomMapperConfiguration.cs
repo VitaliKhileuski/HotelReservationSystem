@@ -24,6 +24,7 @@ namespace HotelReservation.Api.Mappers
             RoomConfiguration = new RoomConfiguration();
             UsersConfiguration = new MapperConfiguration(x =>
             {
+                x.CreateMap<UserRequestModel, UserModel>();
                 x.CreateMap<LoginUserRequestModel, LoginUserModel>();
                 x.CreateMap<RegisterUserRequestModel, RegisterUserModel>();
                 x.CreateMap<UserRequestModel, UserModel>();
@@ -31,6 +32,7 @@ namespace HotelReservation.Api.Mappers
                 x.CreateMap<RoleModel, RoleResponseModel>();
                 x.CreateMap<OrderModel, OrderResponseModel>();
                 x.CreateMap<RoomModel, RoomResponseModel>();
+                x.CreateMap<ServiceQuantityModel, ServiceQuantityResponseModel>();
                 x.CreateMap<ServiceModel, ServiceResponseModel>();
                 x.CreateMap<HotelModel, HotelResponseModel>()
                     .ForMember(x => x.Rooms, opt => opt.Ignore())

@@ -8,9 +8,12 @@ namespace Business.Interfaces
     public interface IUserService
     {
         Task<ICollection<UserModel>> GetAll(Guid hotelId);
-        Task<UserModel> GetById(Guid userId);
+        Task<UserModel> GetById(Guid id,string userId);
         Task DeleteById(Guid userId);
-        Task Update(Guid id, UserModel user); 
+        Task<string> Update(Guid id,string userId, UserModel user); 
         Task AddUser(UserModel user);
+        IEnumerable<string> GetUsersSurnames();
+        public IEnumerable<string> GetUsersEmails();
+        Task<PageInfo<UserModel>> GetUsersPage(string userId, Pagination pagination);
     }
 }

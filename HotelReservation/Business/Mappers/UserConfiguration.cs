@@ -16,12 +16,16 @@ namespace Business.Mappers
             x.CreateMap<RegisterUserModel, UserEntity>().ReverseMap();
             x.CreateMap<RoleEntity, RoleModel>();
             x.CreateMap<OrderEntity, OrderModel>();
+            x.CreateMap<ServiceEntity, ServiceModel>();
             x.CreateMap<RoomEntity, RoomModel>()
                 .ForMember(x => x.Orders, opt => opt.Ignore());
+            x.CreateMap<ServiceQuantityEntity, ServiceQuantityModel>();
             x.CreateMap<ServiceEntity, ServiceModel>()
                 .ForMember(x => x.Rooms, opt => opt.Ignore());
             x.CreateMap<HotelEntity, HotelModel>();
             x.CreateMap<LocationEntity, LocationModel>();
+            x.CreateMap<AttachmentEntity, AttachmentModel>();
+            x.CreateMap<FileContentEntity, FileContentModel>();
         })
         {
 
