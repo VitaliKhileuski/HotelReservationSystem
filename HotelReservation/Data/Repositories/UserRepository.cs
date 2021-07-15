@@ -26,5 +26,15 @@ namespace HotelReservation.Data.Repositories
         {
             return _db.Users.Where(x => x.Role.Name != Roles.Admin).Where(x => !x.OwnedHotels.Contains(hotel));
         }
+
+        public IEnumerable<string> GetUsersEmails()
+        {
+            return _db.Users.Select(x => x.Email);
+        }
+
+        public IEnumerable<string> GetUsersSurnames()
+        {
+            return _db.Users.Select(x => x.Surname).Distinct();
+        }
     }
 }

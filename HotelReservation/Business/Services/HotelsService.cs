@@ -216,7 +216,7 @@ namespace Business.Services
             return _userMapper.Map<ICollection<UserModel>>(hotelEntity.Admins);
         }
 
-        public async Task<PageInfo<HotelModel>> GetFilteredHotels(string userId, DateTime checkInDate,DateTime checkOutDate,string country,string city, Pagination hotelPagination)
+        public async Task<PageInfo<HotelModel>> GetFilteredHotels(string userId, DateTime checkInDate,DateTime checkOutDate,string country,string city, string hotelName, Pagination hotelPagination)
         {
             var filteredHotels = new List<HotelEntity>();
             bool flag = false;
@@ -229,13 +229,17 @@ namespace Business.Services
             {
                 city = null;
             }
+
+            if (hotelName == "null")
+            {
+                hotelName = null;
+            }
             foreach (var hotel in hotels)
             {
-                if (string.IsNullOrEmpty(country) || hotel.Location.Country == country)
+                
+                if ((string.IsNullOrEmpty(country) || hotel.Location.Country == country) && (string.IsNullOrEmpty(city) || hotel.Location.City == city) && (string.IsNullOrEmpty(hotelName) || hotel.Name==hotelName))
                 {
-                    if (string.IsNullOrEmpty(city) || hotel.Location.City == city)
-                    {
-                        if (hotel.Rooms != null)
+                    if (hotel.Rooms != null)
                         {
                             foreach (var room in hotel.Rooms)
                             {
@@ -268,7 +272,7 @@ namespace Business.Services
                         {
                             filteredHotels.Add(hotel);
                         }
-                    }
+                    
                 }
             }
 
@@ -313,6 +317,11 @@ namespace Business.Services
                                                                             x.Location.City == hotel.Location.City &&
                                                                             x.Location.Street == hotel.Location.Street && x.Location.BuildingNumber == hotel.Location.BuildingNumber);
             return hotelEntity == null;
+        }
+
+        public IEnumerable<string> GetHotelNames()
+        {
+            return _hotelRepository.GetHotelNames();
         }
     }
 }

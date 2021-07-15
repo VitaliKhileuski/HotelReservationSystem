@@ -23,5 +23,10 @@ namespace HotelReservation.Data.Repositories
         {
             return await _db.Hotels.Where(x => x.Admins.Contains(hotelAdmin)).CountAsync();
         }
+
+        public IEnumerable<string> GetHotelNames()
+        {
+            return _db.Hotels.Select(x => x.Name).Distinct();
+        }
     }
 }

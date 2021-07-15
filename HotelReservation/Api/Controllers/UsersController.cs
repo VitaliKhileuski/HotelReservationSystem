@@ -51,6 +51,26 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Authorize(Policy = Policies.AdminPermission)]
+        [Route("emails")]
+
+        public IActionResult GetUsersEmails()
+        {
+            var emails = _usersService.GetUsersEmails();
+            return Ok(emails);
+        }
+
+        [HttpGet]
+        [Authorize(Policy = Policies.AdminPermission)]
+        [Route("surnames")]
+
+        public IActionResult GetUsersSurnames()
+        {
+            var emails = _usersService.GetUsersSurnames();
+            return Ok(emails);
+        }
+
+        [HttpGet]
+        [Authorize(Policy = Policies.AdminPermission)]
         public async Task<IActionResult> GetUsersPage([FromQuery] Pagination pagination)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);

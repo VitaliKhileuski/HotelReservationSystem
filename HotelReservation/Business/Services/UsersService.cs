@@ -175,5 +175,16 @@ public async Task<string> Update(Guid id,string userId, UserModel user)
 
             throw new BadRequestException("you don't have any permissions");
         }
+
+        public IEnumerable<string> GetUsersEmails()
+        {
+          var emails = _userRepository.GetUsersEmails();
+          return emails;
+        }
+        public IEnumerable<string> GetUsersSurnames()
+        {
+            var surnames = _userRepository.GetUsersSurnames();
+            return surnames;
+        }
     }
 }

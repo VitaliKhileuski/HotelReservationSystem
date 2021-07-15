@@ -12,6 +12,8 @@ namespace Business.Interfaces
         Task DeleteById(Guid userId);
         Task<string> Update(Guid id,string userId, UserModel user); 
         Task AddUser(UserModel user);
+        IEnumerable<string> GetUsersSurnames();
+        public IEnumerable<string> GetUsersEmails();
         Task<PageInfo<UserModel>> GetUsersPage(string userId, Pagination pagination);
     }
 }
