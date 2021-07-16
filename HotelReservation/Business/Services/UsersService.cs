@@ -110,7 +110,7 @@ namespace Business.Services
             await _userRepository.DeleteAsync(userId);
         }
 
-        public async Task<PageInfo<UserModel>> GetUsersPage(string userId, Pagination pagination)
+        public async Task<PageInfo<UserModel>> GetUsersPage(string email,string surname, string userId, Pagination pagination)
         {
             var userEntity = await _userRepository.GetAsync(userId);
             if (userEntity == null)
@@ -118,12 +118,34 @@ namespace Business.Services
                 _logger.LogError($"user with {userId} id not exists");
                 throw new NotFoundException($"user with {userId} id not exists");
             }
-            var users = _mapper.Map < ICollection < UserModel>>(_userRepository.GetAll());
-            var page = PageInfoCreator<UserModel>.GetPageInfo(users, pagination);
+
+            if (email == "null")
+            {
+                email = null;
+            }
+
+            if (surname == "null")
+            {
+                surname = null;
+            }
+            ICollection<UserModel> filteredUsers = new List<UserModel>();
+            if (surname != null)
+            {
+                filteredUsers = _mapper.Map<ICollection<UserModel>>(_userRepository.GetFilteredUsersBySurname(surname));
+            }
+            else if (email != null)
+            {
+                filteredUsers.Add(_mapper.Map<UserEntity,UserModel>(await _userRepository.GetAsyncByEmail(email)));
+            }
+            else
+            {
+                filteredUsers = _mapper.Map<ICollection<UserModel>>(_userRepository.GetAll());
+            }
+            var page = PageInfoCreator<UserModel>.GetPageInfo(filteredUsers, pagination);
             return page;
         }
 
-public async Task<string> Update(Guid id,string userId, UserModel user)
+        public async Task<string> Update(Guid id,string userId, UserModel user)
         {
             var userEntity = await _userRepository.GetAsync(id);
             if (userEntity == null)
@@ -184,6 +206,18 @@ public async Task<string> Update(Guid id,string userId, UserModel user)
         public IEnumerable<string> GetUsersSurnames()
         {
             var surnames = _userRepository.GetUsersSurnames();
+            return surnames;
+        }
+
+        public IEnumerable<string> GetHotelAdminsEmails()
+        {
+            var emails = _userRepository.GetHotelAdminsEmails();
+            return emails;
+        }
+
+        public IEnumerable<string> GetHotelAdminsSurnames()
+        {
+            var surnames = _userRepository.GetHotelAdminsSurnames();
             return surnames;
         }
     }

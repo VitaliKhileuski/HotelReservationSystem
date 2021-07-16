@@ -216,7 +216,7 @@ namespace Business.Services
             return _userMapper.Map<ICollection<UserModel>>(hotelEntity.Admins);
         }
 
-        public async Task<PageInfo<HotelModel>> GetFilteredHotels(string userId, DateTime checkInDate,DateTime checkOutDate,string country,string city, string hotelName, Pagination hotelPagination)
+        public async Task<PageInfo<HotelModel>> GetFilteredHotels(string userId, DateTime? checkInDate,DateTime? checkOutDate,string country,string city, string hotelName,string email,string surname, Pagination hotelPagination)
         {
             var filteredHotels = new List<HotelEntity>();
             bool flag = false;
@@ -233,6 +233,23 @@ namespace Business.Services
             if (hotelName == "null")
             {
                 hotelName = null;
+            }
+
+            if (email == "null")
+            {
+                email = null;
+            }
+
+
+            if (surname == "null")
+            {
+                surname = null;
+            }
+
+            var hotelAdmin = await _userRepository.GetAsyncByEmail(email);
+            if (hotelAdmin != null)
+            {
+                filteredHotels = hotelName != null ? hotelAdmin.OwnedHotels.Where(x => x.Name == hotelName).ToList() : hotelAdmin.OwnedHotels.ToList();
             }
             foreach (var hotel in hotels)
             {

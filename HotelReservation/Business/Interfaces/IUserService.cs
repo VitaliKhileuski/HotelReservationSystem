@@ -14,6 +14,9 @@ namespace Business.Interfaces
         Task AddUser(UserModel user);
         IEnumerable<string> GetUsersSurnames();
         public IEnumerable<string> GetUsersEmails();
-        Task<PageInfo<UserModel>> GetUsersPage(string userId, Pagination pagination);
+        public IEnumerable<string> GetHotelAdminsEmails();
+        public IEnumerable<string> GetHotelAdminsSurnames();
+        Task<PageInfo<UserModel>> GetUsersPage(string email, string surname,string userId, Pagination pagination);
+        
     }
 }
