@@ -38,10 +38,10 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Route("{hotelId}")]
-        public async Task<IActionResult> GetPage(Guid hotelId,string userId, DateTime checkInDate,DateTime checkOutDate, [FromQuery] Pagination filter)
+        public async Task<IActionResult> GetPage(Guid hotelId,string userId,string roomNumber, DateTime checkInDate,DateTime checkOutDate, [FromQuery] Pagination filter)
         {
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
-            var pageInfo = await _roomsService.GetRoomsPage(hotelId,userId,checkInDate,checkOutDate,validFilter);
+            var pageInfo = await _roomsService.GetRoomsPage(hotelId,userId, roomNumber,checkInDate,checkOutDate,validFilter);
             var rooms = _mapper.Map<List<RoomResponseModel>>(pageInfo.Items);
             var responsePageInfo = new PageInfo<RoomResponseModel>
             {
@@ -73,7 +73,6 @@ namespace HotelReservation.Api.Controllers
             var roomModel = _mapper.Map<RoomRequestModel, RoomModel>(room);
             await _roomsService.AddRoom(hotelId, roomModel, userId);
             return Ok("Added successfully");
-            
         }
 
         [HttpPut]

@@ -91,6 +91,16 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Authorize(Policy = Policies.AllAdminsPermission)]
+        [Route("{hotelId}/getRoomsNumbers")]
+        public async Task<IActionResult> GetHotelRoomsNumbers(Guid hotelId)
+        {
+            var userId = TokenData.GetIdFromClaims(User.Claims);
+            var roomsNumbers = await _hotelsService.GetHotelRoomsNumbers(hotelId, userId);
+            return Ok(roomsNumbers);
+        }
+
+        [HttpGet]
+        [Authorize(Policy = Policies.AllAdminsPermission)]
         [Route("{hotelId}/getHotelAdmins")]
         public async Task<IActionResult> GetHotelAdmins(Guid hotelId)
         {

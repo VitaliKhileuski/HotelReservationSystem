@@ -46,12 +46,12 @@ namespace HotelReservation.Data.Repositories
 
         public IEnumerable<string> GetHotelAdminsEmails()
         {
-            return _db.Users.Where(x => x.Role.Name == Roles.Admin || x.Role.Name == Roles.HotelAdmin)
+            return _db.Users.Where(x => x.Role.Name == Roles.HotelAdmin)
                 .Select(x => x.Email);
         }
         public IEnumerable<string> GetHotelAdminsSurnames()
         {
-            return _db.Users.Where(x => x.Role.Name == Roles.Admin || x.Role.Name == Roles.HotelAdmin)
+            return _db.Users.Where(x => x.Role.Name == Roles.HotelAdmin)
                 .Select(x => x.Surname).Distinct();
         }
     }

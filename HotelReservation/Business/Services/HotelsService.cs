@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.Configuration.Annotations;
 using Business.Exceptions;
 using Business.Helpers;
 using Business.Interfaces;
@@ -246,50 +248,63 @@ namespace Business.Services
                 surname = null;
             }
 
+            if (!string.IsNullOrEmpty(surname))
+            {
+                filteredHotels.AddRange(from hotel in hotels from admin in hotel.Admins where admin.Surname == surname select hotel);
+
+                if (string.IsNullOrEmpty(hotelName))
+                    return PageInfoCreator<HotelModel>.GetPageInfo(
+                        _hotelMapper.Map<ICollection<HotelModel>>(filteredHotels), hotelPagination);
+                var filteredItems = filteredHotels.Where(x => x.Name == hotelName);
+                return PageInfoCreator<HotelModel>.GetPageInfo(_hotelMapper.Map<ICollection<HotelModel>>(filteredItems), hotelPagination);
+            }
+
             var hotelAdmin = await _userRepository.GetAsyncByEmail(email);
             if (hotelAdmin != null)
             {
-                filteredHotels = hotelName != null ? hotelAdmin.OwnedHotels.Where(x => x.Name == hotelName).ToList() : hotelAdmin.OwnedHotels.ToList();
+                filteredHotels = hotelName != null
+                    ? hotelAdmin.OwnedHotels.Where(x => x.Name == hotelName).ToList()
+                    : hotelAdmin.OwnedHotels.ToList();
+                return PageInfoCreator<HotelModel>.GetPageInfo(_hotelMapper.Map<ICollection<HotelModel>>(filteredHotels), hotelPagination);
+
             }
             foreach (var hotel in hotels)
             {
-                
-                if ((string.IsNullOrEmpty(country) || hotel.Location.Country == country) && (string.IsNullOrEmpty(city) || hotel.Location.City == city) && (string.IsNullOrEmpty(hotelName) || hotel.Name==hotelName))
+                if ((!string.IsNullOrEmpty(country) && hotel.Location.Country != country) ||
+                    (!string.IsNullOrEmpty(city) && hotel.Location.City != city) ||
+                    (!string.IsNullOrEmpty(hotelName) && hotel.Name != hotelName)) continue;
+                if (hotel.Rooms != null)
                 {
-                    if (hotel.Rooms != null)
+                    foreach (var room in hotel.Rooms)
+                    {
+                        if (room.UnblockDate==null || room.PotentialCustomerId == userId || DateTime.Now > room.UnblockDate)
                         {
-                            foreach (var room in hotel.Rooms)
+                            if (room.Orders != null && room.Orders.Count != 0)
                             {
-                                if (room.UnblockDate==null || room.PotentialCustomerId == userId || DateTime.Now > room.UnblockDate)
+                                if (room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
+                                                               checkOutDate > order.StartDate && checkOutDate < order.EndDate ||
+                                                               order.StartDate > checkInDate && order.StartDate < checkOutDate ||
+                                                               order.EndDate > checkInDate && order.EndDate < checkOutDate)))
                                 {
-                                    if (room.Orders != null && room.Orders.Count != 0)
-                                    {
-                                        if (room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
-                                                                       checkOutDate > order.StartDate && checkOutDate < order.EndDate ||
-                                                                       order.StartDate > checkInDate && order.StartDate < checkOutDate ||
-                                                                       order.EndDate > checkInDate && order.EndDate < checkOutDate)))
-                                        {
-                                            filteredHotels.Add(hotel);
-                                            flag = true;
-                                        }
-
-                                        if (flag) break;
-                                    }
-                                    else
-                                    {
-                                        filteredHotels.Add(hotel);
-                                        break;
-                                    }
+                                    filteredHotels.Add(hotel);
+                                    flag = true;
                                 }
-                                
+
+                                if (flag) break;
                             }
+                            else
+                            {
+                                filteredHotels.Add(hotel);
+                                break;
+                            }
+                        }
+                                
+                    }
                         
-                        }
-                        else
-                        {
-                            filteredHotels.Add(hotel);
-                        }
-                    
+                }
+                else
+                {
+                    filteredHotels.Add(hotel);
                 }
             }
 
@@ -317,6 +332,30 @@ namespace Business.Services
 
             hotelEntity.Admins.Remove(userEntity);
             await _hotelRepository.UpdateAsync(hotelEntity);
+        }
+
+        public async Task<IEnumerable<string>> GetHotelRoomsNumbers(Guid hotelId, string userId)
+        {
+            var userEntity = await _userRepository.GetAsync(userId);
+            if (userEntity == null)
+            {
+                _logger.LogError($"user with {userId} id not exists");
+                throw new NotFoundException($"user with {userId} id not exists");
+            }
+            var hotelEntity = await _hotelRepository.GetAsync(hotelId);
+            if (hotelEntity == null)
+            {
+                _logger.LogError($"hotel with {hotelId} id not exists");
+                throw new NotFoundException($"hotel with {hotelId} id not exists");
+            }
+
+            if(PermissionVerifier.CheckHotelPermission(hotelEntity, userEntity))
+            {
+                var roomsNumbers = hotelEntity.Rooms.Select(x => x.RoomNumber);
+                return roomsNumbers;
+            }
+
+            throw new BadRequestException("you don't have permissions to do this action");
         }
 
         public bool IsLocationEmpty(HotelEntity hotel, LocationEntity oldLocation = null)

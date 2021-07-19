@@ -77,7 +77,7 @@ namespace Business.Services
                 await _roomRepository.UpdateAsync(roomEntity);
             }
         }
-        public async Task<PageInfo<RoomModel>> GetRoomsPage(Guid hotelId,string userId, DateTime checkInDate,DateTime checkOutDate, Pagination roomPagination)
+        public async Task<PageInfo<RoomModel>> GetRoomsPage(Guid hotelId,string userId,string roomNumber, DateTime checkInDate,DateTime checkOutDate, Pagination roomPagination)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -86,12 +86,23 @@ namespace Business.Services
                 throw new NotFoundException($"hotel with {hotelId} id not exists");
             }
 
+            if (roomNumber == "null")
+            {
+                roomNumber = null;
+            }
+            
             var filteredRooms = new List<RoomEntity>();
+            if (!string.IsNullOrEmpty(roomNumber))
+            {
+                filteredRooms.AddRange(hotelEntity.Rooms.Where(x => x.RoomNumber==roomNumber));
+                return  PageInfoCreator<RoomModel>.GetPageInfo(_roomMapper.Map<ICollection<RoomModel>>(filteredRooms), roomPagination);
+
+            }
             if (hotelEntity.Rooms != null)
             {
                 foreach (var room in hotelEntity.Rooms)
                 {
-
+                    
                     if (room.UnblockDate==null || room.PotentialCustomerId==userId ||  DateTime.Now > room.UnblockDate)
                     {
 
