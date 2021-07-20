@@ -220,5 +220,11 @@ namespace Business.Services
             var surnames = _userRepository.GetHotelAdminsSurnames();
             return surnames;
         }
+
+        public IEnumerable<string> GetCustomersSurnames()
+        {
+            var surnames = _userRepository.GetCustomersSurnames();
+            return surnames;
+        }
     }
 }

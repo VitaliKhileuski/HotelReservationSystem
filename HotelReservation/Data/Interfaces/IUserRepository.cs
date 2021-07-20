@@ -13,5 +13,6 @@ namespace HotelReservation.Data.Interfaces
         IEnumerable<UserEntity> GetFilteredUsersBySurname(string surname);
         IEnumerable<string> GetHotelAdminsEmails();
         IEnumerable<string> GetHotelAdminsSurnames();
+        IEnumerable<string> GetCustomersSurnames();
     }
 }

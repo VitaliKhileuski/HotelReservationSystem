@@ -141,30 +141,43 @@ namespace Business.Services
             await _orderRepository.DeleteAsync(orderId);
         }
 
-        public async Task<PageInfo<OrderModel>> GetOrdersPage(string userId, Pagination pagination)
+        public async Task<PageInfo<OrderModel>> GetOrdersPage(string userId, string country, string city, string surname, Pagination pagination)
         {
+
+            if (country == "null")
+            {
+                country = null;
+            }
+
+            if (city == "null")
+            {
+                city = null;
+            }
+
+            if (surname == "null")
+            {
+                surname = null;
+            }
+
             var userEntity = await _userRepository.GetAsync(userId);
             if (userEntity == null)
             {
                 _logger.LogError($"user with {userId} id not exists");
                 throw new NotFoundException($"user with {userId} id not exists");
             }
-            switch (userEntity.Role.Name)
+
+            return userEntity.Role.Name switch
             {
-                case Roles.Admin:
-                     return GetOrdersForAdmin(pagination);
-                case Roles.HotelAdmin:
-                    return GetOrdersForHotelAdmin(userEntity, pagination);
-                case Roles.User:
-                   return GetOrdersForUser(userEntity, pagination);
-                default:
-                    return new PageInfo<OrderModel>();
-            }
+                Roles.Admin => GetOrdersForAdmin(country,city,surname,pagination),
+                Roles.HotelAdmin => GetOrdersForHotelAdmin(userEntity, pagination),
+                Roles.User => GetOrdersForUser(userEntity, pagination),
+                _ => new PageInfo<OrderModel>()
+            };
         }
 
-        private PageInfo<OrderModel> GetOrdersForAdmin(Pagination pagination)
+        private PageInfo<OrderModel> GetOrdersForAdmin(string country,string city,string surname,Pagination pagination)
         { 
-            var orderModels = _mapper.Map<ICollection<OrderModel>>(_orderRepository.GetAll());
+            var orderModels = _mapper.Map<ICollection<OrderModel>>(_orderRepository.GetFilteredOrders(country,city,surname));
             var page = PageInfoCreator<OrderModel>.GetPageInfo(orderModels,pagination);
             return page;
         }

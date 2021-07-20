@@ -102,6 +102,14 @@ namespace HotelReservation.Api.Controllers
             var surnames = _usersService.GetHotelAdminsSurnames();
             return Ok(surnames);
         }
+        [HttpGet]
+        [Authorize(Policy = Policies.AdminPermission)]
+        [Route("customersSurnames")]
+        public IActionResult GetCustomersSurnames()
+        {
+            var surnames = _usersService.GetCustomersSurnames();
+            return Ok(surnames);
+        }
 
         [HttpPost]
         public async Task<IActionResult> AddUser([FromBody] UserRequestModel user)

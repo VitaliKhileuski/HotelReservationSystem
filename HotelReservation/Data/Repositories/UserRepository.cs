@@ -54,5 +54,10 @@ namespace HotelReservation.Data.Repositories
             return _db.Users.Where(x => x.Role.Name == Roles.HotelAdmin)
                 .Select(x => x.Surname).Distinct();
         }
+
+        public IEnumerable<string> GetCustomersSurnames()
+        {
+            return _db.Users.Where(x => x.Orders.Count != 0).Select(x => x.Surname);
+        }
     }
 }

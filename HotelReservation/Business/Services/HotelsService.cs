@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.Configuration.Annotations;
@@ -220,9 +221,8 @@ namespace Business.Services
 
         public async Task<PageInfo<HotelModel>> GetFilteredHotels(string userId, DateTime? checkInDate,DateTime? checkOutDate,string country,string city, string hotelName,string email,string surname, Pagination hotelPagination)
         {
-            var filteredHotels = new List<HotelEntity>();
             bool flag = false;
-            var hotels = _hotelRepository.GetAll();
+            var userEntity = await _userRepository.GetAsync(userId);
             if (country == "null")
             {
                 country = null;
@@ -242,75 +242,63 @@ namespace Business.Services
                 email = null;
             }
 
-
             if (surname == "null")
             {
                 surname = null;
             }
 
-            if (!string.IsNullOrEmpty(surname))
+            var adminEntity = await _userRepository.GetAsync(userId);
+            var availableHotels = new List<HotelEntity>();
+            var filteredHotels = _hotelRepository.GetFilteredHotels(country, city, hotelName, email, surname);
+            if (adminEntity != null && adminEntity.Role.Name==Roles.User || adminEntity==null)
             {
-                filteredHotels.AddRange(from hotel in hotels from admin in hotel.Admins where admin.Surname == surname select hotel);
-
-                if (string.IsNullOrEmpty(hotelName))
-                    return PageInfoCreator<HotelModel>.GetPageInfo(
-                        _hotelMapper.Map<ICollection<HotelModel>>(filteredHotels), hotelPagination);
-                var filteredItems = filteredHotels.Where(x => x.Name == hotelName);
-                return PageInfoCreator<HotelModel>.GetPageInfo(_hotelMapper.Map<ICollection<HotelModel>>(filteredItems), hotelPagination);
-            }
-
-            var hotelAdmin = await _userRepository.GetAsyncByEmail(email);
-            if (hotelAdmin != null)
-            {
-                filteredHotels = hotelName != null
-                    ? hotelAdmin.OwnedHotels.Where(x => x.Name == hotelName).ToList()
-                    : hotelAdmin.OwnedHotels.ToList();
-                return PageInfoCreator<HotelModel>.GetPageInfo(_hotelMapper.Map<ICollection<HotelModel>>(filteredHotels), hotelPagination);
-
-            }
-            foreach (var hotel in hotels)
-            {
-                if ((!string.IsNullOrEmpty(country) && hotel.Location.Country != country) ||
-                    (!string.IsNullOrEmpty(city) && hotel.Location.City != city) ||
-                    (!string.IsNullOrEmpty(hotelName) && hotel.Name != hotelName)) continue;
-                if (hotel.Rooms != null)
+                foreach (var hotel in filteredHotels)
                 {
-                    foreach (var room in hotel.Rooms)
+                    if (hotel.Rooms != null)
                     {
-                        if (room.UnblockDate==null || room.PotentialCustomerId == userId || DateTime.Now > room.UnblockDate)
+                        foreach (var room in hotel.Rooms)
                         {
-                            if (room.Orders != null && room.Orders.Count != 0)
+                            if (room.UnblockDate == null || room.PotentialCustomerId == userId || DateTime.Now > room.UnblockDate)
                             {
-                                if (room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
-                                                               checkOutDate > order.StartDate && checkOutDate < order.EndDate ||
-                                                               order.StartDate > checkInDate && order.StartDate < checkOutDate ||
-                                                               order.EndDate > checkInDate && order.EndDate < checkOutDate)))
+                                if (room.Orders != null && room.Orders.Count != 0)
                                 {
-                                    filteredHotels.Add(hotel);
-                                    flag = true;
+                                    if (room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
+                                                                   checkOutDate > order.StartDate && checkOutDate < order.EndDate ||
+                                                                   order.StartDate > checkInDate && order.StartDate < checkOutDate ||
+                                                                   order.EndDate > checkInDate && order.EndDate < checkOutDate)))
+                                    {
+                                        availableHotels.Add(hotel);
+                                        flag = true;
+                                    }
+
+                                    if (flag) break;
                                 }
+                                else
+                                {
+                                    availableHotels.Add(hotel);
+                                    break;
+                                }
+                            }
 
-                                if (flag) break;
-                            }
-                            else
-                            {
-                                filteredHotels.Add(hotel);
-                                break;
-                            }
                         }
-                                
-                    }
-                        
-                }
-                else
-                {
-                    filteredHotels.Add(hotel);
-                }
-            }
 
-            var hotelModels = _hotelMapper.Map<ICollection<HotelModel>>(filteredHotels);
-            var hotelPageInfo = PageInfoCreator<HotelModel>.GetPageInfo(hotelModels, hotelPagination);
-            return hotelPageInfo;
+                    }
+                    else
+                    {
+                        availableHotels.Add(hotel);
+                    }
+                }
+                var hotelModels = _hotelMapper.Map<ICollection<HotelModel>>(availableHotels);
+                var hotelPageInfo = PageInfoCreator<HotelModel>.GetPageInfo(hotelModels, hotelPagination);
+                return hotelPageInfo;
+            }
+            else
+            {
+                var hotelModels = _hotelMapper.Map<ICollection<HotelModel>>(filteredHotels);
+                var hotelPageInfo = PageInfoCreator<HotelModel>.GetPageInfo(hotelModels, hotelPagination);
+                return hotelPageInfo;
+            }
+           
         }
 
         public async Task DeleteHotelAdmin(Guid hotelId, Guid userId)
