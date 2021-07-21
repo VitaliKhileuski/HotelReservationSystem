@@ -219,7 +219,7 @@ namespace Business.Services
             return _userMapper.Map<ICollection<UserModel>>(hotelEntity.Admins);
         }
 
-        public async Task<PageInfo<HotelModel>> GetFilteredHotels(string userId, DateTime? checkInDate,DateTime? checkOutDate,string country,string city, string hotelName,string email,string surname, Pagination hotelPagination)
+        public async Task<PageInfo<HotelModel>> GetFilteredHotels(string userId, DateTime? checkInDate,DateTime? checkOutDate,string country,string city, string hotelName,string email,string surname, Pagination hotelPagination,SortModel sortModel)
         {
             bool flag = false;
             var userEntity = await _userRepository.GetAsync(userId);
@@ -249,39 +249,34 @@ namespace Business.Services
 
             var adminEntity = await _userRepository.GetAsync(userId);
             var availableHotels = new List<HotelEntity>();
-            var filteredHotels = _hotelRepository.GetFilteredHotels(country, city, hotelName, email, surname);
+            var filteredHotels = _hotelRepository.GetFilteredHotels(country, city, hotelName, email, surname,sortModel.SortField,sortModel.Ascending);
             if (adminEntity != null && adminEntity.Role.Name==Roles.User || adminEntity==null)
             {
                 foreach (var hotel in filteredHotels)
                 {
                     if (hotel.Rooms != null)
                     {
-                        foreach (var room in hotel.Rooms)
+                        foreach (var room in hotel.Rooms.Where(room => room.UnblockDate == null || room.PotentialCustomerId == userId || DateTime.Now > room.UnblockDate))
                         {
-                            if (room.UnblockDate == null || room.PotentialCustomerId == userId || DateTime.Now > room.UnblockDate)
+                            if (room.Orders != null && room.Orders.Count != 0)
                             {
-                                if (room.Orders != null && room.Orders.Count != 0)
-                                {
-                                    if (room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
-                                                                   checkOutDate > order.StartDate && checkOutDate < order.EndDate ||
-                                                                   order.StartDate > checkInDate && order.StartDate < checkOutDate ||
-                                                                   order.EndDate > checkInDate && order.EndDate < checkOutDate)))
-                                    {
-                                        availableHotels.Add(hotel);
-                                        flag = true;
-                                    }
-
-                                    if (flag) break;
-                                }
-                                else
+                                if (room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
+                                                               checkOutDate > order.StartDate && checkOutDate < order.EndDate ||
+                                                               order.StartDate > checkInDate && order.StartDate < checkOutDate ||
+                                                               order.EndDate > checkInDate && order.EndDate < checkOutDate)))
                                 {
                                     availableHotels.Add(hotel);
-                                    break;
+                                    flag = true;
                                 }
+
+                                if (flag) break;
                             }
-
+                            else
+                            {
+                                availableHotels.Add(hotel);
+                                break;
+                            }
                         }
-
                     }
                     else
                     {

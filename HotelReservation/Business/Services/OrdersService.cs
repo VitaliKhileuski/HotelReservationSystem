@@ -141,7 +141,7 @@ namespace Business.Services
             await _orderRepository.DeleteAsync(orderId);
         }
 
-        public async Task<PageInfo<OrderModel>> GetOrdersPage(string userId, string country, string city, string surname, Pagination pagination)
+        public async Task<PageInfo<OrderModel>> GetOrdersPage(string userId, string country, string city, string surname, Pagination pagination,SortModel sortModel)
         {
 
             if (country == "null")
@@ -168,16 +168,16 @@ namespace Business.Services
 
             return userEntity.Role.Name switch
             {
-                Roles.Admin => GetOrdersForAdmin(country,city,surname,pagination),
+                Roles.Admin => GetOrdersForAdmin(country,city,surname,pagination,sortModel),
                 Roles.HotelAdmin => GetOrdersForHotelAdmin(userEntity, pagination),
                 Roles.User => GetOrdersForUser(userEntity, pagination),
                 _ => new PageInfo<OrderModel>()
             };
         }
 
-        private PageInfo<OrderModel> GetOrdersForAdmin(string country,string city,string surname,Pagination pagination)
+        private PageInfo<OrderModel> GetOrdersForAdmin(string country,string city,string surname,Pagination pagination,SortModel sortModel)
         { 
-            var orderModels = _mapper.Map<ICollection<OrderModel>>(_orderRepository.GetFilteredOrders(country,city,surname));
+            var orderModels = _mapper.Map<ICollection<OrderModel>>(_orderRepository.GetFilteredOrders(country,city,surname,sortModel.SortField,sortModel.Ascending));
             var page = PageInfoCreator<OrderModel>.GetPageInfo(orderModels,pagination);
             return page;
         }

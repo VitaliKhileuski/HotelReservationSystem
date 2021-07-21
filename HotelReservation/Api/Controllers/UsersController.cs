@@ -10,9 +10,7 @@ using HotelReservation.Api.Models.ResponseModels;
 using HotelReservation.Api.Policy;
 using Microsoft.AspNetCore.Authorization;
 using System;
-using System.Collections;
 using HotelReservation.Api.Helpers;
-using HotelReservation.Data.Entities;
 
 namespace HotelReservation.Api.Controllers
 {
@@ -71,10 +69,10 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Authorize(Policy = Policies.AdminPermission)]
-        public async Task<IActionResult> GetUsersPage(string email, string surname, [FromQuery] Pagination pagination)
+        public async Task<IActionResult> GetUsersPage(string email, string surname, [FromQuery] Pagination pagination,[FromQuery] SortModel sortModel)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
-            var pageInfo = await _usersService.GetUsersPage(email, surname, userId, pagination);
+            var pageInfo = await _usersService.GetUsersPage(email, surname, userId, pagination,sortModel);
             var userResponseModels = _mapper.Map <ICollection<UserResponseViewModel>>(pageInfo.Items);
             var page = new PageInfo<UserResponseViewModel>
             {

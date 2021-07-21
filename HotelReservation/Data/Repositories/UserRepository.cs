@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using HotelReservation.Data.Constants;
 using HotelReservation.Data.Entities;
+using HotelReservation.Data.Helpers;
 using HotelReservation.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,10 +29,17 @@ namespace HotelReservation.Data.Repositories
             return _db.Users.Where(x => x.Role.Name != Roles.Admin).Where(x => !x.OwnedHotels.Contains(hotel));
         }
 
-        public  IEnumerable<UserEntity> GetFilteredUsersBySurname(string surname)
+        public  IEnumerable<UserEntity> GetFilteredUsersBySurname(string surname,string email,string sortedField,bool ascending)
         {
 
-            return _db.Users.Where(x => x.Surname == surname);
+            var filteredUsers =  _db.Users.Where(x => (!string.IsNullOrEmpty(surname) &&  x.Surname == surname || string.IsNullOrEmpty(surname)) &&
+                                                      (!string.IsNullOrEmpty(email) && x.Email == email || string.IsNullOrEmpty(email)));
+            if (string.IsNullOrEmpty(sortedField))
+            {
+                return filteredUsers;
+            }
+
+            return filteredUsers.OrderByPropertyName(sortedField, ascending);
         }
 
         public IEnumerable<string> GetUsersEmails()

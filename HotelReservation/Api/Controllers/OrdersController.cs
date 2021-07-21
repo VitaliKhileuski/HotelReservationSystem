@@ -44,11 +44,11 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetPage(string country,string city,string surname, [FromQuery] Pagination filter)
+        public async Task<IActionResult> GetPage(string country,string city,string surname, [FromQuery] Pagination filter,[FromQuery] SortModel sortModel)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
-            var pageInfo = await _orderService.GetOrdersPage(userId,country,city,surname, validFilter);
+            var pageInfo = await _orderService.GetOrdersPage(userId,country,city,surname, validFilter,sortModel);
             var orders = _mapper.Map<List<OrderResponseModel>>(pageInfo.Items);
             var responsePageInfo = new PageInfo<OrderResponseModel>
             {

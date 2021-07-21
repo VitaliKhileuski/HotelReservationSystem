@@ -5,6 +5,6 @@ namespace HotelReservation.Data.Interfaces
 {
     public interface IOrderRepository : IBaseRepository<OrderEntity>
     {
-        public IEnumerable<OrderEntity> GetFilteredOrders(string country, string city, string surname);
+        public IEnumerable<OrderEntity> GetFilteredOrders(string country, string city, string surname,string sortField,bool ascending);
     }
 }

@@ -11,6 +11,6 @@ namespace HotelReservation.Data.Interfaces
          IEnumerable<string> GetHotelNames();
 
          public IEnumerable<HotelEntity> GetFilteredHotels(string country, string city, string hotelName, string email,
-             string surname);
+             string surname, string sortField, bool ascending);
     }
 }

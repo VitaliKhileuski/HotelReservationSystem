@@ -17,7 +17,7 @@ namespace Business.Interfaces
         public IEnumerable<string> GetHotelAdminsEmails();
         public IEnumerable<string> GetHotelAdminsSurnames();
         public IEnumerable<string> GetCustomersSurnames();
-        Task<PageInfo<UserModel>> GetUsersPage(string email, string surname,string userId, Pagination pagination);
+        Task<PageInfo<UserModel>> GetUsersPage(string email, string surname,string userId, Pagination pagination,SortModel sortModel);
         
     }
 }
