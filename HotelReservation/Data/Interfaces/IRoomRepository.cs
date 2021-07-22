@@ -9,5 +9,7 @@ namespace HotelReservation.Data.Interfaces
     {
         IEnumerable<RoomEntity> GetRoomsPageFromHotel(int pageNumber, int pageSize, Guid hotelId);
         Task<int> GetRoomsCount(Guid hotelId);
+        public IEnumerable<RoomEntity> GetFilteredRooms(HotelEntity hotel, string roomNumber, string sortField,
+            bool ascending);
     }
 }

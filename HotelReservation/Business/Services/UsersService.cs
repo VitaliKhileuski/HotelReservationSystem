@@ -9,6 +9,7 @@ using Business.Helpers;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
+using Business.Models.FilterModels;
 using Castle.Core.Internal;
 using HotelReservation.Data.Constants;
 using HotelReservation.Data.Entities;
@@ -110,7 +111,7 @@ namespace Business.Services
             await _userRepository.DeleteAsync(userId);
         }
 
-        public async Task<PageInfo<UserModel>> GetUsersPage(string email,string surname, string userId, Pagination pagination,SortModel sortModel)
+        public async Task<PageInfo<UserModel>> GetUsersPage(UserFilter userFilter, string userId, Pagination pagination,SortModel sortModel)
         {
             var userEntity = await _userRepository.GetAsync(userId);
             if (userEntity == null)
@@ -119,15 +120,9 @@ namespace Business.Services
                 throw new NotFoundException($"user with {userId} id not exists");
             }
 
-            if (email == "null")
-            {
-                email = null;
-            }
+            var email = userFilter.Email;
+            var surname = userFilter.Surname;
 
-            if (surname == "null")
-            {
-                surname = null;
-            }
             var filteredUsers = _mapper.Map<ICollection<UserModel>>(_userRepository.GetFilteredUsersBySurname(surname,email,sortModel.SortField,sortModel.Ascending));
             var page = PageInfoCreator<UserModel>.GetPageInfo(filteredUsers, pagination);
             return page;

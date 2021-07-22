@@ -35,14 +35,19 @@ namespace HotelReservation.Api.Controllers
         }
         [HttpGet]
         [Route("{hotelId}/pages")]
-        public async Task<IActionResult> GetPage(Guid hotelId, [FromQuery] Pagination filter)
+        public async Task<IActionResult> GetPage(Guid hotelId, [FromQuery] Pagination filter,[FromQuery] SortModel sortModel)
         {
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
-            var servicesWithCount = await _facilitiesService.GetServicesPage(hotelId, validFilter);
-            var services = _mapper.Map<List<ServiceResponseModel>>(servicesWithCount.Item1);
-            var maxNumberOfServices = servicesWithCount.Item2;
+            var pageInfo = await _facilitiesService.GetServicesPage(hotelId, validFilter, sortModel);
+            var services = _mapper.Map<List<ServiceResponseModel>>(pageInfo.Items);
+            var responsePageInfo = new PageInfo<ServiceResponseModel>
+            {
+                Items = services,
+                NumberOfItems = pageInfo.NumberOfItems,
+                NumberOfPages = pageInfo.NumberOfPages
+            };
 
-            return Ok(Tuple.Create(services, maxNumberOfServices));
+            return Ok(responsePageInfo);
         }
 
         [HttpGet]

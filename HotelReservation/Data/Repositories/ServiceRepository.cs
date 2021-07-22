@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using HotelReservation.Data.Entities;
+using HotelReservation.Data.Helpers;
 using HotelReservation.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Asn1;
@@ -18,14 +20,15 @@ namespace HotelReservation.Data.Repositories
             _db = context;
         }
 
-        public IEnumerable<ServiceEntity> GetServicesPageFromHotel(int pageNumber, int pageSize, Guid hotelId)
+        public IEnumerable<ServiceEntity> GetFilteredServices(HotelEntity hotel, string sortField, bool ascending)
         {
-            return _db.Services.Skip((pageNumber - 1) * pageSize).Take(pageSize).Where(x => x.HotelId == hotelId);
-        }
+            var services = hotel.Services;
+            if (string.IsNullOrEmpty(sortField))
+            {
+                return services;
+            }
 
-        public async Task<int> GetServiceCount(Guid hotelId)
-        {
-            return await _db.Services.Where(x => x.HotelId == hotelId).CountAsync();
+            return services.AsQueryable().OrderByPropertyName(sortField, ascending);
         }
     }
 }

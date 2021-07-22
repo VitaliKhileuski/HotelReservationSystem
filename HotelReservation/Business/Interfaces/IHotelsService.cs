@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Business.Models;
+using Business.Models.FilterModels;
 
 namespace Business.Interfaces
 {
@@ -12,7 +13,7 @@ namespace Business.Interfaces
         Task UpdateHotelAdmin(Guid hotelId,Guid adminId);
         Task UpdateHotel(Guid hotelId, HotelModel hotel,string userId);
         Task DeleteHotelById(Guid hotelId,string userId);
-        Task<PageInfo<HotelModel>> GetFilteredHotels(string userId, DateTime? checkInDate, DateTime? checkOutDate, string country, string city,string hotelName,string email,string surname, Pagination hotelPagination,SortModel sortModel);
+        Task<PageInfo<HotelModel>> GetFilteredHotels(HotelFilterModel hotelFilter, Pagination hotelPagination,SortModel sortModel);
         Task<Tuple<IEnumerable<HotelModel>, int>> GetHotelsPage(Pagination hotelPagination);
         Task<ICollection<UserModel>> GetHotelAdmins(Guid hotelId);
         Task DeleteHotelAdmin(Guid hotelId, Guid adminId);

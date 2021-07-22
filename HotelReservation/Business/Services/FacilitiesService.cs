@@ -52,7 +52,7 @@ namespace Business.Services
             return _mapper.Map<ServiceEntity, ServiceModel>(service);
 
         }
-        public async Task<Tuple<IEnumerable<ServiceModel>, int>> GetServicesPage(Guid hotelId, Pagination hotelPagination)
+        public async Task<PageInfo<ServiceModel>> GetServicesPage(Guid hotelId, Pagination servicePagination,SortModel sortModel)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -60,12 +60,9 @@ namespace Business.Services
                 _logger.LogError($"hotel with {hotelId} id not exists");
                 throw new NotFoundException($"hotel with {hotelId} id not exists");
             }
-            var services = _mapper.Map<IEnumerable<ServiceModel>>(_serviceRepository.GetServicesPageFromHotel(hotelPagination.PageNumber,
-                hotelPagination.PageSize, hotelId));
-            var numberOfServices = await _serviceRepository.GetServiceCount(hotelId);
-
-
-            return Tuple.Create(services, numberOfServices);
+            var services = _mapper.Map<ICollection<ServiceModel>>(_serviceRepository.GetFilteredServices(hotelEntity,sortModel.SortField,sortModel.Ascending));
+            var page = PageInfoCreator<ServiceModel>.GetPageInfo(services, servicePagination);
+            return page;
         }
 
         public async Task UpdateService(Guid serviceId, string userId, ServiceModel serviceModel)

@@ -6,6 +6,7 @@ using AutoMapper;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
+using Business.Models.FilterModels;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
@@ -44,11 +45,11 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetPage(string country,string city,string surname, [FromQuery] Pagination filter,[FromQuery] SortModel sortModel)
+        public async Task<IActionResult> GetPage([FromQuery] OrderFilter orderFilter, [FromQuery] Pagination filter,[FromQuery] SortModel sortModel)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
-            var pageInfo = await _orderService.GetOrdersPage(userId,country,city,surname, validFilter,sortModel);
+            var pageInfo = await _orderService.GetOrdersPage(userId,orderFilter, validFilter,sortModel);
             var orders = _mapper.Map<List<OrderResponseModel>>(pageInfo.Items);
             var responsePageInfo = new PageInfo<OrderResponseModel>
             {

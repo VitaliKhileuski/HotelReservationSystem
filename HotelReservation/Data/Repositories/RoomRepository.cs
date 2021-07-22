@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HotelReservation.Data.Entities;
+using HotelReservation.Data.Helpers;
 using HotelReservation.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +24,13 @@ namespace HotelReservation.Data.Repositories
         public async Task<int> GetRoomsCount(Guid hotelId)
         {
             return await _db.Rooms.Where(x => x.HotelId==hotelId).CountAsync();
+        }
+
+        public IEnumerable<RoomEntity> GetFilteredRooms(HotelEntity hotel,string roomNumber,string sortField,bool ascending)
+        {
+            var filteredRooms = hotel.Rooms.Where(x =>
+                !string.IsNullOrEmpty(roomNumber) && x.RoomNumber == roomNumber || string.IsNullOrEmpty(roomNumber));
+            return string.IsNullOrEmpty(sortField) ? filteredRooms : filteredRooms.AsQueryable().OrderByPropertyName(sortField,ascending);
         }
     }
 }

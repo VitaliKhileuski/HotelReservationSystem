@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Business.Models;
+using Business.Models.FilterModels;
 
 namespace Business.Interfaces
 {
@@ -17,7 +18,7 @@ namespace Business.Interfaces
         public IEnumerable<string> GetHotelAdminsEmails();
         public IEnumerable<string> GetHotelAdminsSurnames();
         public IEnumerable<string> GetCustomersSurnames();
-        Task<PageInfo<UserModel>> GetUsersPage(string email, string surname,string userId, Pagination pagination,SortModel sortModel);
+        Task<PageInfo<UserModel>> GetUsersPage(UserFilter userFilter,string userId, Pagination pagination,SortModel sortModel);
         
     }
 }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Business.Interfaces;
 using Business.Models;
+using Business.Models.FilterModels;
 using HotelReservation.Api.Helpers;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
@@ -65,11 +66,10 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Route("page")]
-        public async Task<IActionResult> GetFilteredGHotels(string userId, DateTime? checkInDate, DateTime? checkOutDate, string country,
-            string city,string hotelName,string email,string surname, [FromQuery] Pagination filter,[FromQuery] SortModel sortModel)
+        public async Task<IActionResult> GetFilteredGHotels([FromQuery] HotelFilterModel hotelFilter, [FromQuery] Pagination filter,[FromQuery] SortModel sortModel)
         {
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
-            var pageInfo = await  _hotelsService.GetFilteredHotels(userId, checkInDate, checkOutDate, country, city,hotelName,email,surname, validFilter,sortModel);
+            var pageInfo = await  _hotelsService.GetFilteredHotels(hotelFilter, validFilter,sortModel);
             var hotels = _hotelMapper.Map<List<HotelResponseModel>>(pageInfo.Items);
             var responsePageInfo = new PageInfo<HotelResponseModel>
             {

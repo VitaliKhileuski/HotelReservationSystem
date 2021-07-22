@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using AutoMapper;
-using AutoMapper.Configuration.Annotations;
 using Business.Exceptions;
 using Business.Helpers;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
+using Business.Models.FilterModels;
 using HotelReservation.Data.Constants;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
@@ -25,17 +23,15 @@ namespace Business.Services
         private readonly Mapper _locationMapper;
         private readonly Mapper _hotelMapper;
         private readonly Mapper _userMapper;
-        private readonly ILocationRepository _locationRepository;
         private readonly IFileContentRepository _fileContentRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly ILogger<HotelsService> _logger;
 
         public HotelsService(ILogger<HotelsService>  logger, IHotelRepository hotelRepository,IRoleRepository roleRepository,
-            IUserRepository userRepository,ILocationRepository locationRepository,IFileContentRepository fileContentRepository, MapConfiguration cfg)
+            IUserRepository userRepository,IFileContentRepository fileContentRepository, MapConfiguration cfg)
         {
             _hotelRepository = hotelRepository;
             _userRepository = userRepository;
-            _locationRepository = locationRepository;
             _fileContentRepository = fileContentRepository;
             _locationMapper = new Mapper(cfg.LocationConfiguration);
             _hotelMapper = new Mapper(cfg.HotelConfiguration);
@@ -219,36 +215,20 @@ namespace Business.Services
             return _userMapper.Map<ICollection<UserModel>>(hotelEntity.Admins);
         }
 
-        public async Task<PageInfo<HotelModel>> GetFilteredHotels(string userId, DateTime? checkInDate,DateTime? checkOutDate,string country,string city, string hotelName,string email,string surname, Pagination hotelPagination,SortModel sortModel)
+        public async Task<PageInfo<HotelModel>> GetFilteredHotels(HotelFilterModel hotelFilter, Pagination hotelPagination,SortModel sortModel)
         {
             bool flag = false;
-            var userEntity = await _userRepository.GetAsync(userId);
-            if (country == "null")
-            {
-                country = null;
-            }
-            if (city == "null")
-            {
-                city = null;
-            }
-
-            if (hotelName == "null")
-            {
-                hotelName = null;
-            }
-
-            if (email == "null")
-            {
-                email = null;
-            }
-
-            if (surname == "null")
-            {
-                surname = null;
-            }
-
+            var userId = hotelFilter.UserId;
+            var country = hotelFilter.Country;
+            var city = hotelFilter.City;
+            var checkInDate = hotelFilter.CheckInDate;
+            var checkOutDate = hotelFilter.CheckOutDate;
+            var hotelName = hotelFilter.HotelName;
+            var email = hotelFilter.Email;
+            var surname = hotelFilter.Surname;
             var adminEntity = await _userRepository.GetAsync(userId);
             var availableHotels = new List<HotelEntity>();
+
             var filteredHotels = _hotelRepository.GetFilteredHotels(country, city, hotelName, email, surname,sortModel.SortField,sortModel.Ascending);
             if (adminEntity != null && adminEntity.Role.Name==Roles.User || adminEntity==null)
             {
@@ -293,7 +273,6 @@ namespace Business.Services
                 var hotelPageInfo = PageInfoCreator<HotelModel>.GetPageInfo(hotelModels, hotelPagination);
                 return hotelPageInfo;
             }
-           
         }
 
         public async Task DeleteHotelAdmin(Guid hotelId, Guid userId)
