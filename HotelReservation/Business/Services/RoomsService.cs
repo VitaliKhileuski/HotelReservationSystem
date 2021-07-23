@@ -9,6 +9,8 @@ using Business.Helpers;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
+using Business.Models.FilterModels;
+using HotelReservation.Data.Constants;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -77,7 +79,7 @@ namespace Business.Services
                 await _roomRepository.UpdateAsync(roomEntity);
             }
         }
-        public async Task<PageInfo<RoomModel>> GetRoomsPage(Guid hotelId,string userId, DateTime checkInDate,DateTime checkOutDate, Pagination roomPagination)
+        public async Task<PageInfo<RoomModel>> GetRoomsPage(Guid hotelId,string userId,RoomFilter roomFilter, Pagination roomPagination,SortModel sortModel)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -86,12 +88,28 @@ namespace Business.Services
                 throw new NotFoundException($"hotel with {hotelId} id not exists");
             }
 
+            var roomNumber = roomFilter.RoomNumber;
+            var checkInDate = roomFilter.CheckInDate;
+            var checkOutDate = roomFilter.CheckOutDate;
+
+            var userEntity = await _userRepository.GetAsync(userId);
+            if (roomNumber == "null")
+            {
+                roomNumber = null;
+            }
+            
             var filteredRooms = new List<RoomEntity>();
+            if (userEntity!=null && userEntity.Role.Name!=Roles.User)
+            {
+                filteredRooms.AddRange(_roomRepository.GetFilteredRooms(hotelEntity,roomNumber,sortModel.SortField,sortModel.Ascending));
+                return  PageInfoCreator<RoomModel>.GetPageInfo(_roomMapper.Map<ICollection<RoomModel>>(filteredRooms), roomPagination);
+
+            }
             if (hotelEntity.Rooms != null)
             {
                 foreach (var room in hotelEntity.Rooms)
                 {
-
+                    
                     if (room.UnblockDate==null || room.PotentialCustomerId==userId ||  DateTime.Now > room.UnblockDate)
                     {
 
@@ -107,12 +125,8 @@ namespace Business.Services
                             filteredRooms.Add(room);
                         }
                     }
-                    
-                       
                 }
-
             }
-
             var filteredRoomModels = _roomMapper.Map<ICollection<RoomModel>>(filteredRooms);
            var roomPageInfo = PageInfoCreator<RoomModel>.GetPageInfo(filteredRoomModels, roomPagination);
             return roomPageInfo;

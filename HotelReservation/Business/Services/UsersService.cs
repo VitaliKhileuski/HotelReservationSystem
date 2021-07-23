@@ -9,6 +9,7 @@ using Business.Helpers;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
+using Business.Models.FilterModels;
 using Castle.Core.Internal;
 using HotelReservation.Data.Constants;
 using HotelReservation.Data.Entities;
@@ -110,7 +111,7 @@ namespace Business.Services
             await _userRepository.DeleteAsync(userId);
         }
 
-        public async Task<PageInfo<UserModel>> GetUsersPage(string userId, Pagination pagination)
+        public async Task<PageInfo<UserModel>> GetUsersPage(UserFilter userFilter, string userId, Pagination pagination,SortModel sortModel)
         {
             var userEntity = await _userRepository.GetAsync(userId);
             if (userEntity == null)
@@ -118,12 +119,16 @@ namespace Business.Services
                 _logger.LogError($"user with {userId} id not exists");
                 throw new NotFoundException($"user with {userId} id not exists");
             }
-            var users = _mapper.Map < ICollection < UserModel>>(_userRepository.GetAll());
-            var page = PageInfoCreator<UserModel>.GetPageInfo(users, pagination);
+
+            var email = userFilter.Email;
+            var surname = userFilter.Surname;
+
+            var filteredUsers = _mapper.Map<ICollection<UserModel>>(_userRepository.GetFilteredUsersBySurname(surname,email,sortModel.SortField,sortModel.Ascending));
+            var page = PageInfoCreator<UserModel>.GetPageInfo(filteredUsers, pagination);
             return page;
         }
 
-public async Task<string> Update(Guid id,string userId, UserModel user)
+        public async Task<string> Update(Guid id,string userId, UserModel user)
         {
             var userEntity = await _userRepository.GetAsync(id);
             if (userEntity == null)
@@ -184,6 +189,24 @@ public async Task<string> Update(Guid id,string userId, UserModel user)
         public IEnumerable<string> GetUsersSurnames()
         {
             var surnames = _userRepository.GetUsersSurnames();
+            return surnames;
+        }
+
+        public IEnumerable<string> GetHotelAdminsEmails()
+        {
+            var emails = _userRepository.GetHotelAdminsEmails();
+            return emails;
+        }
+
+        public IEnumerable<string> GetHotelAdminsSurnames()
+        {
+            var surnames = _userRepository.GetHotelAdminsSurnames();
+            return surnames;
+        }
+
+        public IEnumerable<string> GetCustomersSurnames()
+        {
+            var surnames = _userRepository.GetCustomersSurnames();
             return surnames;
         }
     }

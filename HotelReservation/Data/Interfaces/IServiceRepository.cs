@@ -7,7 +7,6 @@ namespace HotelReservation.Data.Interfaces
 {
     public interface IServiceRepository : IBaseRepository<ServiceEntity>
     {
-        IEnumerable<ServiceEntity> GetServicesPageFromHotel(int pageNumber, int pageSize, Guid hotelId);
-        Task<int> GetServiceCount(Guid hotelId);
+        IEnumerable<ServiceEntity> GetFilteredServices(HotelEntity hotel,string sortField,bool ascending);
     }
 }

@@ -8,6 +8,7 @@ using Business.Helpers;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
+using Business.Models.FilterModels;
 using HotelReservation.Data.Constants;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
@@ -22,17 +23,15 @@ namespace Business.Services
         private readonly Mapper _locationMapper;
         private readonly Mapper _hotelMapper;
         private readonly Mapper _userMapper;
-        private readonly ILocationRepository _locationRepository;
         private readonly IFileContentRepository _fileContentRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly ILogger<HotelsService> _logger;
 
         public HotelsService(ILogger<HotelsService>  logger, IHotelRepository hotelRepository,IRoleRepository roleRepository,
-            IUserRepository userRepository,ILocationRepository locationRepository,IFileContentRepository fileContentRepository, MapConfiguration cfg)
+            IUserRepository userRepository,IFileContentRepository fileContentRepository, MapConfiguration cfg)
         {
             _hotelRepository = hotelRepository;
             _userRepository = userRepository;
-            _locationRepository = locationRepository;
             _fileContentRepository = fileContentRepository;
             _locationMapper = new Mapper(cfg.LocationConfiguration);
             _hotelMapper = new Mapper(cfg.HotelConfiguration);
@@ -216,69 +215,64 @@ namespace Business.Services
             return _userMapper.Map<ICollection<UserModel>>(hotelEntity.Admins);
         }
 
-        public async Task<PageInfo<HotelModel>> GetFilteredHotels(string userId, DateTime checkInDate,DateTime checkOutDate,string country,string city, string hotelName, Pagination hotelPagination)
+        public async Task<PageInfo<HotelModel>> GetFilteredHotels(HotelFilterModel hotelFilter, Pagination hotelPagination,SortModel sortModel)
         {
-            var filteredHotels = new List<HotelEntity>();
             bool flag = false;
-            var hotels = _hotelRepository.GetAll();
-            if (country == "null")
-            {
-                country = null;
-            }
-            if (city == "null")
-            {
-                city = null;
-            }
+            var userId = hotelFilter.UserId;
+            var country = hotelFilter.Country;
+            var city = hotelFilter.City;
+            var checkInDate = hotelFilter.CheckInDate;
+            var checkOutDate = hotelFilter.CheckOutDate;
+            var hotelName = hotelFilter.HotelName;
+            var email = hotelFilter.Email;
+            var surname = hotelFilter.Surname;
+            var adminEntity = await _userRepository.GetAsync(userId);
+            var availableHotels = new List<HotelEntity>();
 
-            if (hotelName == "null")
+            var filteredHotels = _hotelRepository.GetFilteredHotels(country, city, hotelName, email, surname,sortModel.SortField,sortModel.Ascending);
+            if (adminEntity != null && adminEntity.Role.Name==Roles.User || adminEntity==null)
             {
-                hotelName = null;
-            }
-            foreach (var hotel in hotels)
-            {
-                
-                if ((string.IsNullOrEmpty(country) || hotel.Location.Country == country) && (string.IsNullOrEmpty(city) || hotel.Location.City == city) && (string.IsNullOrEmpty(hotelName) || hotel.Name==hotelName))
+                foreach (var hotel in filteredHotels)
                 {
                     if (hotel.Rooms != null)
+                    {
+                        foreach (var room in hotel.Rooms.Where(room => room.UnblockDate == null || room.PotentialCustomerId == userId || DateTime.Now > room.UnblockDate))
                         {
-                            foreach (var room in hotel.Rooms)
+                            if (room.Orders != null && room.Orders.Count != 0)
                             {
-                                if (room.UnblockDate==null || room.PotentialCustomerId == userId || DateTime.Now > room.UnblockDate)
+                                if (room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
+                                                               checkOutDate > order.StartDate && checkOutDate < order.EndDate ||
+                                                               order.StartDate > checkInDate && order.StartDate < checkOutDate ||
+                                                               order.EndDate > checkInDate && order.EndDate < checkOutDate)))
                                 {
-                                    if (room.Orders != null && room.Orders.Count != 0)
-                                    {
-                                        if (room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
-                                                                       checkOutDate > order.StartDate && checkOutDate < order.EndDate ||
-                                                                       order.StartDate > checkInDate && order.StartDate < checkOutDate ||
-                                                                       order.EndDate > checkInDate && order.EndDate < checkOutDate)))
-                                        {
-                                            filteredHotels.Add(hotel);
-                                            flag = true;
-                                        }
-
-                                        if (flag) break;
-                                    }
-                                    else
-                                    {
-                                        filteredHotels.Add(hotel);
-                                        break;
-                                    }
+                                    availableHotels.Add(hotel);
+                                    flag = true;
                                 }
-                                
-                            }
-                        
-                        }
-                        else
-                        {
-                            filteredHotels.Add(hotel);
-                        }
-                    
-                }
-            }
 
-            var hotelModels = _hotelMapper.Map<ICollection<HotelModel>>(filteredHotels);
-            var hotelPageInfo = PageInfoCreator<HotelModel>.GetPageInfo(hotelModels, hotelPagination);
-            return hotelPageInfo;
+                                if (flag) break;
+                            }
+                            else
+                            {
+                                availableHotels.Add(hotel);
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        availableHotels.Add(hotel);
+                    }
+                }
+                var hotelModels = _hotelMapper.Map<ICollection<HotelModel>>(availableHotels);
+                var hotelPageInfo = PageInfoCreator<HotelModel>.GetPageInfo(hotelModels, hotelPagination);
+                return hotelPageInfo;
+            }
+            else
+            {
+                var hotelModels = _hotelMapper.Map<ICollection<HotelModel>>(filteredHotels);
+                var hotelPageInfo = PageInfoCreator<HotelModel>.GetPageInfo(hotelModels, hotelPagination);
+                return hotelPageInfo;
+            }
         }
 
         public async Task DeleteHotelAdmin(Guid hotelId, Guid userId)
@@ -300,6 +294,30 @@ namespace Business.Services
 
             hotelEntity.Admins.Remove(userEntity);
             await _hotelRepository.UpdateAsync(hotelEntity);
+        }
+
+        public async Task<IEnumerable<string>> GetHotelRoomsNumbers(Guid hotelId, string userId)
+        {
+            var userEntity = await _userRepository.GetAsync(userId);
+            if (userEntity == null)
+            {
+                _logger.LogError($"user with {userId} id not exists");
+                throw new NotFoundException($"user with {userId} id not exists");
+            }
+            var hotelEntity = await _hotelRepository.GetAsync(hotelId);
+            if (hotelEntity == null)
+            {
+                _logger.LogError($"hotel with {hotelId} id not exists");
+                throw new NotFoundException($"hotel with {hotelId} id not exists");
+            }
+
+            if(PermissionVerifier.CheckHotelPermission(hotelEntity, userEntity))
+            {
+                var roomsNumbers = hotelEntity.Rooms.Select(x => x.RoomNumber);
+                return roomsNumbers;
+            }
+
+            throw new BadRequestException("you don't have permissions to do this action");
         }
 
         public bool IsLocationEmpty(HotelEntity hotel, LocationEntity oldLocation = null)

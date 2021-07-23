@@ -11,6 +11,7 @@ using HotelReservation.Api.Models.ResponseModels;
 using Microsoft.AspNetCore.Authorization;
 using HotelReservation.Api.Policy;
 using System;
+using Business.Models.FilterModels;
 
 namespace HotelReservation.Api.Controllers
 {
@@ -37,11 +38,11 @@ namespace HotelReservation.Api.Controllers
         // }
 
         [HttpGet]
-        [Route("{hotelId}")]
-        public async Task<IActionResult> GetPage(Guid hotelId,string userId, DateTime checkInDate,DateTime checkOutDate, [FromQuery] Pagination filter)
+        [Route("{hotelId}/{userId}")]
+        public async Task<IActionResult> GetPage(Guid hotelId,string userId,[FromQuery] RoomFilter roomFilter, [FromQuery] Pagination filter,[FromQuery] SortModel sortModel)
         {
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
-            var pageInfo = await _roomsService.GetRoomsPage(hotelId,userId,checkInDate,checkOutDate,validFilter);
+            var pageInfo = await _roomsService.GetRoomsPage(hotelId,userId,roomFilter,validFilter,sortModel);
             var rooms = _mapper.Map<List<RoomResponseModel>>(pageInfo.Items);
             var responsePageInfo = new PageInfo<RoomResponseModel>
             {
@@ -73,7 +74,6 @@ namespace HotelReservation.Api.Controllers
             var roomModel = _mapper.Map<RoomRequestModel, RoomModel>(room);
             await _roomsService.AddRoom(hotelId, roomModel, userId);
             return Ok("Added successfully");
-            
         }
 
         [HttpPut]

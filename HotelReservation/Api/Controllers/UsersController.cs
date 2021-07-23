@@ -10,9 +10,8 @@ using HotelReservation.Api.Models.ResponseModels;
 using HotelReservation.Api.Policy;
 using Microsoft.AspNetCore.Authorization;
 using System;
-using System.Collections;
+using Business.Models.FilterModels;
 using HotelReservation.Api.Helpers;
-using HotelReservation.Data.Entities;
 
 namespace HotelReservation.Api.Controllers
 {
@@ -71,10 +70,10 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Authorize(Policy = Policies.AdminPermission)]
-        public async Task<IActionResult> GetUsersPage([FromQuery] Pagination pagination)
+        public async Task<IActionResult> GetUsersPage([FromQuery] UserFilter userFilter, [FromQuery] Pagination pagination,[FromQuery] SortModel sortModel)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
-            var pageInfo = await _usersService.GetUsersPage(userId, pagination);
+            var pageInfo = await _usersService.GetUsersPage(userFilter, userId, pagination,sortModel);
             var userResponseModels = _mapper.Map <ICollection<UserResponseViewModel>>(pageInfo.Items);
             var page = new PageInfo<UserResponseViewModel>
             {
@@ -85,6 +84,31 @@ namespace HotelReservation.Api.Controllers
             return Ok(page);
         }
 
+        [HttpGet]
+        [Authorize(Policy = Policies.AdminPermission)]
+        [Route("hotelAdminsEmails")]
+        public IActionResult GetHotelAdminsEmails()
+        {
+            var emails = _usersService.GetHotelAdminsEmails();
+            return Ok(emails);
+        }
+
+        [HttpGet]
+        [Authorize(Policy = Policies.AdminPermission)]
+        [Route("hotelAdminsSurnames")]
+        public IActionResult GetHotelAdminsSurnames()
+        {
+            var surnames = _usersService.GetHotelAdminsSurnames();
+            return Ok(surnames);
+        }
+        [HttpGet]
+        [Authorize(Policy = Policies.AdminPermission)]
+        [Route("customersSurnames")]
+        public IActionResult GetCustomersSurnames()
+        {
+            var surnames = _usersService.GetCustomersSurnames();
+            return Ok(surnames);
+        }
 
         [HttpPost]
         public async Task<IActionResult> AddUser([FromBody] UserRequestModel user)
