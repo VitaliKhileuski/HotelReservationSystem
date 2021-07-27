@@ -205,10 +205,6 @@ namespace Business.Services
             var email = hotelFilter.Email;
             var surname = hotelFilter.Surname;
             var adminEntity = await _userRepository.GetAsync(userId);
-            if (adminEntity != null && adminEntity.Role.Name == Roles.HotelAdmin)
-            {
-                email = adminEntity.Email;
-            }
             var availableHotels = new List<HotelEntity>();
 
             var filteredHotels = _hotelRepository.GetFilteredHotels(country, city, hotelName, email, surname,sortModel.SortField,sortModel.Ascending);
@@ -255,6 +251,23 @@ namespace Business.Services
                 var hotelPageInfo = PageInfoCreator<HotelModel>.GetPageInfo(hotelModels, hotelPagination);
                 return hotelPageInfo;
             }
+        }
+
+        public async Task<PageInfo<HotelModel>> GetHotelsPageForHotelAdmin(HotelFilterModel hotelFilter, Pagination hotelPagination, SortModel sortModel)
+        {
+            var hotelAdmin = await _userRepository.GetAsync(hotelFilter.UserId);
+            if (hotelAdmin == null)
+            {
+                _logger.LogError($"hotel admin with {hotelFilter.UserId} id not exists");
+                throw new NotFoundException($"hotel admin with {hotelFilter.UserId} id not exists");
+            }
+            hotelFilter.Email = hotelAdmin.Email;
+
+            var filteredHotels = _hotelRepository.GetFilteredHotels(hotelFilter.Country, hotelFilter.City, hotelFilter.HotelName,
+                hotelFilter.Email, hotelFilter.Surname, sortModel.SortField, sortModel.Ascending);
+            var hotelModels = _hotelMapper.Map<ICollection<HotelModel>>(filteredHotels);
+            var hotelPageInfo = PageInfoCreator<HotelModel>.GetPageInfo(hotelModels, hotelPagination);
+            return hotelPageInfo;
         }
 
         public async Task DeleteHotelAdmin(Guid hotelId, Guid userId)

@@ -14,10 +14,10 @@ namespace Business.Interfaces
         Task UpdateHotel(Guid hotelId, HotelModel hotel,string userId);
         Task DeleteHotelById(Guid hotelId,string userId);
         Task<PageInfo<HotelModel>> GetFilteredHotels(HotelFilterModel hotelFilter, Pagination hotelPagination,SortModel sortModel);
-        Task<Tuple<IEnumerable<HotelModel>, int>> GetHotelsPage(Pagination hotelPagination);
+        //Task<Tuple<IEnumerable<HotelModel>, int>> GetHotelsPage(Pagination hotelPagination);
         Task<ICollection<UserModel>> GetHotelAdmins(Guid hotelId);
         Task DeleteHotelAdmin(Guid hotelId, Guid adminId);
-        Task<Tuple<IEnumerable<HotelModel>, int>> GetHotelAdminPages(Pagination hotelPagination, Guid hotelAdminId);
+        Task<PageInfo<HotelModel>> GetHotelsPageForHotelAdmin(HotelFilterModel hotelFilter, Pagination hotelPagination, SortModel sortModel);
         IEnumerable<string> GetHotelNames();
         Task<IEnumerable<string>> GetHotelRoomsNumbers(Guid hotelId,string userId);
     }

@@ -40,16 +40,20 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = Policies.HotelAdminPermission)]
-        [Route("hotelAdmin/{hotelAdminId}/pages")]
-        public async Task<IActionResult> GetHotelAdminsPage([FromQuery] Pagination filter,Guid hotelAdminId)
+        [Route("pagesForHotelAdmin")]
+        public async Task<IActionResult> GetHotelAdminsPage([FromQuery] HotelFilterModel hotelFilter, [FromQuery] Pagination filter, [FromQuery] SortModel sortModel)
         {
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
-            var  hotelsWithCount = await _hotelsService.GetHotelAdminPages(validFilter,hotelAdminId);
-            var hotels = _hotelMapper.Map<List<HotelResponseModel>>(hotelsWithCount.Item1);
-            var maxNumberOfHotels = hotelsWithCount.Item2;
+            var pageInfo = await _hotelsService.GetHotelsPageForHotelAdmin(hotelFilter, validFilter, sortModel);
+            var hotels = _hotelMapper.Map<List<HotelResponseModel>>(pageInfo.Items);
+            var responsePageInfo = new PageInfo<HotelResponseModel>
+            {
+                Items = hotels,
+                NumberOfItems = pageInfo.NumberOfItems,
+                NumberOfPages = pageInfo.NumberOfPages
+            };
 
-            return Ok(Tuple.Create(hotels, maxNumberOfHotels));
+            return Ok(responsePageInfo);
         }
 
         [HttpGet]
