@@ -40,18 +40,6 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = Policies.AdminPermission)]
-        [Route("pages")]
-        public async Task<IActionResult> GetPage([FromQuery] Pagination filter)
-        {
-            var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
-            var hotelsWithCount = await _hotelsService.GetHotelsPage(validFilter);
-            var hotels = _hotelMapper.Map<List<HotelResponseModel>>(hotelsWithCount.Item1);
-            var maxNumberOfHotels = hotelsWithCount.Item2;
-
-            return Ok(Tuple.Create(hotels, maxNumberOfHotels));
-        }
-        [HttpGet]
         [Authorize(Policy = Policies.HotelAdminPermission)]
         [Route("hotelAdmin/{hotelAdminId}/pages")]
         public async Task<IActionResult> GetHotelAdminsPage([FromQuery] Pagination filter,Guid hotelAdminId)
@@ -68,6 +56,7 @@ namespace HotelReservation.Api.Controllers
         [Route("page")]
         public async Task<IActionResult> GetFilteredGHotels([FromQuery] HotelFilterModel hotelFilter, [FromQuery] Pagination filter,[FromQuery] SortModel sortModel)
         {
+            var userId = TokenData.GetIdFromClaims(User.Claims);
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
             var pageInfo = await  _hotelsService.GetFilteredHotels(hotelFilter, validFilter,sortModel);
             var hotels = _hotelMapper.Map<List<HotelResponseModel>>(pageInfo.Items);
