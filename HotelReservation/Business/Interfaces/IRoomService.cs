@@ -12,7 +12,7 @@ namespace Business.Interfaces
        // Task<ICollection<RoomModel>> GetRoomsFromHotel(Guid hotelId,DateTime checkInDate, DateTime checkOutDate);
         Task UpdateRoom(Guid roomId, string userId, RoomModel room);
         Task DeleteRoom(Guid roomId, string userId);
-        Task<PageInfo<RoomModel>> GetRoomsPage(Guid hotelId,string userId,RoomFilter roomFilter, Pagination roomPagination, SortModel sortModel);
+        Task<PageInfo<RoomModel>> GetRoomsPage(Guid hotelId,RoomFilter roomFilter, Pagination roomPagination, SortModel sortModel);
         Task<bool> IsRoomEmpty(Guid roomId, DateTime checkInDate, DateTime checkOutDate);
         Task<bool> IsRoomBlocked(Guid roomId);
         Task BlockRoomById(Guid roomId,string userId);

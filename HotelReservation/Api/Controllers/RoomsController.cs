@@ -38,11 +38,11 @@ namespace HotelReservation.Api.Controllers
         // }
 
         [HttpGet]
-        [Route("{hotelId}/{userId}")]
-        public async Task<IActionResult> GetPage(Guid hotelId,string userId,[FromQuery] RoomFilter roomFilter, [FromQuery] Pagination filter,[FromQuery] SortModel sortModel)
+        [Route("{hotelId}")]
+        public async Task<IActionResult> GetPage(Guid hotelId,[FromQuery] RoomFilter roomFilter, [FromQuery] Pagination filter,[FromQuery] SortModel sortModel)
         {
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
-            var pageInfo = await _roomsService.GetRoomsPage(hotelId,userId,roomFilter,validFilter,sortModel);
+            var pageInfo = await _roomsService.GetRoomsPage(hotelId,roomFilter,validFilter,sortModel);
             var rooms = _mapper.Map<List<RoomResponseModel>>(pageInfo.Items);
             var responsePageInfo = new PageInfo<RoomResponseModel>
             {

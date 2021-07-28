@@ -212,6 +212,8 @@ namespace Business.Services
             {
                 foreach (var hotel in filteredHotels)
                 {
+                    var a = hotel.Rooms;
+                    
                     if (hotel.Rooms != null)
                     {
                         foreach (var room in hotel.Rooms.Where(room => room.UnblockDate == null || room.PotentialCustomerId == userId || DateTime.Now > room.UnblockDate))

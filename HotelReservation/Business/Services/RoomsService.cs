@@ -79,7 +79,7 @@ namespace Business.Services
                 await _roomRepository.UpdateAsync(roomEntity);
             }
         }
-        public async Task<PageInfo<RoomModel>> GetRoomsPage(Guid hotelId,string userId,RoomFilter roomFilter, Pagination roomPagination,SortModel sortModel)
+        public async Task<PageInfo<RoomModel>> GetRoomsPage(Guid hotelId,RoomFilter roomFilter, Pagination roomPagination,SortModel sortModel)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
             if (hotelEntity == null)
@@ -92,7 +92,7 @@ namespace Business.Services
             var checkInDate = roomFilter.CheckInDate;
             var checkOutDate = roomFilter.CheckOutDate;
 
-            var userEntity = await _userRepository.GetAsync(userId);
+            var userEntity = await _userRepository.GetAsync(roomFilter.UserId);
             if (roomNumber == "null")
             {
                 roomNumber = null;
@@ -110,7 +110,7 @@ namespace Business.Services
                 foreach (var room in hotelEntity.Rooms)
                 {
                     
-                    if (room.UnblockDate==null || room.PotentialCustomerId==userId ||  DateTime.Now > room.UnblockDate)
+                    if (room.UnblockDate==null || room.PotentialCustomerId==roomFilter.UserId ||  DateTime.Now > room.UnblockDate)
                     {
 
                         if (room.Orders != null && room.Orders.Count != 0)
