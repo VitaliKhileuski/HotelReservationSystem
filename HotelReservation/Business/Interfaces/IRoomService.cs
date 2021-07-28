@@ -14,6 +14,7 @@ namespace Business.Interfaces
         Task DeleteRoom(Guid roomId, string userId);
         Task<PageInfo<RoomModel>> GetRoomsPage(Guid hotelId,string userId,RoomFilter roomFilter, Pagination roomPagination, SortModel sortModel);
         Task<bool> IsRoomEmpty(Guid roomId, DateTime checkInDate, DateTime checkOutDate);
+        Task<bool> IsRoomBlocked(Guid roomId);
         Task BlockRoomById(Guid roomId,string userId);
     }
 }
