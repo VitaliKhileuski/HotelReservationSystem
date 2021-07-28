@@ -211,5 +211,15 @@ namespace Business.Services
             roomEntity.PotentialCustomerId = userId;
                 await _roomRepository.UpdateAsync(roomEntity);
         }
+
+        public async Task<bool> IsRoomBlocked(Guid roomId)
+        {
+            var roomEntity = await _roomRepository.GetAsync(roomId);
+            if (roomEntity.UnblockDate == null)
+            {
+                return false;
+            }
+            return roomEntity.UnblockDate > DateTime.Now;
+        }
     }
 }

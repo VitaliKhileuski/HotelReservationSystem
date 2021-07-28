@@ -95,42 +95,6 @@ namespace Business.Services
             await _roomRepository.UpdateAsync(roomEntity);
         }
 
-        public async Task UpdateOrder(Guid orderId, OrderModel newOrder)
-        {
-            if (newOrder == null)
-            {
-                _logger.LogError("incorrect input data");
-                throw new BadRequestException("incorrect input data");
-            }
-            var currentOrder = await _orderRepository.GetAsync(orderId);
-            var orderEntity = _mapper.Map<OrderModel, OrderEntity>(newOrder);
-            if (currentOrder == null)
-            {
-                _logger.LogError($"order with {orderId} id not exists");
-                throw new NotFoundException($"order with {orderId} id not exists");
-            }
-            var roomEntity = currentOrder.Room;
-            var services = new List<ServiceEntity>();
-            foreach (var service in roomEntity.Hotel.Services)
-            {
-                foreach (var orderService in orderEntity.Services)
-                {
-                    if (service.Id == orderService.Id)
-                    {
-                        services.Add(service);
-                    }
-                }
-            }
-
-            orderEntity.Services = null;
-            currentOrder.EndDate = orderEntity.EndDate;
-            currentOrder.StartDate = orderEntity.StartDate;
-            currentOrder.NumberOfDays = currentOrder.EndDate.Subtract(currentOrder.StartDate).Days;
-            currentOrder.Services = orderEntity.Services;
-            currentOrder.FullPrice = GetFullPrice(currentOrder,roomEntity);
-            await _orderRepository.UpdateAsync(currentOrder);
-        }
-
         public async Task DeleteOrder(Guid orderId)
         {
             var order = await _orderRepository.GetAsync(orderId);
@@ -154,14 +118,13 @@ namespace Business.Services
                 throw new NotFoundException($"user with {userId} id not exists");
             }
 
-            IEnumerable<OrderEntity> orders;
             if (userEntity.Role.Name == Roles.Admin)
             {
                 userEntity = null;
             }
            
-            orders = _orderRepository.GetFilteredOrders(userEntity, country, city, surname, sortModel.SortField,
-                    sortModel.Ascending);
+            var orders = _orderRepository.GetFilteredOrders(userEntity, country, city, surname, sortModel.SortField,
+                sortModel.Ascending);
 
             var orderModels = _mapper.Map<ICollection<OrderModel>>(orders);
             var page = PageInfoCreator<OrderModel>.GetPageInfo(orderModels, pagination);

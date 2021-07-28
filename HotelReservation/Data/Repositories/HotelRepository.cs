@@ -42,7 +42,7 @@ namespace HotelReservation.Data.Repositories
                 var filteredHotels = _db.Hotels.Where(x => (!string.IsNullOrEmpty(country) && x.Location.Country == country || string.IsNullOrEmpty(country)) &&
                          (!string.IsNullOrEmpty(city) && x.Location.City == city || string.IsNullOrEmpty(city)) && (!string.IsNullOrEmpty(hotelName) &&
                                                                                x.Name == hotelName || string.IsNullOrEmpty(hotelName)));
-                return string.IsNullOrEmpty(sortField) ? filteredHotels : filteredHotels.OrderByPropertyName(sortField, @ascending);
+                return string.IsNullOrEmpty(sortField) ? filteredHotels : filteredHotels.OrderByPropertyName(sortField, ascending);
             }
             var hotels = new List<HotelEntity>();
             if (!string.IsNullOrEmpty(email))
@@ -57,10 +57,11 @@ namespace HotelReservation.Data.Repositories
                 hotels.AddRange(users.SelectMany(x => x.OwnedHotels));
             }
 
-            return hotels.Where(x => (!string.IsNullOrEmpty(country) && x.Location.Country == country || string.IsNullOrEmpty(country))
+            var filteredHotelAdminHotels =  hotels.Where(x => (!string.IsNullOrEmpty(country) && x.Location.Country == country || string.IsNullOrEmpty(country))
                                                                             && ( !string.IsNullOrEmpty(city) && x.Location.City == city || string.IsNullOrEmpty(city)) &&
                                                                             (!string.IsNullOrEmpty(hotelName) &&
-                                                                            x.Name == hotelName || string.IsNullOrEmpty(hotelName)));
+                                                                            x.Name == hotelName || string.IsNullOrEmpty(hotelName))).AsQueryable();
+            return string.IsNullOrEmpty(sortField) ? filteredHotelAdminHotels : filteredHotelAdminHotels.OrderByPropertyName(sortField, ascending);
         }
     }
 }

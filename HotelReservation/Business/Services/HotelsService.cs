@@ -180,29 +180,6 @@ namespace Business.Services
             }
         }
 
-        public async Task<Tuple<IEnumerable<HotelModel>,int>> GetHotelsPage(Pagination hotelPagination)
-        {
-            var hotels = _hotelMapper.Map<IEnumerable<HotelModel>>(_hotelRepository.Find(hotelPagination.PageNumber,hotelPagination.PageSize));
-            var numberOfPages = await  _hotelRepository.GetCountAsync();
-
-
-            return Tuple.Create(hotels,numberOfPages);
-        }
-        public async Task<Tuple<IEnumerable<HotelModel>, int>> GetHotelAdminPages(Pagination hotelPagination,Guid hotelAdminId)
-        {
-            var hotelAdmin = await _userRepository.GetAsync(hotelAdminId);
-            if (hotelAdmin == null)
-            {
-                _logger.LogError($"user with {hotelAdminId} id not exists");
-                throw new  NotFoundException($"user with {hotelAdminId} id not exists");
-            }
-
-            var hotels = _hotelMapper.Map<IEnumerable<HotelModel>>(_hotelRepository.GetHotelAdminsHotels(hotelPagination.PageNumber, hotelPagination.PageSize,hotelAdmin));
-            var numberOfPages = await _hotelRepository.GetHotelAdminsHotelsCount(hotelAdmin);
-            return Tuple.Create(hotels, numberOfPages);
-        }
-
-
         public async Task<ICollection<UserModel>> GetHotelAdmins(Guid hotelId)
         {
             var hotelEntity = await _hotelRepository.GetAsync(hotelId);
@@ -217,6 +194,7 @@ namespace Business.Services
 
         public async Task<PageInfo<HotelModel>> GetFilteredHotels(HotelFilterModel hotelFilter, Pagination hotelPagination,SortModel sortModel)
         {
+
             bool flag = false;
             var userId = hotelFilter.UserId;
             var country = hotelFilter.Country;
@@ -273,6 +251,23 @@ namespace Business.Services
                 var hotelPageInfo = PageInfoCreator<HotelModel>.GetPageInfo(hotelModels, hotelPagination);
                 return hotelPageInfo;
             }
+        }
+
+        public async Task<PageInfo<HotelModel>> GetHotelsPageForHotelAdmin(HotelFilterModel hotelFilter, Pagination hotelPagination, SortModel sortModel)
+        {
+            var hotelAdmin = await _userRepository.GetAsync(hotelFilter.UserId);
+            if (hotelAdmin == null)
+            {
+                _logger.LogError($"hotel admin with {hotelFilter.UserId} id not exists");
+                throw new NotFoundException($"hotel admin with {hotelFilter.UserId} id not exists");
+            }
+            hotelFilter.Email = hotelAdmin.Email;
+
+            var filteredHotels = _hotelRepository.GetFilteredHotels(hotelFilter.Country, hotelFilter.City, hotelFilter.HotelName,
+                hotelFilter.Email, hotelFilter.Surname, sortModel.SortField, sortModel.Ascending);
+            var hotelModels = _hotelMapper.Map<ICollection<HotelModel>>(filteredHotels);
+            var hotelPageInfo = PageInfoCreator<HotelModel>.GetPageInfo(hotelModels, hotelPagination);
+            return hotelPageInfo;
         }
 
         public async Task DeleteHotelAdmin(Guid hotelId, Guid userId)
