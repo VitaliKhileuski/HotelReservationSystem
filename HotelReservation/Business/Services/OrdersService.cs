@@ -51,7 +51,7 @@ namespace Business.Services
             return orderModel;
         }
 
-        public async Task CreateOrder(Guid roomId, OrderModel order)
+        public async Task<string> CreateOrder(Guid roomId, OrderModel order)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
             if (roomEntity == null)
@@ -86,13 +86,29 @@ namespace Business.Services
 
             orderEntity.Customer = userEntity;
             orderEntity.DateOrdered = DateTime.Now;
-            orderEntity.NumberOfDays = orderEntity.EndDate.Subtract(orderEntity.StartDate).Days;
+            orderEntity.NumberOfDays = orderEntity.EndDate.Day - orderEntity.StartDate.Day;
             orderEntity.FullPrice = GetFullPrice(orderEntity,roomEntity);
             orderEntity.Room = roomEntity;
-            userEntity.Orders.Add(orderEntity);
-            roomEntity.Orders.Add(orderEntity);
-            await _userRepository.UpdateAsync(userEntity);
-            await _roomRepository.UpdateAsync(roomEntity);
+            
+            while (true)
+            {
+                try
+                {
+                    orderEntity.Number = RandomStringGenerator.GetRandomString(8);
+                    userEntity.Orders.Add(orderEntity);
+                    roomEntity.Orders.Add(orderEntity);
+                    await _userRepository.UpdateAsync(userEntity);
+                    await _roomRepository.UpdateAsync(roomEntity);
+                    break;
+                }
+                catch
+                {
+                    userEntity.Orders.Remove(orderEntity);
+                    roomEntity.Orders.Remove(orderEntity);
+                }
+            }
+
+            return orderEntity.Number;
         }
 
         public async Task DeleteOrder(Guid orderId)
@@ -111,6 +127,7 @@ namespace Business.Services
             var country = orderFilter.Country;
             var city = orderFilter.City;
             var surname = orderFilter.Surname;
+            var orderNumber = orderFilter.Number;
             var userEntity = await _userRepository.GetAsync(userId);
             if (userEntity == null)
             {
@@ -123,39 +140,13 @@ namespace Business.Services
                 userEntity = null;
             }
            
-            var orders = _orderRepository.GetFilteredOrders(userEntity, country, city, surname, sortModel.SortField,
+            var orders = _orderRepository.GetFilteredOrders(userEntity, country, city, surname,orderNumber, sortModel.SortField,
                 sortModel.Ascending);
 
             var orderModels = _mapper.Map<ICollection<OrderModel>>(orders);
             var page = PageInfoCreator<OrderModel>.GetPageInfo(orderModels, pagination);
             return page;
 
-        }
-
-        private PageInfo<OrderModel> GetOrdersForAdmin(string country,string city,string surname,Pagination pagination,SortModel sortModel)
-        { 
-            var orderModels = _mapper.Map<ICollection<OrderModel>>(_orderRepository.GetFilteredOrders(null,country,city,surname,sortModel.SortField,sortModel.Ascending));
-            var page = PageInfoCreator<OrderModel>.GetPageInfo(orderModels,pagination);
-            return page;
-        }
-
-        private PageInfo<OrderModel> GetOrdersForHotelAdmin(string country,string city,string surname,UserEntity userEntity, Pagination pagination,SortModel sortModel)
-        {
-
-            var orders = _orderRepository.GetFilteredOrders(userEntity, country, city, surname, sortModel.SortField,
-                sortModel.Ascending);
-            var orderModels = _mapper.Map<ICollection<OrderModel>>(orders);
-            var page = PageInfoCreator<OrderModel>.GetPageInfo(orderModels, pagination);
-            return page;
-        }
-
-        private PageInfo<OrderModel> GetOrdersForUser(UserEntity userEntity,string country,string city, string surname, Pagination pagination,SortModel sortModel)
-        {
-            var orders = _orderRepository.GetFilteredOrders(userEntity, country, city, surname, sortModel.SortField,
-                sortModel.Ascending);
-            var orderModels = _mapper.Map<ICollection<OrderModel>>(orders);
-            var page = PageInfoCreator<OrderModel>.GetPageInfo(orderModels, pagination);
-            return page;
         }
 
         private static decimal GetFullPrice(OrderEntity order, RoomEntity room)

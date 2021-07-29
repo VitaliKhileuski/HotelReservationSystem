@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using Business.Helpers;
 using Business.Interfaces;
 using Business.Models;
 using Business.Models.FilterModels;
@@ -60,7 +61,7 @@ namespace HotelReservation.Api.Controllers
         [Route("page")]
         public async Task<IActionResult> GetFilteredGHotels([FromQuery] HotelFilterModel hotelFilter, [FromQuery] Pagination filter,[FromQuery] SortModel sortModel)
         {
-            var userId = TokenData.GetIdFromClaims(User.Claims);
+
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
             var pageInfo = await  _hotelsService.GetFilteredHotels(hotelFilter, validFilter,sortModel);
             var hotels = _hotelMapper.Map<List<HotelResponseModel>>(pageInfo.Items);

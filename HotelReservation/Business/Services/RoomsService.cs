@@ -212,14 +212,15 @@ namespace Business.Services
                 await _roomRepository.UpdateAsync(roomEntity);
         }
 
-        public async Task<bool> IsRoomBlocked(Guid roomId)
+        public async Task<bool> IsRoomBlocked(Guid roomId,Guid userId)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
-            if (roomEntity.UnblockDate == null)
+            if (roomEntity.UnblockDate == null || roomEntity.PotentialCustomerId==userId.ToString() ||  roomEntity.UnblockDate<DateTime.Now)
             {
                 return false;
             }
-            return roomEntity.UnblockDate > DateTime.Now;
+
+            return true;
         }
     }
 }

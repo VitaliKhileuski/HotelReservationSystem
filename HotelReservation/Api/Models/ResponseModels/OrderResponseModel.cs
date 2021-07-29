@@ -12,6 +12,7 @@ namespace HotelReservation.Api.Models.ResponseModels
         public DateTime DateOrdered { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        public string Number { get; set; }
         public int NumberOfDays { get; set; }
         public decimal FullPrice { get; set; }
     }

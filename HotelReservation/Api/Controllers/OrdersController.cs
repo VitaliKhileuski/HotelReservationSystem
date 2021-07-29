@@ -79,8 +79,8 @@ namespace HotelReservation.Api.Controllers
                 });
             }
 
-            await _orderService.CreateOrder(roomId, orderModel);
-            return Ok("Ordered");
+          var orderNumber =  await _orderService.CreateOrder(roomId, orderModel);
+            return Ok(orderNumber);
         }
 
         //[HttpPut]

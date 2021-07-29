@@ -61,9 +61,9 @@ namespace HotelReservation.Api.Controllers
         }
         [HttpGet]
         [Route("{roomId}/isRoomBlocked")]
-        public async Task<IActionResult> IsRoomEmpty(Guid roomId)
+        public async Task<IActionResult> IsRoomBlocked(Guid roomId,[FromQuery] Guid userId)
         {
-            var isRoomBlocked = await _roomsService.IsRoomBlocked(roomId);
+            var isRoomBlocked = await _roomsService.IsRoomBlocked(roomId,userId);
             return Ok(isRoomBlocked);
         }
 

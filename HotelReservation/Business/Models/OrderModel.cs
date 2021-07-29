@@ -9,6 +9,7 @@ namespace Business.Models
         public ICollection<ServiceQuantityModel> Services;
         public string UserEmail { get; set; }
         public UserModel Customer { get; set; }
+        public string Number { get; set; }
         public RoomModel Room { get; set; }
         public DateTime DateOrdered { get; set; }
         public DateTime StartDate { get; set; }
