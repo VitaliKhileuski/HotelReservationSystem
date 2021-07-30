@@ -93,11 +93,7 @@ namespace Business.Services
             var checkOutDate = roomFilter.CheckOutDate;
 
             var userEntity = await _userRepository.GetAsync(roomFilter.UserId);
-            if (roomNumber == "null")
-            {
-                roomNumber = null;
-            }
-            
+
             var filteredRooms = new List<RoomEntity>();
             if (userEntity!=null && userEntity.Role.Name!=Roles.User)
             {
@@ -212,13 +208,14 @@ namespace Business.Services
                 await _roomRepository.UpdateAsync(roomEntity);
         }
 
-        public async Task<bool> IsRoomBlocked(Guid roomId,Guid userId)
+        public async Task<bool> IsRoomBlocked(Guid roomId,string userId)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
-            if (roomEntity.UnblockDate == null || roomEntity.PotentialCustomerId==userId.ToString() ||  roomEntity.UnblockDate<DateTime.Now)
+            if (roomEntity.UnblockDate == null || roomEntity.PotentialCustomerId==userId ||  roomEntity.UnblockDate<DateTime.Now)
             {
                 return false;
             }
+
 
             return true;
         }

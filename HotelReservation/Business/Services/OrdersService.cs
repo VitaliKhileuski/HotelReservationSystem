@@ -59,6 +59,12 @@ namespace Business.Services
                 _logger.LogError($"room with {roomId} id not exists");
                 throw new NotFoundException($"room with {roomId} id not exists");
             }
+            if(!IsAvailableToBook(roomEntity,order.StartDate,order.EndDate))
+            {
+                _logger.LogError($"this room is already booked on this dates");
+                throw new BadRequestException($"this room is already booked on this dates");
+            }
+
             var orderEntity = _mapper.Map<OrderModel, OrderEntity>(order);
             var serviceQuantities = new List<ServiceQuantityEntity>();
             foreach (var serviceQuantity in order.Services)
@@ -86,7 +92,7 @@ namespace Business.Services
 
             orderEntity.Customer = userEntity;
             orderEntity.DateOrdered = DateTime.Now;
-            orderEntity.NumberOfDays = orderEntity.EndDate.Day - orderEntity.StartDate.Day;
+            orderEntity.NumberOfDays = (orderEntity.EndDate.Date - orderEntity.StartDate.Date).Days;
             orderEntity.FullPrice = GetFullPrice(orderEntity,roomEntity);
             orderEntity.Room = roomEntity;
             
@@ -152,6 +158,13 @@ namespace Business.Services
         private static decimal GetFullPrice(OrderEntity order, RoomEntity room)
         {
               return order.EndDate.Subtract(order.StartDate).Days * room.PaymentPerDay + order.Services.Sum(serviceQuantity => serviceQuantity.Service.Payment*serviceQuantity.Quantity);
+        }
+        private bool IsAvailableToBook(RoomEntity room, DateTime checkInDate, DateTime checkOutDate)
+        {
+            return room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
+                                              checkOutDate > order.StartDate && checkOutDate < order.EndDate
+                                              || order.StartDate > checkInDate && order.StartDate < checkOutDate ||
+                                              order.EndDate > checkInDate && order.EndDate < checkOutDate));
         }
 
     }
