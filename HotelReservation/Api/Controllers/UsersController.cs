@@ -48,25 +48,6 @@ namespace HotelReservation.Api.Controllers
             return Ok(responseUser);
         }
 
-        [HttpGet]
-        [Authorize(Policy = Policies.AdminPermission)]
-        [Route("emails")]
-
-        public IActionResult GetUsersEmails()
-        {
-            var emails = _usersService.GetUsersEmails();
-            return Ok(emails);
-        }
-
-        [HttpGet]
-        [Authorize(Policy = Policies.AdminPermission)]
-        [Route("surnames")]
-
-        public IActionResult GetUsersSurnames()
-        {
-            var emails = _usersService.GetUsersSurnames();
-            return Ok(emails);
-        }
 
         [HttpGet]
         [Authorize(Policy = Policies.AdminPermission)]
@@ -86,27 +67,47 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Authorize(Policy = Policies.AdminPermission)]
-        [Route("hotelAdminsEmails")]
-        public IActionResult GetHotelAdminsEmails()
+        [Route("emails")]
+
+        public IActionResult GetUsersEmails(string email, int limit)
         {
-            var emails = _usersService.GetHotelAdminsEmails();
+            var emails = _usersService.GetUsersEmails(email, limit);
+            return Ok(emails);
+        }
+
+        [HttpGet]
+        [Authorize(Policy = Policies.AdminPermission)]
+        [Route("surnames")]
+
+        public IActionResult GetUsersSurnames(string surname, int limit)
+        {
+            var emails = _usersService.GetUsersSurnames(surname, limit);
+            return Ok(emails);
+        }
+
+        [HttpGet]
+        [Authorize(Policy = Policies.AdminPermission)]
+        [Route("hotelAdminsEmails")]
+        public IActionResult GetHotelAdminsEmails(string email,int limit)
+        {
+            var emails = _usersService.GetHotelAdminsEmails(email,limit);
             return Ok(emails);
         }
 
         [HttpGet]
         [Authorize(Policy = Policies.AdminPermission)]
         [Route("hotelAdminsSurnames")]
-        public IActionResult GetHotelAdminsSurnames()
+        public IActionResult GetHotelAdminsSurnames(string surname, int limit)
         {
-            var surnames = _usersService.GetHotelAdminsSurnames();
+            var surnames = _usersService.GetHotelAdminsSurnames(surname, limit);
             return Ok(surnames);
         }
         [HttpGet]
         [Authorize(Policy = Policies.AdminPermission)]
         [Route("customersSurnames")]
-        public IActionResult GetCustomersSurnames()
+        public IActionResult GetCustomersSurnames(string surname, int limit)
         {
-            var surnames = _usersService.GetCustomersSurnames();
+            var surnames = _usersService.GetCustomersSurnames(surname, limit);
             return Ok(surnames);
         }
 

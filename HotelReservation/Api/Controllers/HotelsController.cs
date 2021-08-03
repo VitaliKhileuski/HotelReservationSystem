@@ -77,19 +77,19 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Route("hotelNames")]
-        public IActionResult GetHotelNames()
+        public IActionResult GetHotelNames(string hotelName, int limit)
         {
-            var hotelNames = _hotelsService.GetHotelNames();
+            var hotelNames = _hotelsService.GetHotelNames(hotelName, limit);
             return Ok(hotelNames);
         }
 
         [HttpGet]
         [Authorize(Policy = Policies.AllAdminsPermission)]
         [Route("{hotelId}/getRoomsNumbers")]
-        public async Task<IActionResult> GetHotelRoomsNumbers(Guid hotelId)
+        public async Task<IActionResult> GetHotelRoomsNumbers(Guid hotelId,string roomNumber,int limit)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
-            var roomsNumbers = await _hotelsService.GetHotelRoomsNumbers(hotelId, userId);
+            var roomsNumbers = await _hotelsService.GetHotelRoomsNumbers(hotelId, userId,roomNumber,limit);
             return Ok(roomsNumbers);
         }
 

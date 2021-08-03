@@ -32,8 +32,8 @@ namespace HotelReservation.Data.Repositories
         public  IEnumerable<UserEntity> GetFilteredUsersBySurname(string surname,string email,string sortedField,bool ascending)
         {
 
-            var filteredUsers =  _db.Users.Where(x => (!string.IsNullOrEmpty(surname) &&  x.Surname == surname || string.IsNullOrEmpty(surname)) &&
-                                                      (!string.IsNullOrEmpty(email) && x.Email == email || string.IsNullOrEmpty(email)));
+            var filteredUsers =  _db.Users.Where(x => (!string.IsNullOrEmpty(surname) &&  x.Surname.StartsWith(surname) || string.IsNullOrEmpty(surname)) &&
+                                                      (!string.IsNullOrEmpty(email) && x.Email.StartsWith(email) || string.IsNullOrEmpty(email)));
             if (string.IsNullOrEmpty(sortedField))
             {
                 return filteredUsers;
@@ -42,30 +42,31 @@ namespace HotelReservation.Data.Repositories
             return filteredUsers.OrderByPropertyName(sortedField, ascending);
         }
 
-        public IEnumerable<string> GetUsersEmails()
+        public IEnumerable<string> GetUsersEmails(string email, int limit)
         {
-            return _db.Users.Select(x => x.Email);
+
+            return _db.Users.Select(x =>x.Email).Where(x => !string.IsNullOrEmpty(email) && x.StartsWith(email) || string.IsNullOrEmpty(email)).Take(limit);
         }
 
-        public IEnumerable<string> GetUsersSurnames()
+        public IEnumerable<string> GetUsersSurnames(string surname,int limit)
         {
-            return _db.Users.Select(x => x.Surname).Distinct();
+            return _db.Users.Select(x => x.Surname).Distinct().Where(x => !string.IsNullOrEmpty(surname) && x.StartsWith(surname) || string.IsNullOrEmpty(surname)).Take(limit);
         }
 
-        public IEnumerable<string> GetHotelAdminsEmails()
+        public IEnumerable<string> GetHotelAdminsEmails(string email, int limit)
         {
             return _db.Users.Where(x => x.Role.Name == Roles.HotelAdmin)
-                .Select(x => x.Email);
+                .Select(x => x.Email).Where(x => !string.IsNullOrEmpty(email) && x.StartsWith(email) || string.IsNullOrEmpty(email)).Take(limit);
         }
-        public IEnumerable<string> GetHotelAdminsSurnames()
+        public IEnumerable<string> GetHotelAdminsSurnames(string surname, int limit)
         {
             return _db.Users.Where(x => x.Role.Name == Roles.HotelAdmin)
-                .Select(x => x.Surname).Distinct();
+                .Select(x => x.Surname).Distinct().Where(x => !string.IsNullOrEmpty(surname) && x.StartsWith(surname) || string.IsNullOrEmpty(surname)).Take(limit);
         }
 
-        public IEnumerable<string> GetCustomersSurnames()
+        public IEnumerable<string> GetCustomersSurnames(string surname,int limit)
         {
-            return _db.Users.Where(x => x.Orders.Count != 0).Select(x => x.Surname);
+            return _db.Users.Where(x => x.Orders.Count != 0).Select(x => x.Surname).Distinct().Where(x => !string.IsNullOrEmpty(surname) && x.StartsWith(surname) || string.IsNullOrEmpty(surname)).Take(limit);
         }
     }
 }

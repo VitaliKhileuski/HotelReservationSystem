@@ -29,7 +29,7 @@ namespace HotelReservation.Data.Repositories
         public IEnumerable<RoomEntity> GetFilteredRooms(HotelEntity hotel,string roomNumber,string sortField,bool ascending)
         {
             var filteredRooms = hotel.Rooms.Where(x =>
-                !string.IsNullOrEmpty(roomNumber) && x.RoomNumber == roomNumber || string.IsNullOrEmpty(roomNumber));
+                !string.IsNullOrEmpty(roomNumber) && x.RoomNumber.StartsWith(roomNumber) || string.IsNullOrEmpty(roomNumber));
             return string.IsNullOrEmpty(sortField) ? filteredRooms : filteredRooms.AsQueryable().OrderByPropertyName(sortField,ascending);
         }
     }

@@ -293,7 +293,7 @@ namespace Business.Services
             await _hotelRepository.UpdateAsync(hotelEntity);
         }
 
-        public async Task<IEnumerable<string>> GetHotelRoomsNumbers(Guid hotelId, string userId)
+        public async Task<IEnumerable<string>> GetHotelRoomsNumbers(Guid hotelId, string userId,string roomNumber, int limit)
         {
             var userEntity = await _userRepository.GetAsync(userId);
             if (userEntity == null)
@@ -310,7 +310,7 @@ namespace Business.Services
 
             if(PermissionVerifier.CheckHotelPermission(hotelEntity, userEntity))
             {
-                var roomsNumbers = hotelEntity.Rooms.Select(x => x.RoomNumber);
+                var roomsNumbers = hotelEntity.Rooms.Select(x => x.RoomNumber).Where(x =>!string.IsNullOrEmpty(roomNumber) && x.StartsWith(roomNumber) || string.IsNullOrEmpty(roomNumber)).Take(limit);
                 return roomsNumbers;
             }
 
@@ -334,9 +334,9 @@ namespace Business.Services
             return hotelEntity == null;
         }
 
-        public IEnumerable<string> GetHotelNames()
+        public IEnumerable<string> GetHotelNames(string hotelName, int limit)
         {
-            return _hotelRepository.GetHotelNames();
+            return _hotelRepository.GetHotelNames(hotelName, limit);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace HotelReservation.Data.Repositories
             var orderEntities = orderItems.Where(x => 
                                                       (!string.IsNullOrEmpty(country) && x.Room.Hotel.Location.Country==country || string.IsNullOrEmpty(country)) &&
                                                       (!string.IsNullOrEmpty(city) && x.Room.Hotel.Location.City==city || string.IsNullOrEmpty(city)) &&
-                                                      (!string.IsNullOrEmpty(surname) && x.Customer.Surname==surname || string.IsNullOrEmpty(surname)) &&
+                                                      (!string.IsNullOrEmpty(surname) && x.Customer.Surname.StartsWith(surname) || string.IsNullOrEmpty(surname)) &&
                                                       (!string.IsNullOrEmpty(orderNumber) && x.Number.StartsWith(orderNumber) || string.IsNullOrEmpty(orderNumber)) );
             if (string.IsNullOrEmpty(sortField))
             {
