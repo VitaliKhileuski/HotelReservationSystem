@@ -15,6 +15,12 @@ namespace HotelReservation.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(100);
             builder
+                .Property(x => x.CheckInTime)
+                .IsRequired();
+            builder
+                .Property(x => x.CheckOutTime)
+                .IsRequired();
+            builder
                 .HasOne(x => x.Location)
                 .WithOne(x => x.Hotel)
                 .HasForeignKey<LocationEntity>(x => x.HotelId)
