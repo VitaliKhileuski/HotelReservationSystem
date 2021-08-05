@@ -16,5 +16,7 @@ namespace Business.Models
         public DateTime EndDate { get; set; }
         public int NumberOfDays { get; set; }
         public decimal FullPrice { get; set; }
+        public TimeSpan CheckInTime { get; set; }
+        public TimeSpan CheckOutTime { get; set; }
     }
 }

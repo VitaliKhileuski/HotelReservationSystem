@@ -149,6 +149,9 @@ namespace Business.Services
                 hotelEntity.Location.City = hotel.Location.City;
                 hotelEntity.Location.Street = hotel.Location.Street;
                 hotelEntity.Location.BuildingNumber = hotel.Location.BuildingNumber;
+                hotelEntity.LimitDays = hotel.LimitDays;
+                hotelEntity.CheckInTime = hotel.CheckInTime;
+                hotelEntity.CheckOutTime = hotel.CheckOutTime;
 
                     await _hotelRepository.UpdateAsync(hotelEntity);
             }
