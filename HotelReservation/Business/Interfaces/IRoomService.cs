@@ -16,5 +16,6 @@ namespace Business.Interfaces
         Task<bool> IsRoomEmpty(Guid roomId, DateTime checkInDate, DateTime checkOutDate);
         Task<bool> IsRoomBlocked(Guid roomId,string userId);
         Task BlockRoomById(Guid roomId,string userId);
+        Task<bool> IsPossibleToShiftCheckOutTime(Guid roomId, DateTime checkOutDate);
     }
 }

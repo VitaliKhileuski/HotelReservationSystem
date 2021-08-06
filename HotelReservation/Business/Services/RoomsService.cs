@@ -187,6 +187,31 @@ namespace Business.Services
                                               order.EndDate > checkInDate && order.EndDate < checkOutDate));
         }
 
+        public async Task<bool> IsPossibleToShiftCheckOutTime(Guid roomId, DateTime checkOutDate)
+        {
+            var roomEntity = await _roomRepository.GetAsync(roomId);
+            if (roomEntity == null)
+            {
+                _logger.LogError($"room with {roomId} id not exists");
+                throw new NotFoundException($"room with {roomId} id not exists");
+            }
+
+            if (roomEntity.Orders == null || roomEntity.Orders.Count == 0)
+            {
+                return true;
+            }
+
+            foreach (var order in roomEntity.Orders)
+            {
+                if (order.StartDate == checkOutDate)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public async Task BlockRoomById(Guid roomId,string userId)
         {
             var userEntity = await _userRepository.GetAsync(userId);

@@ -83,6 +83,14 @@ namespace HotelReservation.Api.Controllers
             return Ok("Added successfully");
         }
 
+        [HttpGet]
+        [Route("{roomId}/isPossibleToShiftCheckOutTime")]
+        public async Task<IActionResult> IsPossibleToShiftCheckOutTime(Guid roomId, DateTime checkOutDate)
+        {
+            var result = await _roomsService.IsPossibleToShiftCheckOutTime(roomId, checkOutDate);
+            return Ok(result);
+        }
+
         [HttpPut]
         [Authorize]
         [Route("{roomId}/block")]
