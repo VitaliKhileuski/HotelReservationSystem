@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using HotelReservation.Api.Migrations;
 using Org.BouncyCastle.Asn1.Cms;
 
 namespace HotelReservation.Api.Models.ResponseModels
@@ -18,5 +19,6 @@ namespace HotelReservation.Api.Models.ResponseModels
         public TimeSpan CheckOutTime { get; set; }
         public int NumberOfDays { get; set; }
         public decimal FullPrice { get; set; }
+        public bool IsCheckOutTimeShifted { get; set; }
     }
 }

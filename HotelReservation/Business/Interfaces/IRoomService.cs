@@ -17,5 +17,6 @@ namespace Business.Interfaces
         Task<bool> IsRoomBlocked(Guid roomId,string userId);
         Task BlockRoomById(Guid roomId,string userId);
         Task<bool> IsPossibleToShiftCheckOutTime(Guid roomId, DateTime checkOutDate);
+        Task<LimitHoursModel> GetLimitHours(Guid roomId);
     }
 }

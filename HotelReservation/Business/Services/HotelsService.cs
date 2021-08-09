@@ -223,10 +223,10 @@ namespace Business.Services
                         {
                             if (room.Orders != null && room.Orders.Count != 0)
                             {
-                                if (room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
-                                                               checkOutDate > order.StartDate && checkOutDate < order.EndDate ||
-                                                               order.StartDate > checkInDate && order.StartDate < checkOutDate ||
-                                                               order.EndDate > checkInDate && order.EndDate < checkOutDate)))
+                                 var orderEntity = room.Orders.FirstOrDefault(
+                                    order => order.StartDate.Date >= checkInDate.Date && order.StartDate.Date < checkOutDate.Date ||
+                                             order.EndDate.Date > checkInDate.Date && order.EndDate.Date <= checkOutDate.Date);
+                                if (orderEntity==null)
                                 {
                                     availableHotels.Add(hotel);
                                     flag = true;

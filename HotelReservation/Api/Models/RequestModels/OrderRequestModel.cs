@@ -11,5 +11,6 @@ namespace HotelReservation.Api.Models.RequestModels
         public TimeSpan CheckInTime { get; set; }
         public TimeSpan CheckOutTime { get; set; }
         public ICollection<ServiceQuantityRequestModel> ServiceQuantities { get; set; }
+        public bool IsCheckOutTimeShifted { get; set; }
     }
 }

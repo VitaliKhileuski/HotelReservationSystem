@@ -53,6 +53,14 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
+        [Route("{roomId}/getLimitHours")]
+        public async Task<IActionResult> GetRoomLimitHours(Guid roomId)
+        {
+            var roomLimitHours = await _roomsService.GetLimitHours(roomId);
+            return Ok(roomLimitHours);
+        }
+
+        [HttpGet]
         [Route("{roomId}/isEmpty")]
         public async Task<IActionResult> IsRoomEmpty(Guid roomId, DateTime checkInDate, DateTime checkOutDate)
         {

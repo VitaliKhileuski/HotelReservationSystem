@@ -12,8 +12,6 @@ using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
 using Microsoft.AspNetCore.Authorization;
 using HotelReservation.Api.Helpers;
-using HotelReservation.Data.Entities;
-using HotelReservation.Data.Interfaces;
 
 namespace HotelReservation.Api.Controllers
 {
@@ -79,21 +77,18 @@ namespace HotelReservation.Api.Controllers
                 });
             }
 
-          var orderNumber =  await _orderService.CreateOrder(roomId, orderModel);
+            var orderNumber =  await _orderService.CreateOrder(roomId, orderModel);
             return Ok(orderNumber);
         }
 
-        //[HttpPut]
-        //[Authorize]
-        //[Route("{orderId}/updateOrder")]
-        //public async Task<IActionResult> UpdateOrder(Guid orderId, [FromBody] OrderRequestModel order)
-        //{
-        //    var orderModel = _mapper.Map<OrderRequestModel, OrderModel>(order);
-        //    orderModel.Services = new List<ServiceModel>();
-
-        //    await _orderService.UpdateOrder(orderId, orderModel);
-        //    return Ok("Updated successfully");
-        //}
+        [HttpPut]
+        [Authorize]
+        [Route("{orderId}/updateOrder")]
+        public async Task<IActionResult> UpdateOrder(Guid orderId, [FromBody] LimitHoursModel hours)
+        {
+            await _orderService.UpdateOrder(orderId, hours);
+            return Ok("Updated successfully");
+        }
 
         [HttpDelete]
         [Authorize]

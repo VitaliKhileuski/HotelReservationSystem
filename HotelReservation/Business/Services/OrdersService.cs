@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +14,6 @@ using Business.Models.FilterModels;
 using HotelReservation.Data.Constants;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
 namespace Business.Services
@@ -23,17 +23,15 @@ namespace Business.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IUserRepository _userRepository;
         private readonly IRoomRepository _roomRepository;
-        private readonly IServiceRepository _serviceRepository;
         private readonly Mapper _mapper;
         private readonly ILogger<OrdersService> _logger;
         public OrdersService(ILogger<OrdersService> logger, IOrderRepository orderRepository, IUserRepository userRepository,
-            IRoomRepository roomRepository,IServiceRepository serviceRepository, MapConfiguration cfg)
+            IRoomRepository roomRepository, MapConfiguration cfg)
         {
             _orderRepository = orderRepository;
             _userRepository = userRepository;
             _roomRepository = roomRepository;
             _mapper = new Mapper(cfg.OrderConfiguration);
-            _serviceRepository = serviceRepository;
             _logger = logger;
         }
 
@@ -95,7 +93,8 @@ namespace Business.Services
             orderEntity.NumberOfDays = (orderEntity.EndDate.Date - orderEntity.StartDate.Date).Days;
             orderEntity.FullPrice = GetFullPrice(orderEntity,roomEntity);
             orderEntity.Room = roomEntity;
-            
+            roomEntity.UnblockDate = null;
+            roomEntity.PotentialCustomerId = null;
             while (true)
             {
                 try
@@ -159,13 +158,26 @@ namespace Business.Services
         {
               return order.EndDate.Subtract(order.StartDate).Days * room.PaymentPerDay + order.Services.Sum(serviceQuantity => serviceQuantity.Service.Payment*serviceQuantity.Quantity);
         }
-        private bool IsAvailableToBook(RoomEntity room, DateTime checkInDate, DateTime checkOutDate)
+        private static bool IsAvailableToBook(RoomEntity room, DateTime checkInDate, DateTime checkOutDate)
         {
-            return room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
-                                              checkOutDate > order.StartDate && checkOutDate < order.EndDate
-                                              || order.StartDate > checkInDate && order.StartDate < checkOutDate ||
-                                              order.EndDate > checkInDate && order.EndDate < checkOutDate));
+            var orderEntity = room.Orders.FirstOrDefault(
+                order => order.StartDate >= checkInDate && order.StartDate < checkOutDate ||
+                           order.EndDate> checkInDate && order.EndDate <= checkOutDate);
+            return orderEntity == null;
         }
 
+        public async Task UpdateOrder(Guid orderId, LimitHoursModel hours)
+        {
+            var orderEntity = await _orderRepository.GetAsync(orderId);
+            if (orderEntity == null)
+            {
+                _logger.LogError($"order with {orderId} id not exists");
+                throw new NotFoundException($"order with {orderId} id not exists");
+            }
+
+            orderEntity.CheckInTime = hours.CheckInTime;
+            orderEntity.CheckOutTime = hours.CheckOutTime;
+            await _orderRepository.UpdateAsync(orderEntity);
+        }
     }
 }

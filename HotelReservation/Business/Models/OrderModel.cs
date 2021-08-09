@@ -18,5 +18,6 @@ namespace Business.Models
         public decimal FullPrice { get; set; }
         public TimeSpan CheckInTime { get; set; }
         public TimeSpan CheckOutTime { get; set; }
+        public bool IsCheckOutTimeShifted { get; set; }
     }
 }

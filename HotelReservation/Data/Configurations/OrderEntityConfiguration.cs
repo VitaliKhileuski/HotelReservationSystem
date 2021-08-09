@@ -16,7 +16,9 @@ namespace HotelReservation.Data.Configurations
             builder
                 .HasIndex(x => x.Number)
                 .IsUnique();
-
+            builder
+                .Property(x => x.IsCheckOutTimeShifted)
+                .HasDefaultValue(false);
             builder
                 .Property(x => x.StartDate)
                 .IsRequired();

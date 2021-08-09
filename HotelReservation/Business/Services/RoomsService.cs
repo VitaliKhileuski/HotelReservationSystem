@@ -179,12 +179,12 @@ namespace Business.Services
             return false;
         }
 
-        private bool IsAvailableToBook(RoomEntity room, DateTime checkInDate, DateTime checkOutDate)
+        private static bool IsAvailableToBook(RoomEntity room, DateTime checkInDate, DateTime checkOutDate)
         {
-            return room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
-                                              checkOutDate > order.StartDate && checkOutDate < order.EndDate
-                                              || order.StartDate > checkInDate && order.StartDate < checkOutDate ||
-                                              order.EndDate > checkInDate && order.EndDate < checkOutDate));
+            var orderEntity = room.Orders.FirstOrDefault(
+                order => order.StartDate.Date >= checkInDate.Date && order.StartDate.Date < checkOutDate.Date ||
+                         order.EndDate.Date > checkInDate.Date && order.EndDate.Date <= checkOutDate.Date);
+            return orderEntity == null;
         }
 
         public async Task<bool> IsPossibleToShiftCheckOutTime(Guid roomId, DateTime checkOutDate)
@@ -203,7 +203,7 @@ namespace Business.Services
 
             foreach (var order in roomEntity.Orders)
             {
-                if (order.StartDate == checkOutDate)
+                if (checkOutDate.Date < order.StartDate.Date)
                 {
                     return false;
                 }
@@ -243,6 +243,23 @@ namespace Business.Services
 
 
             return true;
+        }
+
+        public async Task<LimitHoursModel> GetLimitHours(Guid roomId)
+        {
+            var roomEntity = await _roomRepository.GetAsync(roomId);
+            if (roomEntity == null)
+            {
+                _logger.LogError($"room with {roomId} id not exists");
+                throw new NotFoundException($"room with {roomId} id not exists");
+            }
+
+            var roomLimitHours = new LimitHoursModel()
+            {
+                CheckInTime = roomEntity.Hotel.CheckInTime,
+                CheckOutTime = roomEntity.Hotel.CheckOutTime
+            };
+            return roomLimitHours;
         }
     }
 }
