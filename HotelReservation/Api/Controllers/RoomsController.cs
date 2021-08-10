@@ -62,9 +62,9 @@ namespace HotelReservation.Api.Controllers
 
         [HttpGet]
         [Route("{roomId}/isEmpty")]
-        public async Task<IActionResult> IsRoomEmpty(Guid roomId, DateTime checkInDate, DateTime checkOutDate)
+        public async Task<IActionResult> IsRoomEmpty(Guid roomId, Guid? orderId, DateTime checkInDate, DateTime checkOutDate)
         {
-            var isEmpty = await _roomsService.IsRoomEmpty(roomId, checkInDate, checkOutDate);
+            var isEmpty = await _roomsService.IsRoomEmpty(roomId,orderId, checkInDate, checkOutDate);
             return Ok(isEmpty);
         }
         [HttpGet]
@@ -100,7 +100,7 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpPut]
-        [Authorize]
+        [Authorize(Policy = Policies.AllAdminsPermission)]
         [Route("{roomId}/block")]
         public async Task<IActionResult> BlockRoomById(Guid roomId)
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Helpers;
@@ -22,6 +23,7 @@ namespace HotelReservation.Api.Controllers
     {
         private readonly Mapper _hotelMapper;
         private readonly Mapper _userMapper;
+        private readonly Mapper _serviceMapper;
         private readonly IHotelsService _hotelsService;
 
 
@@ -30,6 +32,7 @@ namespace HotelReservation.Api.Controllers
             _hotelMapper = new Mapper(cfg.HotelConfiguration);
             _hotelsService = hotelService;
             _userMapper = new Mapper(cfg.UsersConfiguration);
+            _serviceMapper = new Mapper(cfg.ServiceConfiguration);
         }
 
         [HttpGet]
@@ -73,6 +76,15 @@ namespace HotelReservation.Api.Controllers
             };
 
             return Ok(responsePageInfo);
+        }
+
+        [HttpGet]
+        [Route("{hotelId}/getServices")]
+        public async Task<IActionResult> GetServicesFromHotel(Guid hotelId)
+        {
+            var services =
+                _serviceMapper.Map<ICollection<ServiceResponseModel>>(await _hotelsService.GetHotelServices(hotelId));
+            return Ok(services);
         }
 
         [HttpGet]

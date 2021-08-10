@@ -21,14 +21,14 @@ namespace HotelReservation.Api.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly Mapper _mapper;
-        private readonly IMapper _modelMapper;
-
+        private readonly IMapper _updateOrderMapper; 
 
         public OrdersController(IOrderService orderService,CustomMapperConfiguration cfg,MapConfiguration modelCfg)
         {
             _orderService = orderService;
             _mapper = new Mapper(cfg.OrderConfiguration);
-            _modelMapper = new Mapper(modelCfg.ServiceConfiguration);
+            _updateOrderMapper = new Mapper(cfg.UpdateOrderConfiguration);
+
         }
 
         [HttpGet]
@@ -84,9 +84,10 @@ namespace HotelReservation.Api.Controllers
         [HttpPut]
         [Authorize]
         [Route("{orderId}/updateOrder")]
-        public async Task<IActionResult> UpdateOrder(Guid orderId, [FromBody] LimitHoursModel hours)
+        public async Task<IActionResult> UpdateOrder(Guid orderId, [FromBody] UpdateOrderRequestModel updateOrderRequestModel)
         {
-            await _orderService.UpdateOrder(orderId, hours);
+            var updateOrderModel = _updateOrderMapper.Map<UpdateOrderRequestModel, UpdateOrderModel>(updateOrderRequestModel);
+            await _orderService.UpdateOrder(orderId, updateOrderModel);
             return Ok("Updated successfully");
         }
 

@@ -33,6 +33,7 @@ namespace HotelReservation.Api.Controllers
             var orders = _mapper.Map<ICollection<ServiceResponseModel>>(_facilitiesService.GetAllServices());
             return Ok(orders);
         }
+        
         [HttpGet]
         [Route("{hotelId}/pages")]
         public async Task<IActionResult> GetPage(Guid hotelId, [FromQuery] Pagination filter,[FromQuery] SortModel sortModel)

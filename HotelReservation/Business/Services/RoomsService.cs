@@ -111,7 +111,7 @@ namespace Business.Services
 
                         if (room.Orders != null && room.Orders.Count != 0)
                         {
-                            if (IsAvailableToBook(room, checkInDate, checkOutDate))
+                            if (IsAvailableToBook(room,null, checkInDate, checkOutDate))
                             {
                                 filteredRooms.Add(room);
                             }
@@ -156,7 +156,7 @@ namespace Business.Services
             }
         }
 
-        public async Task<bool> IsRoomEmpty(Guid roomId, DateTime checkInDate, DateTime checkOutDate)
+        public async Task<bool> IsRoomEmpty(Guid roomId,Guid? orderId, DateTime checkInDate, DateTime checkOutDate)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
             if (roomEntity == null)
@@ -166,7 +166,7 @@ namespace Business.Services
             }
             if (roomEntity.Orders != null && roomEntity.Orders.Count != 0)
             {
-                if (IsAvailableToBook(roomEntity,checkInDate,checkOutDate))
+                if (IsAvailableToBook(roomEntity,orderId,checkInDate,checkOutDate))
                 {
                     return true;
                 }
@@ -179,11 +179,11 @@ namespace Business.Services
             return false;
         }
 
-        private static bool IsAvailableToBook(RoomEntity room, DateTime checkInDate, DateTime checkOutDate)
+        private static bool IsAvailableToBook(RoomEntity room,Guid? orderId, DateTime checkInDate, DateTime checkOutDate)
         {
             var orderEntity = room.Orders.FirstOrDefault(
-                order => order.StartDate.Date >= checkInDate.Date && order.StartDate.Date < checkOutDate.Date ||
-                         order.EndDate.Date > checkInDate.Date && order.EndDate.Date <= checkOutDate.Date);
+                order => order.Id!=orderId && ( order.StartDate.Date >= checkInDate.Date && order.StartDate.Date < checkOutDate.Date ||
+                         order.EndDate.Date > checkInDate.Date && order.EndDate.Date <= checkOutDate.Date));
             return orderEntity == null;
         }
 
