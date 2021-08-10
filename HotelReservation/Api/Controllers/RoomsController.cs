@@ -100,7 +100,7 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpPut]
-        [Authorize(Policy = Policies.AllAdminsPermission)]
+        [Authorize]
         [Route("{roomId}/block")]
         public async Task<IActionResult> BlockRoomById(Guid roomId)
         {
