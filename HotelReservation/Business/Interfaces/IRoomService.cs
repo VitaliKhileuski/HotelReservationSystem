@@ -13,8 +13,10 @@ namespace Business.Interfaces
         Task UpdateRoom(Guid roomId, string userId, RoomModel room);
         Task DeleteRoom(Guid roomId, string userId);
         Task<PageInfo<RoomModel>> GetRoomsPage(Guid hotelId,RoomFilter roomFilter, Pagination roomPagination, SortModel sortModel);
-        Task<bool> IsRoomEmpty(Guid roomId, DateTime checkInDate, DateTime checkOutDate);
-        Task<bool> IsRoomBlocked(Guid roomId);
+        Task<bool> IsRoomEmpty(Guid roomId,Guid? orderId, DateTime checkInDate, DateTime checkOutDate);
+        Task<bool> IsRoomBlocked(Guid roomId,string userId);
         Task BlockRoomById(Guid roomId,string userId);
+        Task<bool> IsPossibleToShiftCheckOutTime(Guid roomId, DateTime checkOutDate);
+        Task<LimitHoursModel> GetLimitHours(Guid roomId);
     }
 }

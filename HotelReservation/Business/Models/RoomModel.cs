@@ -9,6 +9,7 @@ namespace Business.Models
         public  UserModel User { get; set; }
         public  ICollection<OrderModel> Orders { get; set; }
         public ICollection<AttachmentModel> Attachments { get; set; }
+        public Guid HotelId { get; set; }
         public  HotelModel Hotel { get; set; }
         public string RoomNumber { get; set; }
         public int BedsNumber { get; set; }

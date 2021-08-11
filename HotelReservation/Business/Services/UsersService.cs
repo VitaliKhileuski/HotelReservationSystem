@@ -181,32 +181,32 @@ namespace Business.Services
             throw new BadRequestException("you don't have any permissions");
         }
 
-        public IEnumerable<string> GetUsersEmails()
+        public IEnumerable<string> GetUsersEmails(string email, int limit)
         {
-          var emails = _userRepository.GetUsersEmails();
+          var emails = _userRepository.GetUsersEmails(email, limit);
           return emails;
         }
-        public IEnumerable<string> GetUsersSurnames()
+        public IEnumerable<string> GetUsersSurnames(string email, int limit)
         {
-            var surnames = _userRepository.GetUsersSurnames();
+            var surnames = _userRepository.GetUsersSurnames(email, limit);
             return surnames;
         }
 
-        public IEnumerable<string> GetHotelAdminsEmails()
+        public IEnumerable<string> GetHotelAdminsEmails(string email, int limit)
         {
-            var emails = _userRepository.GetHotelAdminsEmails();
+            var emails = _userRepository.GetHotelAdminsEmails(email, limit);
             return emails;
         }
 
-        public IEnumerable<string> GetHotelAdminsSurnames()
+        public IEnumerable<string> GetHotelAdminsSurnames(string email, int limit)
         {
-            var surnames = _userRepository.GetHotelAdminsSurnames();
+            var surnames = _userRepository.GetHotelAdminsSurnames(email, limit);
             return surnames;
         }
 
-        public IEnumerable<string> GetCustomersSurnames()
+        public IEnumerable<string> GetCustomersSurnames(string email, int limit)
         {
-            var surnames = _userRepository.GetCustomersSurnames();
+            var surnames = _userRepository.GetCustomersSurnames(email, limit);
             return surnames;
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +14,6 @@ using Business.Models.FilterModels;
 using HotelReservation.Data.Constants;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
 namespace Business.Services
@@ -23,17 +23,15 @@ namespace Business.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IUserRepository _userRepository;
         private readonly IRoomRepository _roomRepository;
-        private readonly IServiceRepository _serviceRepository;
         private readonly Mapper _mapper;
         private readonly ILogger<OrdersService> _logger;
         public OrdersService(ILogger<OrdersService> logger, IOrderRepository orderRepository, IUserRepository userRepository,
-            IRoomRepository roomRepository,IServiceRepository serviceRepository, MapConfiguration cfg)
+            IRoomRepository roomRepository, MapConfiguration cfg)
         {
             _orderRepository = orderRepository;
             _userRepository = userRepository;
             _roomRepository = roomRepository;
             _mapper = new Mapper(cfg.OrderConfiguration);
-            _serviceRepository = serviceRepository;
             _logger = logger;
         }
 
@@ -51,7 +49,7 @@ namespace Business.Services
             return orderModel;
         }
 
-        public async Task CreateOrder(Guid roomId, OrderModel order)
+        public async Task<string> CreateOrder(Guid roomId, OrderModel order)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
             if (roomEntity == null)
@@ -59,6 +57,12 @@ namespace Business.Services
                 _logger.LogError($"room with {roomId} id not exists");
                 throw new NotFoundException($"room with {roomId} id not exists");
             }
+            if(!IsAvailableToBook(roomEntity,order.StartDate,order.EndDate))
+            {
+                _logger.LogError($"this room is already booked on this dates");
+                throw new BadRequestException($"this room is already booked on this dates");
+            }
+
             var orderEntity = _mapper.Map<OrderModel, OrderEntity>(order);
             var serviceQuantities = new List<ServiceQuantityEntity>();
             foreach (var serviceQuantity in order.Services)
@@ -86,13 +90,30 @@ namespace Business.Services
 
             orderEntity.Customer = userEntity;
             orderEntity.DateOrdered = DateTime.Now;
-            orderEntity.NumberOfDays = orderEntity.EndDate.Subtract(orderEntity.StartDate).Days;
+            orderEntity.NumberOfDays = GetNumberOfDays(orderEntity.StartDate, orderEntity.EndDate);
             orderEntity.FullPrice = GetFullPrice(orderEntity,roomEntity);
             orderEntity.Room = roomEntity;
-            userEntity.Orders.Add(orderEntity);
-            roomEntity.Orders.Add(orderEntity);
-            await _userRepository.UpdateAsync(userEntity);
-            await _roomRepository.UpdateAsync(roomEntity);
+            roomEntity.UnblockDate = null;
+            roomEntity.PotentialCustomerId = null;
+            while (true)
+            {
+                try
+                {
+                    orderEntity.Number = RandomStringGenerator.GetRandomString(8);
+                    userEntity.Orders.Add(orderEntity);
+                    roomEntity.Orders.Add(orderEntity);
+                    await _userRepository.UpdateAsync(userEntity);
+                    await _roomRepository.UpdateAsync(roomEntity);
+                    break;
+                }
+                catch
+                {
+                    userEntity.Orders.Remove(orderEntity);
+                    roomEntity.Orders.Remove(orderEntity);
+                }
+            }
+
+            return orderEntity.Number;
         }
 
         public async Task DeleteOrder(Guid orderId)
@@ -111,6 +132,7 @@ namespace Business.Services
             var country = orderFilter.Country;
             var city = orderFilter.City;
             var surname = orderFilter.Surname;
+            var orderNumber = orderFilter.Number;
             var userEntity = await _userRepository.GetAsync(userId);
             if (userEntity == null)
             {
@@ -123,7 +145,7 @@ namespace Business.Services
                 userEntity = null;
             }
            
-            var orders = _orderRepository.GetFilteredOrders(userEntity, country, city, surname, sortModel.SortField,
+            var orders = _orderRepository.GetFilteredOrders(userEntity, country, city, surname,orderNumber, sortModel.SortField,
                 sortModel.Ascending);
 
             var orderModels = _mapper.Map<ICollection<OrderModel>>(orders);
@@ -132,36 +154,56 @@ namespace Business.Services
 
         }
 
-        private PageInfo<OrderModel> GetOrdersForAdmin(string country,string city,string surname,Pagination pagination,SortModel sortModel)
-        { 
-            var orderModels = _mapper.Map<ICollection<OrderModel>>(_orderRepository.GetFilteredOrders(null,country,city,surname,sortModel.SortField,sortModel.Ascending));
-            var page = PageInfoCreator<OrderModel>.GetPageInfo(orderModels,pagination);
-            return page;
-        }
-
-        private PageInfo<OrderModel> GetOrdersForHotelAdmin(string country,string city,string surname,UserEntity userEntity, Pagination pagination,SortModel sortModel)
+        private static int GetNumberOfDays(DateTime checkInDate, DateTime checkOutDate)
         {
-
-            var orders = _orderRepository.GetFilteredOrders(userEntity, country, city, surname, sortModel.SortField,
-                sortModel.Ascending);
-            var orderModels = _mapper.Map<ICollection<OrderModel>>(orders);
-            var page = PageInfoCreator<OrderModel>.GetPageInfo(orderModels, pagination);
-            return page;
-        }
-
-        private PageInfo<OrderModel> GetOrdersForUser(UserEntity userEntity,string country,string city, string surname, Pagination pagination,SortModel sortModel)
-        {
-            var orders = _orderRepository.GetFilteredOrders(userEntity, country, city, surname, sortModel.SortField,
-                sortModel.Ascending);
-            var orderModels = _mapper.Map<ICollection<OrderModel>>(orders);
-            var page = PageInfoCreator<OrderModel>.GetPageInfo(orderModels, pagination);
-            return page;
+            var numberOfDays = (checkOutDate - checkInDate).Days;
+            return numberOfDays;
         }
 
         private static decimal GetFullPrice(OrderEntity order, RoomEntity room)
         {
               return order.EndDate.Subtract(order.StartDate).Days * room.PaymentPerDay + order.Services.Sum(serviceQuantity => serviceQuantity.Service.Payment*serviceQuantity.Quantity);
         }
+        private static bool IsAvailableToBook(RoomEntity room, DateTime checkInDate, DateTime checkOutDate)
+        {
+            var orderEntity = room.Orders.FirstOrDefault(
+                order => order.StartDate >= checkInDate && order.StartDate < checkOutDate ||
+                           order.EndDate> checkInDate && order.EndDate <= checkOutDate);
+            return orderEntity == null;
+        }
 
+        public async Task UpdateOrder(Guid orderId, UpdateOrderModel updateOrderModel)
+        {
+            var orderEntity = await _orderRepository.GetAsync(orderId);
+            if (orderEntity == null)
+            {
+                _logger.LogError($"order with {orderId} id not exists");
+                throw new NotFoundException($"order with {orderId} id not exists");
+            }
+
+            if (orderEntity.CheckInTime != updateOrderModel.CheckInTime)
+            {
+                orderEntity.CheckInTime = updateOrderModel.CheckInTime;
+            }
+
+            if (orderEntity.CheckOutTime != updateOrderModel.CheckOutTime)
+            {
+                orderEntity.CheckOutTime = updateOrderModel.CheckOutTime;
+            }
+
+            if (orderEntity.StartDate.Date != updateOrderModel.CheckInDate.Date)
+            {
+                orderEntity.StartDate = updateOrderModel.CheckInDate;
+            }
+
+            if (orderEntity.EndDate.Date != updateOrderModel.CheckOutDate.Date)
+            {
+                orderEntity.EndDate = updateOrderModel.CheckOutDate;
+            }
+
+            orderEntity.FullPrice = GetFullPrice(orderEntity, orderEntity.Room);
+            orderEntity.NumberOfDays = GetNumberOfDays(orderEntity.StartDate, orderEntity.EndDate);
+            await _orderRepository.UpdateAsync(orderEntity);
+        }
     }
 }

@@ -23,6 +23,7 @@ namespace Business.Services
         private readonly Mapper _locationMapper;
         private readonly Mapper _hotelMapper;
         private readonly Mapper _userMapper;
+        private readonly Mapper _serviceMapper;
         private readonly IFileContentRepository _fileContentRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly ILogger<HotelsService> _logger;
@@ -36,6 +37,7 @@ namespace Business.Services
             _locationMapper = new Mapper(cfg.LocationConfiguration);
             _hotelMapper = new Mapper(cfg.HotelConfiguration);
             _userMapper = new Mapper(cfg.UserConfiguration);
+            _serviceMapper = new Mapper(cfg.ServiceConfiguration);
             _logger = logger;
             _roleRepository = roleRepository;
 
@@ -149,6 +151,9 @@ namespace Business.Services
                 hotelEntity.Location.City = hotel.Location.City;
                 hotelEntity.Location.Street = hotel.Location.Street;
                 hotelEntity.Location.BuildingNumber = hotel.Location.BuildingNumber;
+                hotelEntity.LimitDays = hotel.LimitDays;
+                hotelEntity.CheckInTime = hotel.CheckInTime;
+                hotelEntity.CheckOutTime = hotel.CheckOutTime;
 
                     await _hotelRepository.UpdateAsync(hotelEntity);
             }
@@ -220,10 +225,10 @@ namespace Business.Services
                         {
                             if (room.Orders != null && room.Orders.Count != 0)
                             {
-                                if (room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
-                                                               checkOutDate > order.StartDate && checkOutDate < order.EndDate ||
-                                                               order.StartDate > checkInDate && order.StartDate < checkOutDate ||
-                                                               order.EndDate > checkInDate && order.EndDate < checkOutDate)))
+                                 var orderEntity = room.Orders.FirstOrDefault(
+                                    order => order.StartDate.Date >= checkInDate.Date && order.StartDate.Date < checkOutDate.Date ||
+                                             order.EndDate.Date > checkInDate.Date && order.EndDate.Date <= checkOutDate.Date);
+                                if (orderEntity==null)
                                 {
                                     availableHotels.Add(hotel);
                                     flag = true;
@@ -293,7 +298,7 @@ namespace Business.Services
             await _hotelRepository.UpdateAsync(hotelEntity);
         }
 
-        public async Task<IEnumerable<string>> GetHotelRoomsNumbers(Guid hotelId, string userId)
+        public async Task<IEnumerable<string>> GetHotelRoomsNumbers(Guid hotelId, string userId,string roomNumber, int limit)
         {
             var userEntity = await _userRepository.GetAsync(userId);
             if (userEntity == null)
@@ -310,12 +315,13 @@ namespace Business.Services
 
             if(PermissionVerifier.CheckHotelPermission(hotelEntity, userEntity))
             {
-                var roomsNumbers = hotelEntity.Rooms.Select(x => x.RoomNumber);
+                var roomsNumbers = hotelEntity.Rooms.Select(x => x.RoomNumber).Where(x =>!string.IsNullOrEmpty(roomNumber) && x.StartsWith(roomNumber) || string.IsNullOrEmpty(roomNumber)).Take(limit);
                 return roomsNumbers;
             }
 
             throw new BadRequestException("you don't have permissions to do this action");
         }
+
 
         public bool IsLocationEmpty(HotelEntity hotel, LocationEntity oldLocation = null)
         {
@@ -334,9 +340,22 @@ namespace Business.Services
             return hotelEntity == null;
         }
 
-        public IEnumerable<string> GetHotelNames()
+        public IEnumerable<string> GetHotelNames(string hotelName, int limit)
         {
-            return _hotelRepository.GetHotelNames();
+            return _hotelRepository.GetHotelNames(hotelName, limit);
+        }
+
+        public async Task<ICollection<ServiceModel>> GetHotelServices(Guid hotelId)
+        {
+            var hotelEntity = await _hotelRepository.GetAsync(hotelId);
+            if (hotelEntity == null)
+            {
+                _logger.LogError($"hotel with {hotelId} id not exists");
+                throw new NotFoundException($"hotel with {hotelId} id not exists");
+            }
+
+            var serviceModels = _serviceMapper.Map<ICollection<ServiceModel>>(hotelEntity.Services);
+            return serviceModels;
         }
     }
 }

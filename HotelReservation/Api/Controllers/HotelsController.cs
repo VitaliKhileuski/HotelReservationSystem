@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using AutoMapper;
+using Business.Helpers;
 using Business.Interfaces;
 using Business.Models;
 using Business.Models.FilterModels;
@@ -21,6 +23,7 @@ namespace HotelReservation.Api.Controllers
     {
         private readonly Mapper _hotelMapper;
         private readonly Mapper _userMapper;
+        private readonly Mapper _serviceMapper;
         private readonly IHotelsService _hotelsService;
 
 
@@ -29,6 +32,7 @@ namespace HotelReservation.Api.Controllers
             _hotelMapper = new Mapper(cfg.HotelConfiguration);
             _hotelsService = hotelService;
             _userMapper = new Mapper(cfg.UsersConfiguration);
+            _serviceMapper = new Mapper(cfg.ServiceConfiguration);
         }
 
         [HttpGet]
@@ -60,7 +64,7 @@ namespace HotelReservation.Api.Controllers
         [Route("page")]
         public async Task<IActionResult> GetFilteredGHotels([FromQuery] HotelFilterModel hotelFilter, [FromQuery] Pagination filter,[FromQuery] SortModel sortModel)
         {
-            var userId = TokenData.GetIdFromClaims(User.Claims);
+
             var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
             var pageInfo = await  _hotelsService.GetFilteredHotels(hotelFilter, validFilter,sortModel);
             var hotels = _hotelMapper.Map<List<HotelResponseModel>>(pageInfo.Items);
@@ -75,20 +79,29 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
-        [Route("hotelNames")]
-        public IActionResult GetHotelNames()
+        [Route("{hotelId}/getServices")]
+        public async Task<IActionResult> GetServicesFromHotel(Guid hotelId)
         {
-            var hotelNames = _hotelsService.GetHotelNames();
+            var services =
+                _serviceMapper.Map<ICollection<ServiceResponseModel>>(await _hotelsService.GetHotelServices(hotelId));
+            return Ok(services);
+        }
+
+        [HttpGet]
+        [Route("hotelNames")]
+        public IActionResult GetHotelNames(string hotelName, int limit)
+        {
+            var hotelNames = _hotelsService.GetHotelNames(hotelName, limit);
             return Ok(hotelNames);
         }
 
         [HttpGet]
         [Authorize(Policy = Policies.AllAdminsPermission)]
         [Route("{hotelId}/getRoomsNumbers")]
-        public async Task<IActionResult> GetHotelRoomsNumbers(Guid hotelId)
+        public async Task<IActionResult> GetHotelRoomsNumbers(Guid hotelId,string roomNumber,int limit)
         {
             var userId = TokenData.GetIdFromClaims(User.Claims);
-            var roomsNumbers = await _hotelsService.GetHotelRoomsNumbers(hotelId, userId);
+            var roomsNumbers = await _hotelsService.GetHotelRoomsNumbers(hotelId, userId,roomNumber,limit);
             return Ok(roomsNumbers);
         }
 

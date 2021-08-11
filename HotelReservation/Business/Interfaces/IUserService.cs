@@ -13,12 +13,11 @@ namespace Business.Interfaces
         Task DeleteById(Guid userId);
         Task<string> Update(Guid id,string userId, UserModel user); 
         Task AddUser(UserModel user);
-        IEnumerable<string> GetUsersSurnames();
-        public IEnumerable<string> GetUsersEmails();
-        public IEnumerable<string> GetHotelAdminsEmails();
-        public IEnumerable<string> GetHotelAdminsSurnames();
-        public IEnumerable<string> GetCustomersSurnames();
+        IEnumerable<string> GetUsersSurnames(string surname, int limit);
+        public IEnumerable<string> GetUsersEmails(string email, int limit);
+        public IEnumerable<string> GetHotelAdminsEmails(string email,int limit);
+        public IEnumerable<string> GetHotelAdminsSurnames(string surname,int limit);
+        public IEnumerable<string> GetCustomersSurnames(string surname,int limit);
         Task<PageInfo<UserModel>> GetUsersPage(UserFilter userFilter,string userId, Pagination pagination,SortModel sortModel);
-        
     }
 }

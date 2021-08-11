@@ -93,11 +93,7 @@ namespace Business.Services
             var checkOutDate = roomFilter.CheckOutDate;
 
             var userEntity = await _userRepository.GetAsync(roomFilter.UserId);
-            if (roomNumber == "null")
-            {
-                roomNumber = null;
-            }
-            
+
             var filteredRooms = new List<RoomEntity>();
             if (userEntity!=null && userEntity.Role.Name!=Roles.User)
             {
@@ -115,7 +111,7 @@ namespace Business.Services
 
                         if (room.Orders != null && room.Orders.Count != 0)
                         {
-                            if (IsAvailableToBook(room, checkInDate, checkOutDate))
+                            if (IsAvailableToBook(room,null, checkInDate, checkOutDate))
                             {
                                 filteredRooms.Add(room);
                             }
@@ -160,7 +156,7 @@ namespace Business.Services
             }
         }
 
-        public async Task<bool> IsRoomEmpty(Guid roomId, DateTime checkInDate, DateTime checkOutDate)
+        public async Task<bool> IsRoomEmpty(Guid roomId,Guid? orderId, DateTime checkInDate, DateTime checkOutDate)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
             if (roomEntity == null)
@@ -170,7 +166,7 @@ namespace Business.Services
             }
             if (roomEntity.Orders != null && roomEntity.Orders.Count != 0)
             {
-                if (IsAvailableToBook(roomEntity,checkInDate,checkOutDate))
+                if (IsAvailableToBook(roomEntity,orderId,checkInDate,checkOutDate))
                 {
                     return true;
                 }
@@ -183,12 +179,37 @@ namespace Business.Services
             return false;
         }
 
-        private bool IsAvailableToBook(RoomEntity room, DateTime checkInDate, DateTime checkOutDate)
+        private static bool IsAvailableToBook(RoomEntity room,Guid? orderId, DateTime checkInDate, DateTime checkOutDate)
         {
-            return room.Orders.All(order => !(checkInDate > order.StartDate && checkInDate < order.EndDate ||
-                                              checkOutDate > order.StartDate && checkOutDate < order.EndDate
-                                              || order.StartDate > checkInDate && order.StartDate < checkOutDate ||
-                                              order.EndDate > checkInDate && order.EndDate < checkOutDate));
+            var orderEntity = room.Orders.FirstOrDefault(
+                order => order.Id!=orderId && ( order.StartDate.Date >= checkInDate.Date && order.StartDate.Date < checkOutDate.Date ||
+                         order.EndDate.Date > checkInDate.Date && order.EndDate.Date <= checkOutDate.Date));
+            return orderEntity == null;
+        }
+
+        public async Task<bool> IsPossibleToShiftCheckOutTime(Guid roomId, DateTime checkOutDate)
+        {
+            var roomEntity = await _roomRepository.GetAsync(roomId);
+            if (roomEntity == null)
+            {
+                _logger.LogError($"room with {roomId} id not exists");
+                throw new NotFoundException($"room with {roomId} id not exists");
+            }
+
+            if (roomEntity.Orders == null || roomEntity.Orders.Count == 0)
+            {
+                return true;
+            }
+
+            foreach (var order in roomEntity.Orders)
+            {
+                if (checkOutDate.Date < order.StartDate.Date)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public async Task BlockRoomById(Guid roomId,string userId)
@@ -212,14 +233,33 @@ namespace Business.Services
                 await _roomRepository.UpdateAsync(roomEntity);
         }
 
-        public async Task<bool> IsRoomBlocked(Guid roomId)
+        public async Task<bool> IsRoomBlocked(Guid roomId,string userId)
         {
             var roomEntity = await _roomRepository.GetAsync(roomId);
-            if (roomEntity.UnblockDate == null)
+            if (roomEntity.UnblockDate == null || roomEntity.PotentialCustomerId==userId ||  roomEntity.UnblockDate<DateTime.Now)
             {
                 return false;
             }
-            return roomEntity.UnblockDate > DateTime.Now;
+
+
+            return true;
+        }
+
+        public async Task<LimitHoursModel> GetLimitHours(Guid roomId)
+        {
+            var roomEntity = await _roomRepository.GetAsync(roomId);
+            if (roomEntity == null)
+            {
+                _logger.LogError($"room with {roomId} id not exists");
+                throw new NotFoundException($"room with {roomId} id not exists");
+            }
+
+            var roomLimitHours = new LimitHoursModel()
+            {
+                CheckInTime = roomEntity.Hotel.CheckInTime,
+                CheckOutTime = roomEntity.Hotel.CheckOutTime
+            };
+            return roomLimitHours;
         }
     }
 }

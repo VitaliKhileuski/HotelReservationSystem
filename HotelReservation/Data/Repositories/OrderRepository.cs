@@ -4,6 +4,7 @@ using HotelReservation.Data.Constants;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Helpers;
 using HotelReservation.Data.Interfaces;
+using Org.BouncyCastle.Math.EC.Rfc7748;
 
 namespace HotelReservation.Data.Repositories
 {
@@ -16,7 +17,7 @@ namespace HotelReservation.Data.Repositories
             _db = context;
         }
 
-        public IEnumerable<OrderEntity> GetFilteredOrders(UserEntity user, string country, string city, string surname,string sortField,bool ascending)
+        public IEnumerable<OrderEntity> GetFilteredOrders(UserEntity user, string country, string city, string surname,string orderNumber,string sortField,bool ascending)
         {
             IQueryable<OrderEntity> orderItems = _db.Orders;
             if (user != null)
@@ -30,9 +31,11 @@ namespace HotelReservation.Data.Repositories
                     orderItems = user.Orders.AsQueryable();
                 }
             }
-            var orderEntities = orderItems.Where(x => (!string.IsNullOrEmpty(country) && x.Room.Hotel.Location.Country==country || string.IsNullOrEmpty(country)) &&
+            var orderEntities = orderItems.Where(x => 
+                                                      (!string.IsNullOrEmpty(country) && x.Room.Hotel.Location.Country==country || string.IsNullOrEmpty(country)) &&
                                                       (!string.IsNullOrEmpty(city) && x.Room.Hotel.Location.City==city || string.IsNullOrEmpty(city)) &&
-                                                      (!string.IsNullOrEmpty(surname) && x.Customer.Surname==surname || string.IsNullOrEmpty(surname)));
+                                                      (!string.IsNullOrEmpty(surname) && x.Customer.Surname.StartsWith(surname) || string.IsNullOrEmpty(surname)) &&
+                                                      (!string.IsNullOrEmpty(orderNumber) && x.Number.StartsWith(orderNumber) || string.IsNullOrEmpty(orderNumber)) );
             if (string.IsNullOrEmpty(sortField))
             {
                 return orderEntities;

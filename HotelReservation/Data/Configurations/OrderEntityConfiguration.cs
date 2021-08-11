@@ -14,6 +14,12 @@ namespace HotelReservation.Data.Configurations
                 .Property(x => x.DateOrdered)
                 .IsRequired();
             builder
+                .HasIndex(x => x.Number)
+                .IsUnique();
+            builder
+                .Property(x => x.IsCheckOutTimeShifted)
+                .HasDefaultValue(false);
+            builder
                 .Property(x => x.StartDate)
                 .IsRequired();
             builder

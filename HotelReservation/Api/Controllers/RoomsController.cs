@@ -53,17 +53,25 @@ namespace HotelReservation.Api.Controllers
         }
 
         [HttpGet]
-        [Route("{roomId}/isEmpty")]
-        public async Task<IActionResult> IsRoomEmpty(Guid roomId, DateTime checkInDate, DateTime checkOutDate)
+        [Route("{roomId}/getLimitHours")]
+        public async Task<IActionResult> GetRoomLimitHours(Guid roomId)
         {
-            var isEmpty = await _roomsService.IsRoomEmpty(roomId, checkInDate, checkOutDate);
+            var roomLimitHours = await _roomsService.GetLimitHours(roomId);
+            return Ok(roomLimitHours);
+        }
+
+        [HttpGet]
+        [Route("{roomId}/isEmpty")]
+        public async Task<IActionResult> IsRoomEmpty(Guid roomId, Guid? orderId, DateTime checkInDate, DateTime checkOutDate)
+        {
+            var isEmpty = await _roomsService.IsRoomEmpty(roomId,orderId, checkInDate, checkOutDate);
             return Ok(isEmpty);
         }
         [HttpGet]
         [Route("{roomId}/isRoomBlocked")]
-        public async Task<IActionResult> IsRoomEmpty(Guid roomId)
+        public async Task<IActionResult> IsRoomBlocked(Guid roomId,[FromQuery] string userId)
         {
-            var isRoomBlocked = await _roomsService.IsRoomBlocked(roomId);
+            var isRoomBlocked = await _roomsService.IsRoomBlocked(roomId,userId);
             return Ok(isRoomBlocked);
         }
 
@@ -81,6 +89,14 @@ namespace HotelReservation.Api.Controllers
             var roomModel = _mapper.Map<RoomRequestModel, RoomModel>(room);
             await _roomsService.AddRoom(hotelId, roomModel, userId);
             return Ok("Added successfully");
+        }
+
+        [HttpGet]
+        [Route("{roomId}/isPossibleToShiftCheckOutTime")]
+        public async Task<IActionResult> IsPossibleToShiftCheckOutTime(Guid roomId, DateTime checkOutDate)
+        {
+            var result = await _roomsService.IsPossibleToShiftCheckOutTime(roomId, checkOutDate);
+            return Ok(result);
         }
 
         [HttpPut]
