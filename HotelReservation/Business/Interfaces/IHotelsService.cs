@@ -17,8 +17,8 @@ namespace Business.Interfaces
         Task<ICollection<UserModel>> GetHotelAdmins(Guid hotelId);
         Task DeleteHotelAdmin(Guid hotelId, Guid adminId);
         Task<PageInfo<HotelModel>> GetHotelsPageForHotelAdmin(HotelFilterModel hotelFilter, Pagination hotelPagination, SortModel sortModel);
-        IEnumerable<string> GetHotelNames(string hotelName, int limit);
-        Task<IEnumerable<string>> GetHotelRoomsNumbers(Guid hotelId,string userId,string roomNumber, int limit);
+        IEnumerable<string> GetHotelNames(string hotelName);
+        Task<IEnumerable<string>> GetHotelRoomsNumbers(Guid hotelId,string userId,string roomNumber);
         Task<ICollection<ServiceModel>> GetHotelServices(Guid hotelId);
     }
 }

@@ -42,31 +42,32 @@ namespace HotelReservation.Data.Repositories
             return filteredUsers.OrderByPropertyName(sortedField, ascending);
         }
 
-        public IEnumerable<string> GetUsersEmails(string email, int limit)
+        public IEnumerable<string> GetUsersEmails(string email)
         {
 
-            return _db.Users.Select(x =>x.Email).Where(x => !string.IsNullOrEmpty(email) && x.StartsWith(email) || string.IsNullOrEmpty(email)).Take(limit);
+            return _db.Users.Select(x =>x.Email).Where(x => !string.IsNullOrEmpty(email) && x.StartsWith(email) || string.IsNullOrEmpty(email));
         }
 
-        public IEnumerable<string> GetUsersSurnames(string surname,int limit)
+        public IEnumerable<string> GetUsersSurnames(string surname)
         {
-            return _db.Users.Select(x => x.Surname).Distinct().Where(x => !string.IsNullOrEmpty(surname) && x.StartsWith(surname) || string.IsNullOrEmpty(surname)).Take(limit);
+            return _db.Users.Select(x => x.Surname).Distinct().Where(x => !string.IsNullOrEmpty(surname) && x.StartsWith(surname) || string.IsNullOrEmpty(surname));
         }
 
-        public IEnumerable<string> GetHotelAdminsEmails(string email, int limit)
+        public IEnumerable<string> GetHotelAdminsEmails(string email)
         {
             return _db.Users.Where(x => x.Role.Name == Roles.HotelAdmin)
-                .Select(x => x.Email).Where(x => !string.IsNullOrEmpty(email) && x.StartsWith(email) || string.IsNullOrEmpty(email)).Take(limit);
+                .Select(x => x.Email).Where(x =>
+                    !string.IsNullOrEmpty(email) && x.StartsWith(email) || string.IsNullOrEmpty(email));
         }
-        public IEnumerable<string> GetHotelAdminsSurnames(string surname, int limit)
+        public IEnumerable<string> GetHotelAdminsSurnames(string surname)
         {
             return _db.Users.Where(x => x.Role.Name == Roles.HotelAdmin)
-                .Select(x => x.Surname).Distinct().Where(x => !string.IsNullOrEmpty(surname) && x.StartsWith(surname) || string.IsNullOrEmpty(surname)).Take(limit);
+                .Select(x => x.Surname).Distinct().Where(x => !string.IsNullOrEmpty(surname) && x.StartsWith(surname) || string.IsNullOrEmpty(surname));
         }
 
-        public IEnumerable<string> GetCustomersSurnames(string surname,int limit)
+        public IEnumerable<string> GetCustomersSurnames(string surname)
         {
-            return _db.Users.Where(x => x.Orders.Count != 0).Select(x => x.Surname).Distinct().Where(x => !string.IsNullOrEmpty(surname) && x.StartsWith(surname) || string.IsNullOrEmpty(surname)).Take(limit);
+            return _db.Users.Where(x => x.Orders.Count != 0).Select(x => x.Surname).Distinct().Where(x => !string.IsNullOrEmpty(surname) && x.StartsWith(surname) || string.IsNullOrEmpty(surname));
         }
     }
 }
