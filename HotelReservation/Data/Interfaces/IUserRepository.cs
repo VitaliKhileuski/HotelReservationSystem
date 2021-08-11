@@ -8,11 +8,11 @@ namespace HotelReservation.Data.Interfaces
     {
         Task<UserEntity> GetAsyncByEmail(string email);
         IEnumerable<UserEntity> GetUsers(HotelEntity hotel);
-        IEnumerable<string> GetUsersSurnames(string surname, int limit);
-        IEnumerable<string> GetUsersEmails(string email,int limit);
+        IEnumerable<string> GetUsersSurnames(string surname);
+        IEnumerable<string> GetUsersEmails(string email);
         IEnumerable<UserEntity> GetFilteredUsersBySurname(string surname,string email, string sortedField,bool ascending);
-        IEnumerable<string> GetHotelAdminsEmails(string email, int limit);
-        IEnumerable<string> GetHotelAdminsSurnames(string surname, int limit);
-        IEnumerable<string> GetCustomersSurnames(string surname, int limit);
+        IEnumerable<string> GetHotelAdminsEmails(string email);
+        IEnumerable<string> GetHotelAdminsSurnames(string surname);
+        IEnumerable<string> GetCustomersSurnames(string surname);
     }
 }

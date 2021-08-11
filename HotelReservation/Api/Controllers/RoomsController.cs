@@ -28,15 +28,6 @@ namespace HotelReservation.Api.Controllers
             _mapper = new Mapper(cfg.RoomConfiguration);
         }
 
-        // [HttpGet]
-        // [Route("{hotelId}")]
-        // public async Task<IActionResult> GetRooms(Guid hotelId, DateTime checkInDate, DateTime checkOutDate)
-        // {
-        //     var roomModels = await _roomsService.GetRoomsFromHotel(hotelId,checkInDate,checkOutDate);
-        //     var roomResponseModels = _mapper.Map<ICollection<RoomResponseModel>>(roomModels);
-        //     return Ok(roomResponseModels);
-        // }
-
         [HttpGet]
         [Route("{hotelId}")]
         public async Task<IActionResult> GetPage(Guid hotelId,[FromQuery] RoomFilter roomFilter, [FromQuery] Pagination filter,[FromQuery] SortModel sortModel)

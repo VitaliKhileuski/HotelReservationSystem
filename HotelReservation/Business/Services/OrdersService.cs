@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -95,23 +96,13 @@ namespace Business.Services
             orderEntity.Room = roomEntity;
             roomEntity.UnblockDate = null;
             roomEntity.PotentialCustomerId = null;
-            while (true)
-            {
-                try
-                {
-                    orderEntity.Number = RandomStringGenerator.GetRandomString(8);
-                    userEntity.Orders.Add(orderEntity);
-                    roomEntity.Orders.Add(orderEntity);
-                    await _userRepository.UpdateAsync(userEntity);
-                    await _roomRepository.UpdateAsync(roomEntity);
-                    break;
-                }
-                catch
-                {
-                    userEntity.Orders.Remove(orderEntity);
-                    roomEntity.Orders.Remove(orderEntity);
-                }
-            }
+            orderEntity.Number = CreateOrderNumber(orderEntity.DateOrdered,roomEntity.Hotel);
+            userEntity.Orders.Add(orderEntity);
+            roomEntity.Orders.Add(orderEntity);
+            await _userRepository.UpdateAsync(userEntity);
+            await _roomRepository.UpdateAsync(roomEntity);
+                
+            
 
             return orderEntity.Number;
         }
@@ -160,6 +151,27 @@ namespace Business.Services
             return numberOfDays;
         }
 
+        private static string CreateOrderNumber(DateTime dateOrdered, HotelEntity hotel)
+        {
+            var orderNumber = string.Empty;
+            var dateParts = dateOrdered.Date.ToString(CultureInfo.InvariantCulture).Split("/");
+            dateParts[2] = dateParts[2].Split(" ")[0];
+            orderNumber = dateParts.Aggregate(orderNumber, (current, datePart) => current + datePart);
+            var tempOrderNumber = orderNumber;
+            var todayOrders = hotel.Rooms.SelectMany(x => x.Orders).Where(x => x.DateOrdered.Date == dateOrdered.Date);
+            var todayOrderCount = todayOrders.Count();
+            tempOrderNumber += todayOrderCount + 1;
+            if (todayOrderCount!=0  && tempOrderNumber == todayOrders.Last().Number)
+            {
+                orderNumber += todayOrderCount + 2;
+            }
+            else
+            {
+                orderNumber += todayOrderCount + 1;
+            }
+            return orderNumber;
+        }
+
         private static decimal GetFullPrice(OrderEntity order, RoomEntity room)
         {
               return order.EndDate.Subtract(order.StartDate).Days * room.PaymentPerDay + order.Services.Sum(serviceQuantity => serviceQuantity.Service.Payment*serviceQuantity.Quantity);
@@ -167,8 +179,8 @@ namespace Business.Services
         private static bool IsAvailableToBook(RoomEntity room, DateTime checkInDate, DateTime checkOutDate)
         {
             var orderEntity = room.Orders.FirstOrDefault(
-                order => order.StartDate >= checkInDate && order.StartDate < checkOutDate ||
-                           order.EndDate> checkInDate && order.EndDate <= checkOutDate);
+                order => order.StartDate.Date >= checkInDate.Date && order.StartDate.Date < checkOutDate.Date ||
+                           order.EndDate.Date> checkInDate.Date && order.EndDate.Date <= checkOutDate.Date);
             return orderEntity == null;
         }
 
@@ -181,26 +193,10 @@ namespace Business.Services
                 throw new NotFoundException($"order with {orderId} id not exists");
             }
 
-            if (orderEntity.CheckInTime != updateOrderModel.CheckInTime)
-            {
-                orderEntity.CheckInTime = updateOrderModel.CheckInTime;
-            }
-
-            if (orderEntity.CheckOutTime != updateOrderModel.CheckOutTime)
-            {
-                orderEntity.CheckOutTime = updateOrderModel.CheckOutTime;
-            }
-
-            if (orderEntity.StartDate.Date != updateOrderModel.CheckInDate.Date)
-            {
-                orderEntity.StartDate = updateOrderModel.CheckInDate;
-            }
-
-            if (orderEntity.EndDate.Date != updateOrderModel.CheckOutDate.Date)
-            {
-                orderEntity.EndDate = updateOrderModel.CheckOutDate;
-            }
-
+            orderEntity.CheckInTime = updateOrderModel.CheckInTime;
+            orderEntity.CheckOutTime = updateOrderModel.CheckOutTime;
+            orderEntity.StartDate = updateOrderModel.CheckInDate;
+            orderEntity.EndDate = updateOrderModel.CheckOutDate;
             orderEntity.FullPrice = GetFullPrice(orderEntity, orderEntity.Room);
             orderEntity.NumberOfDays = GetNumberOfDays(orderEntity.StartDate, orderEntity.EndDate);
             await _orderRepository.UpdateAsync(orderEntity);

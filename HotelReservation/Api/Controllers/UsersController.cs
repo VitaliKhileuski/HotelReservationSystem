@@ -69,9 +69,9 @@ namespace HotelReservation.Api.Controllers
         [Authorize(Policy = Policies.AdminPermission)]
         [Route("emails")]
 
-        public IActionResult GetUsersEmails(string email, int limit)
+        public IActionResult GetUsersEmails(string email)
         {
-            var emails = _usersService.GetUsersEmails(email, limit);
+            var emails = _usersService.GetUsersEmails(email);
             return Ok(emails);
         }
 
@@ -79,35 +79,35 @@ namespace HotelReservation.Api.Controllers
         [Authorize(Policy = Policies.AdminPermission)]
         [Route("surnames")]
 
-        public IActionResult GetUsersSurnames(string surname, int limit)
+        public IActionResult GetUsersSurnames(string surname)
         {
-            var emails = _usersService.GetUsersSurnames(surname, limit);
+            var emails = _usersService.GetUsersSurnames(surname);
             return Ok(emails);
         }
 
         [HttpGet]
         [Authorize(Policy = Policies.AdminPermission)]
         [Route("hotelAdminsEmails")]
-        public IActionResult GetHotelAdminsEmails(string email,int limit)
+        public IActionResult GetHotelAdminsEmails(string email)
         {
-            var emails = _usersService.GetHotelAdminsEmails(email,limit);
+            var emails = _usersService.GetHotelAdminsEmails(email);
             return Ok(emails);
         }
 
         [HttpGet]
         [Authorize(Policy = Policies.AdminPermission)]
         [Route("hotelAdminsSurnames")]
-        public IActionResult GetHotelAdminsSurnames(string surname, int limit)
+        public IActionResult GetHotelAdminsSurnames(string surname)
         {
-            var surnames = _usersService.GetHotelAdminsSurnames(surname, limit);
+            var surnames = _usersService.GetHotelAdminsSurnames(surname);
             return Ok(surnames);
         }
         [HttpGet]
         [Authorize(Policy = Policies.AdminPermission)]
         [Route("customersSurnames")]
-        public IActionResult GetCustomersSurnames(string surname, int limit)
+        public IActionResult GetCustomersSurnames(string surname)
         {
-            var surnames = _usersService.GetCustomersSurnames(surname, limit);
+            var surnames = _usersService.GetCustomersSurnames(surname);
             return Ok(surnames);
         }
 

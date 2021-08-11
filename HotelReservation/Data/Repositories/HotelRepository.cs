@@ -26,9 +26,9 @@ namespace HotelReservation.Data.Repositories
             return await _db.Hotels.Where(x => x.Admins.Contains(hotelAdmin)).CountAsync();
         }
 
-        public IEnumerable<string> GetHotelNames(string hotelName, int limit)
+        public IEnumerable<string> GetHotelNames(string hotelName)
         {
-            return _db.Hotels.Select(x => x.Name).Distinct().Where(x => !string.IsNullOrEmpty(hotelName) && x.StartsWith(hotelName) || string.IsNullOrEmpty(hotelName)).Take(limit);
+            return _db.Hotels.Select(x => x.Name).Distinct().Where(x => !string.IsNullOrEmpty(hotelName) && x.StartsWith(hotelName) || string.IsNullOrEmpty(hotelName));
         }
 
         public IEnumerable<HotelEntity> GetFilteredHotels(string country, string city, string hotelName, string email, string surname,string sortField,bool ascending)
