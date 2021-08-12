@@ -24,16 +24,20 @@ namespace Business.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IUserRepository _userRepository;
         private readonly IRoomRepository _roomRepository;
+        private readonly IServiceQuantityRepository _serviceQuantityRepository;
         private readonly Mapper _mapper;
+        private readonly IMapper _serviceQuantityMapper;
         private readonly ILogger<OrdersService> _logger;
         public OrdersService(ILogger<OrdersService> logger, IOrderRepository orderRepository, IUserRepository userRepository,
-            IRoomRepository roomRepository, MapConfiguration cfg)
+            IRoomRepository roomRepository, IServiceQuantityRepository serviceQuantityRepository, MapConfiguration cfg)
         {
             _orderRepository = orderRepository;
             _userRepository = userRepository;
             _roomRepository = roomRepository;
+            _serviceQuantityRepository = serviceQuantityRepository;
             _mapper = new Mapper(cfg.OrderConfiguration);
             _logger = logger;
+            _serviceQuantityMapper = new Mapper(cfg.ServiceQuantityConfiguration);
         }
 
         public async Task<OrderModel> GetOrderById(Guid orderId)
@@ -101,10 +105,30 @@ namespace Business.Services
             roomEntity.Orders.Add(orderEntity);
             await _userRepository.UpdateAsync(userEntity);
             await _roomRepository.UpdateAsync(roomEntity);
-                
-            
-
             return orderEntity.Number;
+        }
+
+        private  List<ServiceQuantityEntity> FillServiceQuantities(IEnumerable<ServiceQuantityModel> services, HotelEntity hotel)
+        {
+            var serviceQuantities = new List<ServiceQuantityEntity>();
+            foreach (var serviceQuantity in services)
+            {
+                foreach (var service in hotel.Services)
+                {
+                    if (service.Id == serviceQuantity.Service.Id)
+                    {
+                        serviceQuantities.Add(new ServiceQuantityEntity
+                        {
+                            Service = service,
+                            Quantity = serviceQuantity.Quantity
+                        });
+                        break;
+                        
+                    }
+                }
+            }
+            _logger.LogError(serviceQuantities.Count.ToString());
+            return serviceQuantities;
         }
 
         public async Task DeleteOrder(Guid orderId)
@@ -186,6 +210,8 @@ namespace Business.Services
 
         public async Task UpdateOrder(Guid orderId, UpdateOrderModel updateOrderModel)
         {
+            
+            
             var orderEntity = await _orderRepository.GetAsync(orderId);
             if (orderEntity == null)
             {
@@ -193,6 +219,10 @@ namespace Business.Services
                 throw new NotFoundException($"order with {orderId} id not exists");
             }
 
+            var orderEntityServices = orderEntity.Services;
+            var newServices = FillServiceQuantities(updateOrderModel.Services,orderEntity.Room.Hotel);
+            orderEntityServices = newServices;
+            orderEntity.Services = orderEntityServices;
             orderEntity.CheckInTime = updateOrderModel.CheckInTime;
             orderEntity.CheckOutTime = updateOrderModel.CheckOutTime;
             orderEntity.StartDate = updateOrderModel.CheckInDate;

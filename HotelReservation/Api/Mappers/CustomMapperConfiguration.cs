@@ -27,6 +27,9 @@ namespace HotelReservation.Api.Mappers
             UpdateOrderConfiguration = new MapperConfiguration(x =>
             {
                 x.CreateMap<UpdateOrderRequestModel, UpdateOrderModel>();
+                x.CreateMap<ServiceQuantityRequestModel, ServiceQuantityModel>();
+                x.CreateMap<ServiceRequestModel, ServiceModel>()
+                    .ForMember(x => x.Hotel, opt => opt.Ignore());
             });
             UsersConfiguration = new MapperConfiguration(x =>
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Business.Models
 {
@@ -8,5 +9,6 @@ namespace Business.Models
         public TimeSpan CheckOutTime { get; set; }
         public DateTime CheckInDate { get; set; }
         public DateTime CheckOutDate { get; set; }
+        public ICollection<ServiceQuantityModel> Services;
     }
 }

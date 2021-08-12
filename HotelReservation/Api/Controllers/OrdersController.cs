@@ -21,7 +21,7 @@ namespace HotelReservation.Api.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly Mapper _mapper;
-        private readonly IMapper _updateOrderMapper; 
+        private readonly IMapper _updateOrderMapper;
 
         public OrdersController(IOrderService orderService,CustomMapperConfiguration cfg,MapConfiguration modelCfg)
         {
@@ -87,6 +87,19 @@ namespace HotelReservation.Api.Controllers
         public async Task<IActionResult> UpdateOrder(Guid orderId, [FromBody] UpdateOrderRequestModel updateOrderRequestModel)
         {
             var updateOrderModel = _updateOrderMapper.Map<UpdateOrderRequestModel, UpdateOrderModel>(updateOrderRequestModel);
+            updateOrderModel.Services = new List<ServiceQuantityModel>();
+            foreach (var serviceQuantity in updateOrderRequestModel.Services)
+            {
+                updateOrderModel.Services.Add(new ServiceQuantityModel
+                {
+                    Quantity = serviceQuantity.Quantity,
+                    Service = new ServiceModel
+                    {
+                        Id = serviceQuantity.ServiceId
+                    }
+                });
+            }
+
             await _orderService.UpdateOrder(orderId, updateOrderModel);
             return Ok("Updated successfully");
         }

@@ -16,6 +16,7 @@ namespace Business.Mappers
         public MapperConfiguration TokenConfiguration;
         public MapperConfiguration ServiceConfiguration;
         public MapperConfiguration AttachmentConfiguration;
+        public MapperConfiguration ServiceQuantityConfiguration;
 
         public MapConfiguration()
         {
@@ -28,6 +29,7 @@ namespace Business.Mappers
             TokenConfiguration = new TokenConfiguration();
             ServiceConfiguration = new ServiceConfiguration();
             AttachmentConfiguration = new AttachmentConfiguration();
+            ServiceQuantityConfiguration = new ServiceQuantityConfiguration();
         }
     }
 }
