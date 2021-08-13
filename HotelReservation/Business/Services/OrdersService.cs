@@ -219,10 +219,10 @@ namespace Business.Services
                 throw new NotFoundException($"order with {orderId} id not exists");
             }
 
-            var orderEntityServices = orderEntity.Services;
-            var newServices = FillServiceQuantities(updateOrderModel.Services,orderEntity.Room.Hotel);
-            orderEntityServices = newServices;
-            orderEntity.Services = orderEntityServices;
+
+            var tempServices = orderEntity.Services;
+            orderEntity.Services = FillServiceQuantities(updateOrderModel.Services, orderEntity.Room.Hotel);
+            _logger.LogError(orderEntity.Services.Count.ToString());
             orderEntity.CheckInTime = updateOrderModel.CheckInTime;
             orderEntity.CheckOutTime = updateOrderModel.CheckOutTime;
             orderEntity.StartDate = updateOrderModel.CheckInDate;
