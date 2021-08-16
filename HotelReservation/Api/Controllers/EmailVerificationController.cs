@@ -26,9 +26,16 @@ namespace HotelReservation.Api.Controllers
         public async Task<IActionResult> CreateEmailVerificationCode(Guid userId)
         {
            await _emailSenderService.CreateEmailVerificationCode(userId);
-            var a = 5;
-            return Ok();
+           return Ok();
         }
-        
+
+        [HttpPut]
+        [Authorize]
+        [Route("{userId}")]
+        public async Task<IActionResult> CheckVerificationCode(Guid userId, [FromQuery] string verificationCode)
+        {
+            var result = await _emailSenderService.CheckVerificationCode(userId, verificationCode);
+            return Ok(result);
+        }
     }
 }
