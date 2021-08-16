@@ -35,7 +35,8 @@ namespace HotelReservation.Api
             });
 
             services.AddScoped<InitialData>();
-            services.Configure<AuthOptions>(Configuration.GetSection(AuthOptions.Authentication));
+            services.Configure<AuthOptions>(Configuration.GetSection(AuthOptions.AUTHENTICATION));
+            services.Configure<EmailServiceOptions>(Configuration.GetSection(EmailServiceOptions.EMAIL_SERVICE_OPTIONS));
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddRepositories();
             services.AddServices();
@@ -46,7 +47,7 @@ namespace HotelReservation.Api
                 .AddNewtonsoftJson(options =>
                  options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
                  );
-            services.AddTokenAuthentication(Configuration.GetSection(AuthOptions.Authentication).Get<AuthOptions>());
+            services.AddTokenAuthentication(Configuration.GetSection(AuthOptions.AUTHENTICATION).Get<AuthOptions>());
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(Policies.AdminPermission, builder => builder.Combine(Policies.AdminPermissionPolicy()));

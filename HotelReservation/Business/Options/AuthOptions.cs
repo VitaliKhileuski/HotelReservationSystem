@@ -2,7 +2,7 @@
 {
     public class AuthOptions
     {
-        public const string Authentication = "AuthenticationOptions";
+        public const string AUTHENTICATION = "AuthenticationOptions";
         public string Issuer { get; set; }
         public string Audience { get; set; }
         public int Lifetime { get; set; }

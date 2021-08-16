@@ -16,6 +16,7 @@ namespace HotelReservation.Api.Extensions
             services.AddScoped<IUserService, UsersService>();
             services.AddScoped<IAttachmentsService, AttachmentsService>();
             services.AddScoped<IFacilityService, FacilitiesService>();
+            services.AddScoped<IEmailSenderService, EmailSenderService>();
             services.AddScoped<LocationsService>();
         }
     }

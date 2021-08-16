@@ -25,6 +25,9 @@ namespace HotelReservation.Data.Configurations
                 .HasMaxLength(100);
             builder.Property(x => x.PhoneNumber)
                 .HasMaxLength(15);
+            builder
+                .Property(x => x.IsVerified)
+                .HasDefaultValue(false);
             builder.
                 HasOne(x => x.Role)
                 .WithMany(x => x.Users);
