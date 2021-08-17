@@ -17,6 +17,7 @@ namespace HotelReservation.Data.Entities
         public string PhoneNumber { get; set; }
         public string Password { get; set; }
         public bool IsVerified { get; set; }
+        public virtual ICollection<ReviewEntity> Reviews { get; set; }
 
         public override bool Equals(object obj)
         {

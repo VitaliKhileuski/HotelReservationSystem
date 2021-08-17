@@ -23,6 +23,7 @@ namespace HotelReservation.Api.Extensions
             services.AddScoped<IFileContentRepository, FileContentRepository>();
             services.AddScoped<IServiceQuantityRepository, ServiceQuantityRepository>();
             services.AddScoped<IEmailVerificationRepository, EmailVerificationRepository>();
+            services.AddScoped<IReviewCategoryRepository, ReviewCategoryRepository>();
             services.AddScoped<OrderConfiguration>();
         }
     }

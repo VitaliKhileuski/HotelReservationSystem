@@ -15,6 +15,7 @@ namespace HotelReservation.Api.Mappers
         public MapperConfiguration TokenConfiguration;
         public MapperConfiguration ServiceConfiguration;
         public MapperConfiguration UpdateOrderConfiguration;
+        public MapperConfiguration ReviewCategoryConfiguration;
         public AttachmentConfiguration AttachmentConfiguration;
 
         public CustomMapperConfiguration()
@@ -30,6 +31,11 @@ namespace HotelReservation.Api.Mappers
                 x.CreateMap<ServiceQuantityRequestModel, ServiceQuantityModel>();
                 x.CreateMap<ServiceRequestModel, ServiceModel>()
                     .ForMember(x => x.Hotel, opt => opt.Ignore());
+            });
+            ReviewCategoryConfiguration = new MapperConfiguration(x =>
+            {
+                x.CreateMap<ReviewCategoryRequestModel, ReviewCategoryModel>();
+                x.CreateMap<ReviewCategoryModel, ReviewCategoryResponseModel>();
             });
             UsersConfiguration = new MapperConfiguration(x =>
             {

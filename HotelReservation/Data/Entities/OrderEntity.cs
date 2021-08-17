@@ -19,5 +19,6 @@ namespace HotelReservation.Data.Entities
         public TimeSpan CheckInTime { get; set; }
         public TimeSpan CheckOutTime { get; set; }
         public bool IsCheckOutTimeShifted { get; set; }
+        public bool IsRated { get; set; }
     }
 }

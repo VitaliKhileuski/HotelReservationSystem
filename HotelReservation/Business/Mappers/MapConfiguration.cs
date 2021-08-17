@@ -17,6 +17,7 @@ namespace Business.Mappers
         public MapperConfiguration ServiceConfiguration;
         public MapperConfiguration AttachmentConfiguration;
         public MapperConfiguration ServiceQuantityConfiguration;
+        public MapperConfiguration ReviewCategoryConfiguration;
 
         public MapConfiguration()
         {
@@ -30,6 +31,7 @@ namespace Business.Mappers
             ServiceConfiguration = new ServiceConfiguration();
             AttachmentConfiguration = new AttachmentConfiguration();
             ServiceQuantityConfiguration = new ServiceQuantityConfiguration();
+            ReviewCategoryConfiguration = new ReviewCategoryConfiguration();
         }
     }
 }

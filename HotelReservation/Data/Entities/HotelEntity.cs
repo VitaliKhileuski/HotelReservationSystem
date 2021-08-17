@@ -14,6 +14,8 @@ namespace HotelReservation.Data.Entities
         public virtual List<ServiceEntity> Services { get; set; }
         public virtual ICollection<UserEntity> Admins { get; set; }
         public virtual List<AttachmentEntity> Attachments { get; set; }
+        public double? AverageRating { get; set; }
+        public virtual ICollection<ReviewEntity> Reviews { get; set; }
 
 
         public override bool Equals(object obj)

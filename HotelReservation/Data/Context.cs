@@ -25,7 +25,9 @@ namespace HotelReservation.Data
         public DbSet<AttachmentEntity> Attachments { get; set; }
         public DbSet<ServiceQuantityEntity> ServiceQuantities { get; set; }
         public DbSet<EmailVerificationEntity> EmailVerificationEntities { get; set; }
-
+        public DbSet<ReviewEntity> Reviews { get; set; }
+        public DbSet<ReviewCategoryEntity> ReviewCategories { get; set; }
+        public DbSet<ReviewCategoryWithRatingEntity> Ratings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,7 +43,8 @@ namespace HotelReservation.Data
                 .ApplyConfiguration(new ServiceEntityConfiguration())
                 .ApplyConfiguration(new RoleEntityConfiguration())
                 .ApplyConfiguration(new AttachmentEntityConfiguration())
-                .ApplyConfiguration(new FileContentConfiguration());
+                .ApplyConfiguration(new FileContentConfiguration())
+                .ApplyConfiguration(new ReviewCategoryWithRatingEntityConfiguration());
         }
     }
 }

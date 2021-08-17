@@ -41,6 +41,8 @@ namespace HotelReservation.Data.Configurations
                 .HasMany(x => x.Attachments)
                 .WithOne(x => x.Hotel)
                 .OnDelete(DeleteBehavior.NoAction);
+            builder
+                .HasMany(x => x.Reviews);
         }
     }
 }

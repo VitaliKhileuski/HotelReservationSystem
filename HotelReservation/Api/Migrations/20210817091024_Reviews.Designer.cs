@@ -4,14 +4,16 @@ using HotelReservation.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HotelReservation.Api.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20210817091024_Reviews")]
+    partial class Reviews
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,7 +108,7 @@ namespace HotelReservation.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double?>("AverageRating")
+                    b.Property<double>("AverageRating")
                         .HasColumnType("float");
 
                     b.Property<TimeSpan>("CheckInTime")
@@ -190,9 +192,6 @@ namespace HotelReservation.Api.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<bool>("IsRated")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Number")
                         .HasColumnType("nvarchar(450)");
 
@@ -262,14 +261,14 @@ namespace HotelReservation.Api.Migrations
                     b.Property<double>("Rating")
                         .HasColumnType("float");
 
-                    b.Property<Guid>("ReviewId")
+                    b.Property<Guid?>("ReviewEntityId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("ReviewId");
+                    b.HasIndex("ReviewEntityId");
 
                     b.ToTable("Ratings");
                 });
@@ -536,15 +535,11 @@ namespace HotelReservation.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HotelReservation.Data.Entities.ReviewEntity", "Review")
+                    b.HasOne("HotelReservation.Data.Entities.ReviewEntity", null)
                         .WithMany("Ratings")
-                        .HasForeignKey("ReviewId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ReviewEntityId");
 
                     b.Navigation("Category");
-
-                    b.Navigation("Review");
                 });
 
             modelBuilder.Entity("HotelReservation.Data.Entities.ReviewEntity", b =>
