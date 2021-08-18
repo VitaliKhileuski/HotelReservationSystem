@@ -24,6 +24,7 @@ namespace HotelReservation.Api.Extensions
             services.AddScoped<IServiceQuantityRepository, ServiceQuantityRepository>();
             services.AddScoped<IEmailVerificationRepository, EmailVerificationRepository>();
             services.AddScoped<IReviewCategoryRepository, ReviewCategoryRepository>();
+            services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<OrderConfiguration>();
         }
     }

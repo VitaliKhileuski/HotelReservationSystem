@@ -22,6 +22,12 @@ namespace HotelReservation.Api.Mappers
             x.CreateMap<RoomModel, RoomResponseModel>();
             x.CreateMap<ServiceModel, ServiceResponseModel>();
             x.CreateMap<UserModel, UserResponseViewModel>();
+            x.CreateMap<ReviewModel, ReviewResponseModel>();
+            x.CreateMap<ReviewCategoryWithRatingModel, ReviewCategoryWithRatingResponseModel>();
+            x.CreateMap<ReviewCategoryModel, ReviewCategoryResponseModel>();
+            x.CreateMap<OrderModel, OrderResponseModel>()
+                .ForMember(x => x.Services, opt => opt.Ignore())
+                .ForMember(x => x.Customer, opt => opt.Ignore());
         })
         {
 

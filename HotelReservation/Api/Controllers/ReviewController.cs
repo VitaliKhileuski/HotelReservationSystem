@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Business.Interfaces;
 using Business.Models;
+using HotelReservation.Api.Helpers;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
@@ -19,10 +20,12 @@ namespace HotelReservation.Api.Controllers
     {
         private readonly IMapper _reviewCategoryMapper;
         private readonly IReviewService _reviewService;
+        private readonly IMapper _reviewMapper;
         public ReviewController(CustomMapperConfiguration cfg, IReviewService reviewService)
         {
             _reviewCategoryMapper = new Mapper(cfg.ReviewCategoryConfiguration);
             _reviewService = reviewService;
+            _reviewMapper = new Mapper(cfg.ReviewConfiguration);
         }
 
         [HttpGet]
@@ -42,6 +45,18 @@ namespace HotelReservation.Api.Controllers
         public async Task<IActionResult> DeleteReviewCategory(Guid reviewCategoryId)
         {
             await _reviewService.DeleteReviewCategory(reviewCategoryId);
+            return Ok();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("{orderId}/createReview")]
+        public async Task<IActionResult> CreateReview(Guid orderId,
+            [FromBody] ReviewRequestModel review)
+        {
+            var userId = TokenData.GetIdFromClaims(User.Claims);
+            var reviewModel = _reviewMapper.Map<ReviewRequestModel, ReviewModel>(review);
+           await _reviewService.CreateReview(orderId, userId, reviewModel);
             return Ok();
         }
 

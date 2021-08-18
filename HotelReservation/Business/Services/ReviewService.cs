@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -10,19 +11,31 @@ using Business.Models;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
 using Microsoft.Extensions.Logging;
+using Org.BouncyCastle.Crypto.Prng;
 
 namespace Business.Services
 {
     public class ReviewService : IReviewService
     {
         private readonly IMapper _reviewCategoryMapper;
+        private readonly IMapper _reviewMapper;
         private readonly IReviewCategoryRepository _reviewCategoryRepository;
+        private readonly IReviewRepository _reviewRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IHotelRepository _hotelRepository;
         private readonly ILogger<ReviewService> _logger;
-        public ReviewService(ILogger<ReviewService> logger, MapConfiguration cfg, IReviewCategoryRepository reviewCategoryRepository)
+        public ReviewService(ILogger<ReviewService> logger, MapConfiguration cfg, IReviewCategoryRepository reviewCategoryRepository,
+            IUserRepository userERepository, IOrderRepository orderRepository, IReviewRepository reviewRepository, IHotelRepository hotelRepository)
         {
             _reviewCategoryMapper = new Mapper(cfg.ReviewCategoryConfiguration);
+            _reviewMapper = new Mapper(cfg.ReviewConfiguration);
             _logger = logger;
             _reviewCategoryRepository = reviewCategoryRepository;
+            _userRepository = userERepository;
+            _orderRepository = orderRepository;
+            _reviewRepository = reviewRepository;
+            _hotelRepository = hotelRepository;
         }
         public async Task CreateReviewCategory(ReviewCategoryModel reviewCategory)
         {
@@ -51,9 +64,62 @@ namespace Business.Services
 
         }
 
+        public async Task CreateReview(Guid orderId, string userId, ReviewModel review)
+        {
+            var userEntity = await _userRepository.GetAsync(userId);
+            if (userEntity == null)
+            {
+                _logger.LogError($"user with {userId} id not exists");
+                throw new NotFoundException($"user with {userId} id not exists");
+            }
+
+            var orderEntity = await _orderRepository.GetAsync(orderId);
+            if (orderEntity == null)
+            {
+                _logger.LogError($"order with {orderId} id not exists");
+                throw new NotFoundException($"order with {orderId} id not exists");
+            }
+
+            var reviewCategoryWithRatingsEntities = new List<ReviewCategoryWithRatingEntity>();
+            var ratings = new List<double>();
+            foreach (var reviewCategoryWithRating in review.Ratings)
+            {
+                ratings.Add(reviewCategoryWithRating.Rating);
+                reviewCategoryWithRatingsEntities.Add(new ReviewCategoryWithRatingEntity()
+                {
+                    Category = await _reviewCategoryRepository.GetAsync(reviewCategoryWithRating.Category.Id),
+                    Rating = reviewCategoryWithRating.Rating
+                });
+            }
+
+            var hotelEntity = orderEntity.Room.Hotel;
+            hotelEntity.AverageRating = RecalculateHotelAverageRating(hotelEntity, ratings);
+            var reviewEntity = _reviewMapper.Map<ReviewModel, ReviewEntity>(review);
+            reviewEntity.Ratings = reviewCategoryWithRatingsEntities;
+            reviewEntity.CreatedAt = DateTime.Now;
+            reviewEntity.User = userEntity;
+            reviewEntity.Order = orderEntity;
+            reviewEntity.Hotel = hotelEntity;
+            hotelEntity.Reviews.Add(reviewEntity);
+            await _reviewRepository.CreateAsync(reviewEntity);
+            await _hotelRepository.UpdateAsync(hotelEntity);
+
+        }
+
         public IEnumerable<ReviewCategoryModel> GetAllReviewCategories()
         {
             return _reviewCategoryMapper.Map<IEnumerable<ReviewCategoryModel>>(_reviewCategoryRepository.GetAll());
+        }
+
+        private double? RecalculateHotelAverageRating(HotelEntity hotel, IReadOnlyCollection<double> ratings)
+        {
+            double? hotelAverageRating  = ratings.Sum()/ratings.Count;
+            if (hotel.AverageRating != null)
+            {
+                hotelAverageRating = (hotel.AverageRating + hotelAverageRating) / (hotel.Reviews.Count + 1);
+            }
+            return hotelAverageRating;
+
         }
     }
 }

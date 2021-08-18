@@ -8,13 +8,13 @@ namespace HotelReservation.Data.Entities
     {
         public Guid UserId { get; set; }
         public virtual UserEntity User { get; set; }
+        public Guid HotelId { get; set; }
+        public virtual HotelEntity Hotel { get; set; }
         public Guid OrderId { get; set; }
         public virtual OrderEntity Order { get; set; }
         public  DateTime CreatedAt { get; set; }
         public string Comment { get; set;}
         public virtual ICollection<ReviewCategoryWithRatingEntity> Ratings { get; set; }
-        public bool Advised { get; set; }
-
 
     }
 }

@@ -44,7 +44,8 @@ namespace HotelReservation.Data
                 .ApplyConfiguration(new RoleEntityConfiguration())
                 .ApplyConfiguration(new AttachmentEntityConfiguration())
                 .ApplyConfiguration(new FileContentConfiguration())
-                .ApplyConfiguration(new ReviewCategoryWithRatingEntityConfiguration());
+                .ApplyConfiguration(new ReviewCategoryWithRatingEntityConfiguration())
+                .ApplyConfiguration(new ReviewConfiguration());
         }
     }
 }

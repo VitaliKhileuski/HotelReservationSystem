@@ -29,6 +29,9 @@ namespace Business.Mappers
                 .ForMember(x => x.Role, opt => opt.Ignore());
             x.CreateMap<AttachmentEntity, AttachmentModel>().ReverseMap();
             x.CreateMap<FileContentEntity, FileContentModel>().ReverseMap();
+            x.CreateMap<ReviewEntity, ReviewModel>();
+            x.CreateMap<ReviewCategoryEntity, ReviewCategoryModel>();
+            x.CreateMap<ReviewCategoryWithRatingEntity, ReviewCategoryWithRatingModel>();
         })
         {
 

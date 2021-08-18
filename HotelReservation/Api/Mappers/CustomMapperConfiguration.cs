@@ -3,6 +3,8 @@ using Business.Mappers;
 using Business.Models;
 using HotelReservation.Api.Models.RequestModels;
 using HotelReservation.Api.Models.ResponseModels;
+using HotelReservation.Data.Entities;
+using Org.BouncyCastle.Math.EC.Rfc7748;
 
 namespace HotelReservation.Api.Mappers
 {
@@ -16,6 +18,8 @@ namespace HotelReservation.Api.Mappers
         public MapperConfiguration ServiceConfiguration;
         public MapperConfiguration UpdateOrderConfiguration;
         public MapperConfiguration ReviewCategoryConfiguration;
+        public MapperConfiguration ReviewCategoryWithRatingConfiguration;
+        public MapperConfiguration ReviewConfiguration;
         public AttachmentConfiguration AttachmentConfiguration;
 
         public CustomMapperConfiguration()
@@ -25,6 +29,7 @@ namespace HotelReservation.Api.Mappers
             HotelConfiguration = new  HotelConfiguration();
             OrderConfiguration = new OrderConfiguration();
             RoomConfiguration = new RoomConfiguration();
+
             UpdateOrderConfiguration = new MapperConfiguration(x =>
             {
                 x.CreateMap<UpdateOrderRequestModel, UpdateOrderModel>();
@@ -32,11 +37,37 @@ namespace HotelReservation.Api.Mappers
                 x.CreateMap<ServiceRequestModel, ServiceModel>()
                     .ForMember(x => x.Hotel, opt => opt.Ignore());
             });
+
             ReviewCategoryConfiguration = new MapperConfiguration(x =>
             {
                 x.CreateMap<ReviewCategoryRequestModel, ReviewCategoryModel>();
                 x.CreateMap<ReviewCategoryModel, ReviewCategoryResponseModel>();
             });
+
+            ReviewCategoryWithRatingConfiguration = new MapperConfiguration(x =>
+            {
+                x.CreateMap<ReviewCategoryWithRatingRequestModel, ReviewCategoryWithRatingModel>();
+                x.CreateMap<ReviewCategoryWithRatingModel, ReviewCategoryWithRatingResponseModel>();
+                x.CreateMap<ReviewCategoryRequestModel, ReviewCategoryModel>();
+                x.CreateMap<ReviewCategoryModel, ReviewCategoryResponseModel>();
+
+
+            });
+
+            ReviewConfiguration = new MapperConfiguration(x =>
+            {
+                x.CreateMap<ReviewRequestModel, ReviewModel>();
+                x.CreateMap<ReviewModel, ReviewResponseModel>()
+                    .ForMember(x => x.Hotel, opt => opt.Ignore());
+                x.CreateMap<ReviewCategoryWithRatingRequestModel, ReviewCategoryWithRatingModel>();
+                x.CreateMap<ReviewCategoryWithRatingModel, ReviewCategoryWithRatingResponseModel>();
+                x.CreateMap<ReviewCategoryRequestModel, ReviewCategoryModel>();
+                x.CreateMap<ReviewCategoryModel, ReviewCategoryResponseModel>();
+                x.CreateMap<UserModel, UserResponseViewModel>();
+                x.CreateMap<OrderModel, OrderResponseModel>();
+                x.CreateMap<RoomModel, RoomResponseModel>();
+            });
+
             UsersConfiguration = new MapperConfiguration(x =>
             {
                 x.CreateMap<UserRequestModel, UserModel>();
@@ -59,6 +90,7 @@ namespace HotelReservation.Api.Mappers
             {
                 x.CreateMap<RefreshTokenRequestModel, TokenModel>();
             });
+
             ServiceConfiguration = new MapperConfiguration(x =>
             {
                 x.CreateMap<ServiceRequestModel, ServiceModel>();

@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace HotelReservation.Api.Models.RequestModels
 {
-    public class ReviewCategoryRequestModel
+    public class ReviewCategoryWithRatingRequestModel
     {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
+        public ReviewCategoryRequestModel Category { get; set; }
+        public double Rating { get; set; }
     }
 }
