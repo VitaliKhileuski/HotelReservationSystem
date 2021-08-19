@@ -32,6 +32,8 @@ namespace Business.Mappers
             x.CreateMap<ReviewEntity, ReviewModel>();
             x.CreateMap<ReviewCategoryEntity, ReviewCategoryModel>();
             x.CreateMap<ReviewCategoryWithRatingEntity, ReviewCategoryWithRatingModel>();
+            x.CreateMap<AverageReviewCategoryRatingsEntity, AverageReviewCategoryRatingModel>()
+                .ForMember(x => x.CategoryName, opt => opt.MapFrom(x => x.Category.Name));
         })
         {
 

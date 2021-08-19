@@ -28,6 +28,7 @@ namespace HotelReservation.Api.Mappers
             x.CreateMap<OrderModel, OrderResponseModel>()
                 .ForMember(x => x.Services, opt => opt.Ignore())
                 .ForMember(x => x.Customer, opt => opt.Ignore());
+            x.CreateMap<AverageReviewCategoryRatingModel, AverageReviewCategoryRatingResponseModel>();
         })
         {
 

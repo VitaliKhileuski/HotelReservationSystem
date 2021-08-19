@@ -12,10 +12,10 @@ namespace HotelReservation.Api.Models.ResponseModels
         public TimeSpan CheckOutTime { get; set; }
         public UserResponseViewModel Admin { get; set; }
         public LocationResponseModel Location { get; set; }
-        public ICollection<RoomResponseModel> Rooms { get; set; }
         public ICollection<ServiceResponseModel> Services { get; set; }
         public ICollection<string> ImageUrls { get; set; }
         public double? AverageRating { get; set; }
         public ICollection<ReviewResponseModel> Reviews { get; set; }
+        public ICollection<AverageReviewCategoryRatingResponseModel> AverageCategoryRatings { get; set; }
     }
 }

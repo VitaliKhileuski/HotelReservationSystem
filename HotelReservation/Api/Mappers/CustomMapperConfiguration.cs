@@ -81,7 +81,6 @@ namespace HotelReservation.Api.Mappers
                 x.CreateMap<ServiceQuantityModel, ServiceQuantityResponseModel>();
                 x.CreateMap<ServiceModel, ServiceResponseModel>();
                 x.CreateMap<HotelModel, HotelResponseModel>()
-                    .ForMember(x => x.Rooms, opt => opt.Ignore())
                     .ForMember(x => x.Services , opt => opt.Ignore());
                 x.CreateMap<LocationModel, LocationResponseModel>();
             });

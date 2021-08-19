@@ -19,7 +19,9 @@ namespace Business.Mappers
         x.CreateMap<RoomEntity, RoomModel>();
         x.CreateMap<ServiceModel, ServiceEntity>().ReverseMap();
         x.CreateMap<RoleEntity, RoleModel>();
-        x.CreateMap<HotelEntity, HotelModel>();
+        x.CreateMap<HotelEntity, HotelModel>()
+            .ForMember(x => x.Reviews, opt => opt.Ignore())
+            .ForMember(x => x.AverageCategoryRatings, opt => opt.Ignore());
         x.CreateMap<LocationEntity, LocationModel>();
         x.CreateMap<AttachmentEntity, AttachmentModel>();
         x.CreateMap<FileContentEntity, FileContentModel>();

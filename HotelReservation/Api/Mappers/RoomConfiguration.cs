@@ -19,8 +19,7 @@ namespace HotelReservation.Api.Mappers
                 .ForMember(x => x.ImageUrls, opt => opt.MapFrom(room => UrlHelper.GetUrls(room.Attachments)));
             x.CreateMap<RoomRequestModel, RoomModel>();
             x.CreateMap<HotelModel, HotelResponseModel>()
-                .ForMember(x => x.Services, opt => opt.Ignore())
-                .ForMember(x => x.Rooms, opt => opt.Ignore());
+                .ForMember(x => x.Services, opt => opt.Ignore());
             x.CreateMap<LocationModel, LocationResponseModel>();
         })
         {

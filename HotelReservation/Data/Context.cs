@@ -28,6 +28,7 @@ namespace HotelReservation.Data
         public DbSet<ReviewEntity> Reviews { get; set; }
         public DbSet<ReviewCategoryEntity> ReviewCategories { get; set; }
         public DbSet<ReviewCategoryWithRatingEntity> Ratings { get; set; }
+        public DbSet<AverageReviewCategoryRatingsEntity> AverageHotelRatings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -45,7 +46,8 @@ namespace HotelReservation.Data
                 .ApplyConfiguration(new AttachmentEntityConfiguration())
                 .ApplyConfiguration(new FileContentConfiguration())
                 .ApplyConfiguration(new ReviewCategoryWithRatingEntityConfiguration())
-                .ApplyConfiguration(new ReviewConfiguration());
+                .ApplyConfiguration(new ReviewConfiguration())
+                .ApplyConfiguration(new AverageReviewCategoryRatingsConfiguration());
         }
     }
 }

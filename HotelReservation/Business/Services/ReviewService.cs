@@ -10,6 +10,7 @@ using Business.Mappers;
 using Business.Models;
 using HotelReservation.Data.Entities;
 using HotelReservation.Data.Interfaces;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.Crypto.Prng;
 
@@ -81,10 +82,8 @@ namespace Business.Services
             }
 
             var reviewCategoryWithRatingsEntities = new List<ReviewCategoryWithRatingEntity>();
-            var ratings = new List<double>();
             foreach (var reviewCategoryWithRating in review.Ratings)
             {
-                ratings.Add(reviewCategoryWithRating.Rating);
                 reviewCategoryWithRatingsEntities.Add(new ReviewCategoryWithRatingEntity()
                 {
                     Category = await _reviewCategoryRepository.GetAsync(reviewCategoryWithRating.Category.Id),
@@ -93,7 +92,8 @@ namespace Business.Services
             }
 
             var hotelEntity = orderEntity.Room.Hotel;
-            hotelEntity.AverageRating = RecalculateHotelAverageRating(hotelEntity, ratings);
+            hotelEntity.AverageRating = RecalculateHotelAverageRating(hotelEntity, reviewCategoryWithRatingsEntities);
+            RecalculateAverageReviewCategoriesRatings(hotelEntity,reviewCategoryWithRatingsEntities);
             var reviewEntity = _reviewMapper.Map<ReviewModel, ReviewEntity>(review);
             reviewEntity.Ratings = reviewCategoryWithRatingsEntities;
             reviewEntity.CreatedAt = DateTime.Now;
@@ -111,15 +111,47 @@ namespace Business.Services
             return _reviewCategoryMapper.Map<IEnumerable<ReviewCategoryModel>>(_reviewCategoryRepository.GetAll());
         }
 
-        private double? RecalculateHotelAverageRating(HotelEntity hotel, IReadOnlyCollection<double> ratings)
+        private static double RecalculateHotelAverageRating(HotelEntity hotel, ICollection<ReviewCategoryWithRatingEntity> categoriesWithRatings)
         {
-            double? hotelAverageRating  = ratings.Sum()/ratings.Count;
+            var allHotelRatingsCount = hotel.Reviews.SelectMany(x => x.Ratings).Count();
+            var ratingsSum = categoriesWithRatings.Select(x => x.Rating).Sum();
+            double hotelAverageRating = ratingsSum / categoriesWithRatings.Count;
             if (hotel.AverageRating != null)
             {
-                hotelAverageRating = (hotel.AverageRating + hotelAverageRating) / (hotel.Reviews.Count + 1);
+                hotelAverageRating = (double) ((hotel.AverageRating * allHotelRatingsCount + ratingsSum) /
+                                               (allHotelRatingsCount + categoriesWithRatings.Count));
             }
-            return hotelAverageRating;
+            return Math.Round(hotelAverageRating,2);
 
         }
+        private static void RecalculateAverageReviewCategoriesRatings (HotelEntity hotel, ICollection<ReviewCategoryWithRatingEntity> categoriesWithRatings)
+        {
+            foreach(var categoryWithRating in categoriesWithRatings)
+            {
+                var categoryWithAverageRating =
+                    hotel.AverageCategoryRatings.FirstOrDefault(x => x.CategoryId == categoryWithRating.Category.Id);
+                if ( categoryWithAverageRating == null)
+                {
+                    hotel.AverageCategoryRatings.Add(new AverageReviewCategoryRatingsEntity
+                    {
+                        AverageRating = categoryWithRating.Rating,
+                        Category = categoryWithRating.Category,
+                        NumberOfReviews = 1
+                    });
+                }
+                else
+                {
+                    var newAverageRating =(categoryWithAverageRating.AverageRating * categoryWithAverageRating.NumberOfReviews +
+                                            categoryWithRating.Rating) / (categoryWithAverageRating.NumberOfReviews + 1);
+                    if (newAverageRating != null)
+                    {
+                        categoryWithAverageRating.AverageRating = Math.Round((double)newAverageRating, 2);
+                    }
+
+                    categoryWithAverageRating.NumberOfReviews+=1;
+                }
+            }
+        }
+
     }
 }

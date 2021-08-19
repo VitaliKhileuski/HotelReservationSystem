@@ -16,6 +16,7 @@ namespace HotelReservation.Data.Entities
         public virtual List<AttachmentEntity> Attachments { get; set; }
         public double? AverageRating { get; set; }
         public virtual ICollection<ReviewEntity> Reviews { get; set; }
+        public virtual ICollection<AverageReviewCategoryRatingsEntity> AverageCategoryRatings { get; set; }
 
 
         public override bool Equals(object obj)

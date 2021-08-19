@@ -17,5 +17,6 @@ namespace Business.Models
         public ICollection<AttachmentModel> Attachments { get; set; }
         public ICollection<ReviewModel> Reviews { get; set; }
         public double? AverageRating { get; set; }
+        public  ICollection<AverageReviewCategoryRatingModel> AverageCategoryRatings { get; set; }
     }
 }

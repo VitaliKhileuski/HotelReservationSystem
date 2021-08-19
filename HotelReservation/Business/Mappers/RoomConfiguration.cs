@@ -17,7 +17,9 @@ namespace Business.Mappers
                 .ForMember(x => x.Role, opt => opt.Ignore())
                 .ForMember(x => x.Orders, opt => opt.Ignore());
             x.CreateMap<HotelEntity, HotelModel>()
-                .ForMember(x => x.Rooms, opt => opt.Ignore());
+                .ForMember(x => x.Rooms, opt => opt.Ignore())
+                .ForMember(x => x.Reviews, opt => opt.Ignore())
+                .ForMember(X => X.AverageCategoryRatings, opt => opt.Ignore());
             x.CreateMap<LocationEntity, LocationModel>();
             x.CreateMap<ServiceQuantityEntity, ServiceQuantityModel>();
             x.CreateMap<ServiceEntity, ServiceModel>();

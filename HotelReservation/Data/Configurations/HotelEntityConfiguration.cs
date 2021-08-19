@@ -43,6 +43,8 @@ namespace HotelReservation.Data.Configurations
                 .OnDelete(DeleteBehavior.NoAction);
             builder
                 .HasMany(x => x.Reviews);
+            builder
+                .HasMany(x => x.AverageCategoryRatings);
         }
     }
 }
