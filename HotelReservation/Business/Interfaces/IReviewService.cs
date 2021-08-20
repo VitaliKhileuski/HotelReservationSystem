@@ -9,5 +9,6 @@ namespace Business.Interfaces
     public interface IReviewService : IReviewCategoryService
     {
         Task CreateReview(Guid orderId, string userId, ReviewModel review);
+        Task<PageInfo<ReviewModel>> GetFilteredReviews(Guid hotelId, Pagination reviewPagination);
     }
 }

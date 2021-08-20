@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Exceptions;
+using Business.Helpers;
 using Business.Interfaces;
 using Business.Mappers;
 using Business.Models;
@@ -95,6 +96,11 @@ namespace Business.Services
             hotelEntity.AverageRating = RecalculateHotelAverageRating(hotelEntity, reviewCategoryWithRatingsEntities);
             RecalculateAverageReviewCategoriesRatings(hotelEntity,reviewCategoryWithRatingsEntities);
             var reviewEntity = _reviewMapper.Map<ReviewModel, ReviewEntity>(review);
+            if (reviewCategoryWithRatingsEntities.Count != 0)
+            {
+                reviewEntity.AverageRating = Math.Round(reviewCategoryWithRatingsEntities.Select(x => x.Rating).Sum() /
+                                             reviewCategoryWithRatingsEntities.Count,2);
+            }
             reviewEntity.Ratings = reviewCategoryWithRatingsEntities;
             reviewEntity.CreatedAt = DateTime.Now;
             reviewEntity.User = userEntity;
@@ -104,6 +110,20 @@ namespace Business.Services
             await _reviewRepository.CreateAsync(reviewEntity);
             await _hotelRepository.UpdateAsync(hotelEntity);
 
+        }
+
+        public async Task<PageInfo<ReviewModel>> GetFilteredReviews(Guid hotelId, Pagination reviewPagination)
+        {
+            var hotelEntity = await _hotelRepository.GetAsync(hotelId);
+            if (hotelEntity == null)
+            {
+                _logger.LogError($"hotel with {hotelId} id not exists");
+                throw new NotFoundException($"hotel with {hotelId} id not exists");
+            }
+
+            var reviewsModels = _reviewMapper.Map<ICollection<ReviewModel>>(hotelEntity.Reviews);
+
+            return PageInfoCreator<ReviewModel>.GetPageInfo(reviewsModels, reviewPagination);
         }
 
         public IEnumerable<ReviewCategoryModel> GetAllReviewCategories()

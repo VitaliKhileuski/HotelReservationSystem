@@ -72,7 +72,7 @@ namespace HotelReservation.Api
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseMiddleware<CustomExceptionMiddleware>();
+            //app.UseMiddleware<CustomExceptionMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

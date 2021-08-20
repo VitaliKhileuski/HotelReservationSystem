@@ -15,7 +15,6 @@ namespace HotelReservation.Api.Models.ResponseModels
         public ICollection<ServiceResponseModel> Services { get; set; }
         public ICollection<string> ImageUrls { get; set; }
         public double? AverageRating { get; set; }
-        public ICollection<ReviewResponseModel> Reviews { get; set; }
         public ICollection<AverageReviewCategoryRatingResponseModel> AverageCategoryRatings { get; set; }
     }
 }

@@ -13,6 +13,7 @@ namespace Business.Models
         public DateTime CreatedAt { get; set; }
         public string Comment { get; set; }
         public virtual ICollection<ReviewCategoryWithRatingModel> Ratings { get; set; }
+        public double? AverageRating { get; set; }
 
     }
 }

@@ -15,6 +15,7 @@ namespace HotelReservation.Data.Entities
         public  DateTime CreatedAt { get; set; }
         public string Comment { get; set;}
         public virtual ICollection<ReviewCategoryWithRatingEntity> Ratings { get; set; }
+        public double? AverageRating { get; set; }
 
     }
 }

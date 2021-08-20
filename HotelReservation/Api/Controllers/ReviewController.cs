@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Business.Interfaces;
 using Business.Models;
+using Business.Models.FilterModels;
 using HotelReservation.Api.Helpers;
 using HotelReservation.Api.Mappers;
 using HotelReservation.Api.Models.RequestModels;
@@ -37,6 +38,23 @@ namespace HotelReservation.Api.Controllers
                 _reviewCategoryMapper.Map<IEnumerable<ReviewCategoryResponseModel>>(_reviewService
                     .GetAllReviewCategories());
             return Ok(result);
+        }
+        [HttpGet]
+        [Route("{hotelId}/page")]
+        public async Task<IActionResult> GetFilteredReviews(Guid hotelId, [FromQuery] Pagination filter)
+        {
+
+            var validFilter = new Pagination(filter.PageNumber, filter.PageSize);
+            var pageInfo = await _reviewService.GetFilteredReviews(hotelId, validFilter);
+            var reviews  = _reviewMapper.Map<List<ReviewResponseModel>>(pageInfo.Items);
+            var responsePageInfo = new PageInfo<ReviewResponseModel>
+            {
+                Items = reviews,
+                NumberOfItems = pageInfo.NumberOfItems,
+                NumberOfPages = pageInfo.NumberOfPages
+            };
+
+            return Ok(responsePageInfo);
         }
 
         [HttpDelete]

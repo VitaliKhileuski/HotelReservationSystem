@@ -11,5 +11,6 @@ namespace HotelReservation.Api.Models.ResponseModels
         public DateTime CreatedAt { get; set; }
         public string Comment { get; set; }
         public ICollection<ReviewCategoryWithRatingResponseModel> Ratings { get; set; }
+        public double? AverageRating { get; set; }
     }
 }

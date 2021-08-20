@@ -11,12 +11,15 @@ namespace Business.Mappers
     {
         public ReviewConfiguration() : base(x =>
         {
-            x.CreateMap<ReviewEntity, ReviewModel>().ReverseMap();
+            x.CreateMap<ReviewEntity, ReviewModel>()
+                .ForMember(x => x.Hotel, opt=> opt.Ignore());
+            x.CreateMap<ReviewModel, ReviewEntity>();
             x.CreateMap<ReviewCategoryWithRatingEntity, ReviewCategoryWithRatingModel>().ReverseMap();
             x.CreateMap<ReviewCategoryEntity, ReviewCategoryModel>().ReverseMap();
             x.CreateMap<UserEntity, UserModel>()
                 .ForMember(x => x.Orders, opt => opt.Ignore())
-                .ForMember(x => x.OwnedHotels, opt => opt.Ignore());
+                .ForMember(x => x.OwnedHotels, opt => opt.Ignore())
+                .ForMember(x => x.Role, opt => opt.Ignore());
             x.CreateMap<OrderEntity, OrderModel>()
                 .ForMember(x => x.Services, opt => opt.Ignore())
                 .ForMember(x => x.Customer, opt => opt.Ignore());
