@@ -12,5 +12,6 @@ namespace Business.Interfaces
         public Task DeleteOrder(Guid orderId);
         public Task<PageInfo<OrderModel>> GetOrdersPage(string userId, OrderFilter orderFilter, Pagination pagination,SortModel sortModel);
         public Task UpdateOrder(Guid orderId,UpdateOrderModel updateOrderModel);
+        public Task<ReviewModel> GetReview(Guid orderId);
     }
 }

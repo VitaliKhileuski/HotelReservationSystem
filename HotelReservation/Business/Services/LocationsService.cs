@@ -38,7 +38,7 @@ namespace Business.Services
             var locationsEntities = _locationRepository.GetAll().ToList();
             if (locationsEntities.Count == 0)
             {
-                throw new NotFoundException("no data about countries");
+                return new List<string>();
             }
             locationsEntities = locationsEntities.Where(x => x.Country == country).ToList();
             foreach(var location in locationsEntities)

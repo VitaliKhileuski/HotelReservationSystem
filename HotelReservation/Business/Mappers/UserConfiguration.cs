@@ -22,7 +22,10 @@ namespace Business.Mappers
             x.CreateMap<ServiceQuantityEntity, ServiceQuantityModel>();
             x.CreateMap<ServiceEntity, ServiceModel>()
                 .ForMember(x => x.Rooms, opt => opt.Ignore());
-            x.CreateMap<HotelEntity, HotelModel>();
+            x.CreateMap<HotelEntity, HotelModel>()
+                .ForMember(x => x.Reviews, opt => opt.Ignore())
+                .ForMember(x => x.AverageCategoryRatings, opt => opt.Ignore())
+                .ForMember(x => x.Attachments, opt => opt.Ignore());
             x.CreateMap<LocationEntity, LocationModel>();
             x.CreateMap<AttachmentEntity, AttachmentModel>();
             x.CreateMap<FileContentEntity, FileContentModel>();

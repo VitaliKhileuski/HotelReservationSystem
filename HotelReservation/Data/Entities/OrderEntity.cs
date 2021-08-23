@@ -20,5 +20,6 @@ namespace HotelReservation.Data.Entities
         public TimeSpan CheckOutTime { get; set; }
         public bool IsCheckOutTimeShifted { get; set; }
         public bool IsRated { get; set; }
+        public virtual ReviewEntity Review { get; set; }
     }
 }

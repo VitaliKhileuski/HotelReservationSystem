@@ -17,12 +17,12 @@ namespace HotelReservation.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ReviewController : Controller
+    public class ReviewsController : Controller
     {
         private readonly IMapper _reviewCategoryMapper;
         private readonly IReviewService _reviewService;
         private readonly IMapper _reviewMapper;
-        public ReviewController(CustomMapperConfiguration cfg, IReviewService reviewService)
+        public ReviewsController(CustomMapperConfiguration cfg, IReviewService reviewService)
         {
             _reviewCategoryMapper = new Mapper(cfg.ReviewCategoryConfiguration);
             _reviewService = reviewService;

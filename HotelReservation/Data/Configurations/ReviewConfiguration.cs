@@ -23,7 +23,8 @@ namespace HotelReservation.Data.Configurations
                 .HasOne(x => x.Hotel)
                 .WithMany(x => x.Reviews);
             builder
-                .HasOne(x => x.Order);
+                .HasOne(x => x.Order)
+                .WithOne(x => x.Review);
         }
     }
 }

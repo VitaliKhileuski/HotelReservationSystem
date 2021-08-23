@@ -26,7 +26,7 @@ namespace Business.Services
         private readonly IRoomRepository _roomRepository;
         private readonly IServiceQuantityRepository _serviceQuantityRepository;
         private readonly Mapper _mapper;
-        private readonly IMapper _serviceQuantityMapper;
+        private readonly IMapper _reviewMapper;
         private readonly ILogger<OrdersService> _logger;
         public OrdersService(ILogger<OrdersService> logger, IOrderRepository orderRepository, IUserRepository userRepository,
             IRoomRepository roomRepository, IServiceQuantityRepository serviceQuantityRepository, MapConfiguration cfg)
@@ -37,7 +37,7 @@ namespace Business.Services
             _serviceQuantityRepository = serviceQuantityRepository;
             _mapper = new Mapper(cfg.OrderConfiguration);
             _logger = logger;
-            _serviceQuantityMapper = new Mapper(cfg.ServiceQuantityConfiguration);
+            _reviewMapper = new Mapper(cfg.ReviewConfiguration);
         }
 
         public async Task<OrderModel> GetOrderById(Guid orderId)
@@ -162,7 +162,6 @@ namespace Business.Services
            
             var orders = _orderRepository.GetFilteredOrders(userEntity, country, city, surname,orderNumber, sortModel.SortField,
                 sortModel.Ascending);
-
             var orderModels = _mapper.Map<ICollection<OrderModel>>(orders);
             var page = PageInfoCreator<OrderModel>.GetPageInfo(orderModels, pagination);
             return page;
@@ -230,6 +229,18 @@ namespace Business.Services
             orderEntity.FullPrice = GetFullPrice(orderEntity, orderEntity.Room);
             orderEntity.NumberOfDays = GetNumberOfDays(orderEntity.StartDate, orderEntity.EndDate);
             await _orderRepository.UpdateAsync(orderEntity);
+        }
+
+        public async Task<ReviewModel> GetReview(Guid orderId)
+        {
+            var orderEntity = await _orderRepository.GetAsync(orderId);
+            if (orderEntity == null)
+            {
+                _logger.LogError($"order with {orderId} id not exists");
+                throw new NotFoundException($"order with {orderId} id not exists");
+            }
+
+            return _reviewMapper.Map<ReviewEntity, ReviewModel>(orderEntity.Review);
         }
     }
 }

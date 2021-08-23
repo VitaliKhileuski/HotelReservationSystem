@@ -22,12 +22,14 @@ namespace HotelReservation.Api.Controllers
         private readonly IOrderService _orderService;
         private readonly Mapper _mapper;
         private readonly IMapper _updateOrderMapper;
+        private readonly IMapper _reviewMapper;
 
         public OrdersController(IOrderService orderService,CustomMapperConfiguration cfg,MapConfiguration modelCfg)
         {
             _orderService = orderService;
             _mapper = new Mapper(cfg.OrderConfiguration);
             _updateOrderMapper = new Mapper(cfg.UpdateOrderConfiguration);
+            _reviewMapper = new Mapper(cfg.ReviewConfiguration);
 
         }
 
@@ -111,6 +113,17 @@ namespace HotelReservation.Api.Controllers
         {
             await _orderService.DeleteOrder(orderId);
             return Ok();
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("{orderId}/getReview")]
+        public async Task<IActionResult> GetOrderReview(Guid orderId)
+        {
+           var reviewModel = await _orderService.GetReview(orderId);
+           var reviewResponseModel = _reviewMapper.Map<ReviewModel, ReviewResponseModel>(reviewModel);
+           return Ok(reviewResponseModel);
+
         }
     }
 }
